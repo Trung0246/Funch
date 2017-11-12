@@ -1,0 +1,7290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Tween - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <li class="nav-link nav-home-link"><a href="index.html">Home</a></li><li class="nav-heading">Namespaces</li><li class="nav-heading"><span class="nav-item-type type-namespace">N</span><span class="nav-item-name"><a href="Boolean.html">Boolean</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Boolean.html#.all">all</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Boolean.html#.andNot">andNot</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Boolean.html#.nall">nall</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Boolean.html#.nand">nand</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Boolean.html#.nor">nor</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Boolean.html#.notAnd">notAnd</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Boolean.html#.notOr">notOr</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Boolean.html#.orNot">orNot</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Boolean.html#.xnor">xnor</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Boolean.html#.xor">xor</a></span></li><li class="nav-heading"><span class="nav-item-type type-namespace">N</span><span class="nav-item-name"><a href="Geometry.html">Geometry</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.accelAccel">accelAccel</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.anglePnt">anglePnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.areaPoly">areaPoly</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.areaTri">areaTri</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.boundElli">boundElli</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.boundPoly">boundPoly</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.centroidPoly">centroidPoly</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.centroidTri">centroidTri</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.chevDistPnt">chevDistPnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.cmpPnt">cmpPnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.cntrPnt">cntrPnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.colliAnglePnt">colliAnglePnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.colliArcCircPnt">colliArcCircPnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.colliCirc">colliCirc</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.colliCircPnt">colliCircPnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.colliCircRect">colliCircRect</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.colliElliPnt">colliElliPnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.colliLinePnt">colliLinePnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.colliPoly">colliPoly</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.colliPolyCirc">colliPolyCirc</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.colliPolyPnt">colliPolyPnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.colliRayRect">colliRayRect</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.colliRect">colliRect</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.colliRectPnt">colliRectPnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.colliTriPnt">colliTriPnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.convexHullPoly">convexHullPoly</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.crcmCircTri">crcmCircTri</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.crcmCntrTri">crcmCntrTri</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.diffAngle">diffAngle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.distAccel">distAccel</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.distElliPnt">distElliPnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.distLine">distLine</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.distLinePnt">distLinePnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.distPnt">distPnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.distPolyRay">distPolyRay</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.equilTri">equilTri</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.fullDeg">fullDeg</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.fullRad">fullRad</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.getAngle">getAngle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.getXLine">getXLine</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.getYLine">getYLine</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.inCircTri">inCircTri</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.intrElli">intrElli</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.intrElliLine">intrElliLine</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.intrLine">intrLine</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.intrLineCirc">intrLineCirc</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.intrPolyPnt">intrPolyPnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.intrRect">intrRect</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.isBetwAngle">isBetwAngle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.isClockWisePoly">isClockWisePoly</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.isConvexPoly">isConvexPoly</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.isSimplePoly">isSimplePoly</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.manDistPnt">manDistPnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.normDeg">normDeg</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.normRad">normRad</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.onElli">onElli</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.onLine">onLine</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.polarDistPnt">polarDistPnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.randomCirc">randomCirc</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.randomElli">randomElli</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.randomRect">randomRect</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.randomTri">randomTri</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.relfAngle">relfAngle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.reversePoly">reversePoly</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.rightTri">rightTri</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.rotPnt">rotPnt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.sideLine">sideLine</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.slicePoly">slicePoly</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.slopeLine">slopeLine</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.stdLine">stdLine</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.timeAccel">timeAccel</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.timeDistAccel">timeDistAccel</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.toDeg">toDeg</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.toRad">toRad</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Geometry.html#.triPoly">triPoly</a></span></li><li class="nav-heading"><span class="nav-item-type type-namespace">N</span><span class="nav-item-name"><a href="Math.html">Math</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.adjust">adjust</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.adjust2">adjust2</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.away">away</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.away2">away2</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.cdf">cdf</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.ceil">ceil</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.ceil2">ceil2</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.clamp">clamp</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.compare">compare</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.cycle">cycle</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.derivative">derivative</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.erf">erf</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.erfc">erfc</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.erfcx">erfcx</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.factorial">factorial</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.floor">floor</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.floor2">floor2</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.fold">fold</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.gamma">gamma</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.gcd">gcd</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.haar">haar</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.heaviside">heaviside</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.ierf">ierf</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.ierfc">ierfc</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.integral">integral</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.invNorm">invNorm</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.lcm">lcm</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.lerp">lerp</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.limit">limit</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.ln">ln</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.lnGamma">lnGamma</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.log">log</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.map">map</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.mod">mod</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.nCr">nCr</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.norm">norm</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.nPr">nPr</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.nthrt">nthrt</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.one">one</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.order">order</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.pair">pair</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.pdf">pdf</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.pow">pow</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.ppf">ppf</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.precision">precision</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.ramp">ramp</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.random">random</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.range">range</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.rational">rational</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.rect">rect</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.rem">rem</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.round">round</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.round2">round2</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.shear">shear</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.sigmoid">sigmoid</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.snap">snap</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.snap2">snap2</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.tri">tri</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.trunc">trunc</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.trunc2">trunc2</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Math.html#.wrap">wrap</a></span></li><li class="nav-heading"><span class="nav-item-type type-namespace">N</span><span class="nav-item-name"><a href="Number.html">Number</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Number.html#.epsilon">epsilon</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Number.html#.isEven">isEven</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Number.html#.isMinusZero">isMinusZero</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Number.html#.isNumeric">isNumeric</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Number.html#.isPower">isPower</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Number.html#.isPrime">isPrime</a></span></li><li class="nav-heading"><span class="nav-item-type type-namespace">N</span><span class="nav-item-name"><a href="Trigonometry.html">Trigonometry</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.acot">acot</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.acoth">acoth</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.acsc">acsc</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.acsch">acsch</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.acvcos">acvcos</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.acvsin">acvsin</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.aexcsc">aexcsc</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.aexsec">aexsec</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.ahvcos">ahvcos</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.ahvsin">ahvsin</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.asec">asec</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.asech">asech</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.avcos">avcos</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.avsin">avsin</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.cot">cot</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.coth">coth</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.crd">crd</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.csc">csc</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.csch">csch</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.cvcos">cvcos</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.cvsin">cvsin</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.excsc">excsc</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.exsec">exsec</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.hcvcos">hcvcos</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.hcvsin">hcvsin</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.hvcos">hvcos</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.hvsin">hvsin</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.sec">sec</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.sech">sech</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.sinc">sinc</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.sincos">sincos</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.vcos">vcos</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Trigonometry.html#.vsin">vsin</a></span></li><li class="nav-heading"><span class="nav-item-type type-namespace">N</span><span class="nav-item-name"><a href="Tween.html">Tween</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.bezier">bezier</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.count">count</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.curve">curve</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inBack">inBack</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inBounce">inBounce</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inCirc">inCirc</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inCubic">inCubic</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inElastic">inElastic</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inExpo">inExpo</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inOutBack">inOutBack</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inOutBounce">inOutBounce</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inOutCirc">inOutCirc</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inOutCubic">inOutCubic</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inOutElastic">inOutElastic</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inOutExpo">inOutExpo</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inOutPow">inOutPow</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inOutQuad">inOutQuad</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inOutQuart">inOutQuart</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inOutQuint">inOutQuint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inOutSine">inOutSine</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inPow">inPow</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inQuad">inQuad</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inQuart">inQuart</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inQuint">inQuint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.inSine">inSine</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.outBack">outBack</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.outBounce">outBounce</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.outCirc">outCirc</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.outCubic">outCubic</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.outElastic">outElastic</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.outExpo">outExpo</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.outPow">outPow</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.outQuad">outQuad</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.outQuart">outQuart</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.outQuint">outQuint</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.outSine">outSine</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.overShoot">overShoot</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.smoothStep">smoothStep</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Tween.html#.spline">spline</a></span></li><li class="nav-heading"><span class="nav-item-type type-namespace">N</span><span class="nav-item-name"><a href="Vector.html">Vector</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vector.html#.clockWiseVec">clockWiseVec</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vector.html#.crossVec">crossVec</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vector.html#.dotVec">dotVec</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vector.html#.headVec">headVec</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vector.html#.lerpVec">lerpVec</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vector.html#.magVec">magVec</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vector.html#.normVec">normVec</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vector.html#.perVec">perVec</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vector.html#.pol">pol</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vector.html#.projVec">projVec</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vector.html#.rec">rec</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vector.html#.rejVec">rejVec</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vector.html#.revVec">revVec</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vector.html#.scaleVec">scaleVec</a></span></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="Vector.html#.truncVec">truncVec</a></span></li><li class="nav-heading"><a href="global.html">Globals</a></li><li class="nav-item"><span class="nav-item-type type-function">F</span><span class="nav-item-name"><a href="global.html#counter">counter</a></span></li>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Tween</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        Tween
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+            <div class="description"><p>All of functions that related to Tween (see <a href="http://easings.net/">here</a> for more infos)</p></div>
+        
+
+        
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line94">line 94</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+        
+    
+    </div>
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".bezier"><span class="type-signature">(static) </span>bezier<span class="signature">(time, points)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p><a href="https://en.wikipedia.org/wiki/B%25C3%25A9zier_curve">Bezier</a> tween</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line6399">line 6399</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>points</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>Array.&lt;number></code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>control points [x1, y1, x2, y2, ...]</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.bezier(0.25, [0.25, 0.5]);//0.1875</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".count"><span class="type-signature">(static) </span>count<span class="signature">(min, max, change, current, mode)</span><span class="type-signature"> &rarr; {count~counter}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Configurable counting number function</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line6488">line 6488</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>min</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>max</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>change</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>current</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>current start number (not minimum)</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mode</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>there are different modes from 0 to 5, you can test it yourself (recommended to use 1 and 3)</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>count~counter</code></span>
+
+
+    </dd>
+</dl>
+
+
+<div class="param-desc">
+    <p>See <code>counter</code> in global for the return function</p>
+</div>
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>let counter = Tween.count(0, 10, 1, 0, 0);//counter is now a callable function, you can call it like: counter()</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".curve"><span class="type-signature">(static) </span>curve<span class="signature">(time, points)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Customizable tween</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line6369">line 6369</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>points</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>Array.&lt;number></code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>control points [x1, y1, x2, y2, ...]</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.curve(0.25, [0.25, 0.5]);//0.5</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inBack"><span class="type-signature">(static) </span>inBack<span class="signature">(time, overShoot)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Back</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line6148">line 6148</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>overShoot</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inBack(0.25, 2);//0.7024967320129584</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inBounce"><span class="type-signature">(static) </span>inBounce<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Bounce</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line6223">line 6223</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inBounce(0.25);//0.02734375</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inCirc"><span class="type-signature">(static) </span>inCirc<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Circular</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5983">line 5983</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inCirc(0.25);//0.031754163448145745</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inCubic"><span class="type-signature">(static) </span>inCubic<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Cubic</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5638">line 5638</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inCubic(0.25);//0.015625</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inElastic"><span class="type-signature">(static) </span>inElastic<span class="signature">(time, amplitude, period)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Elastic</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line6040">line 6040</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>amplitude</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>period</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inElastic(0.25, 2, 2);//0.0028595734670659252</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inExpo"><span class="type-signature">(static) </span>inExpo<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Exponent</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5920">line 5920</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inExpo(0.25);//0.005524271728019903</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inOutBack"><span class="type-signature">(static) </span>inOutBack<span class="signature">(time, overShoot)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Out Back</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line6196">line 6196</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>overShoot</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inOutBack(0.25, 2);//1.3976808550930153</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inOutBounce"><span class="type-signature">(static) </span>inOutBounce<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Out Bounce</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line6267">line 6267</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inOutBounce(0.25);//0.1171875</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inOutCirc"><span class="type-signature">(static) </span>inOutCirc<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Out Circular</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line6019">line 6019</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inOutCirc(0.25);//0.0669872981077807</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inOutCubic"><span class="type-signature">(static) </span>inOutCubic<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Out Cubic</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5674">line 5674</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inOutCubic(0.25);//0.0625</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inOutElastic"><span class="type-signature">(static) </span>inOutElastic<span class="signature">(time, amplitude, period)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Out Elastic</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line6110">line 6110</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>amplitude</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>period</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inOutElastic(0.25, 2, 2);//0.027063293868263706</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inOutExpo"><span class="type-signature">(static) </span>inOutExpo<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Out Exponent</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5956">line 5956</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inOutExpo(0.25);//0.015625</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inOutPow"><span class="type-signature">(static) </span>inOutPow<span class="signature">(time, pow)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Out Pow (same as quad, cubic,... but modifiable exponent)</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5839">line 5839</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pow</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>exponent</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inOutPow(0.25, 2);//0.125</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inOutQuad"><span class="type-signature">(static) </span>inOutQuad<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Out Quad</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5620">line 5620</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inOutQuad(0.25);//0.125</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inOutQuart"><span class="type-signature">(static) </span>inOutQuart<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Out Quart</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5728">line 5728</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inOutQuart(0.25);//0.03125</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inOutQuint"><span class="type-signature">(static) </span>inOutQuint<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Out Quint</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5782">line 5782</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inOutQuint(0.25);//0.015625</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inOutSine"><span class="type-signature">(static) </span>inOutSine<span class="signature">(time, pow)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Out Sine</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5898">line 5898</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pow</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>exponent</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inOutSine(0.25, 1);//0.49999999999999994</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inPow"><span class="type-signature">(static) </span>inPow<span class="signature">(time, pow)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Pow (same as quad, cubic,... but modifiable exponent)</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5800">line 5800</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pow</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>exponent</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inPow(0.25, 2);//0.0625</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inQuad"><span class="type-signature">(static) </span>inQuad<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Quad</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5582">line 5582</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inQuad(0.25);//0.0625</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inQuart"><span class="type-signature">(static) </span>inQuart<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Quart</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5692">line 5692</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inQuart(0.25);//0.00390625</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inQuint"><span class="type-signature">(static) </span>inQuint<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Quint</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5746">line 5746</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inQuint(0.25);//0.0009765625</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".inSine"><span class="type-signature">(static) </span>inSine<span class="signature">(time, pow)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>In Sine</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5860">line 5860</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pow</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>exponent</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.inSine(0.25, 1);//0.07612046748871326</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".outBack"><span class="type-signature">(static) </span>outBack<span class="signature">(time, overShoot)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Out Back</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line6172">line 6172</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>overShoot</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.outBack(0.25, 2);//2.732490196038875</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".outBounce"><span class="type-signature">(static) </span>outBounce<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Out Bounce</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line6241">line 6241</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.outBounce(0.25);//0.47265625</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".outCirc"><span class="type-signature">(static) </span>outCirc<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Out Circular</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line6001">line 6001</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.outCirc(0.25);//0.6614378277661477</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".outCubic"><span class="type-signature">(static) </span>outCubic<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Out Cubic</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5656">line 5656</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.outCubic(0.25);//0.578125</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".outElastic"><span class="type-signature">(static) </span>outElastic<span class="signature">(time, amplitude, period)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Out Elastic</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line6075">line 6075</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>amplitude</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>period</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.outElastic(0.25, 2, 2);//1.0915063509461096</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".outExpo"><span class="type-signature">(static) </span>outExpo<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Out Exponent</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5938">line 5938</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.outExpo(0.25);//0.8232233047033631</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".outPow"><span class="type-signature">(static) </span>outPow<span class="signature">(time, pow)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Out Pow (same as quad, cubic,... but modifiable exponent)</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5819">line 5819</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pow</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>exponent</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.outPow(0.25, 2);//0.4375</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".outQuad"><span class="type-signature">(static) </span>outQuad<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Out Quad</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5601">line 5601</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.outQuad(0.25);//0.4375</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".outQuart"><span class="type-signature">(static) </span>outQuart<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Out Quart</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5710">line 5710</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.outQuart(0.25);//0.68359375</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".outQuint"><span class="type-signature">(static) </span>outQuint<span class="signature">(time)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Out Quint</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5764">line 5764</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.outQuint(0.25);//0.7626953125</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".outSine"><span class="type-signature">(static) </span>outSine<span class="signature">(time, pow)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Out Sine</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line5879">line 5879</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>pow</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>exponent</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.outSine(0.25, 1);//0.3826834323650898</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".overShoot"><span class="type-signature">(static) </span>overShoot<span class="signature">(time, mag)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Overshoot</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line6349">line 6349</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>mag</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                <p>magnitude</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.overShoot(0.25, 2);//1.2956871203528266</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".smoothStep"><span class="type-signature">(static) </span>smoothStep<span class="signature">(time, order)</span><span class="type-signature"> &rarr; {number}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p><a href="https://en.wikipedia.org/wiki/Smoothstep">Smoothstep</a></p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line6288">line 6288</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>time</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>order</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>number</code></span>
+
+
+    </dd>
+</dl>
+
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.smoothStep(0.25, 1);//0.15625</code></pre>
+
+</div>
+
+</div>
+        
+            
+<div class="section-method">
+
+    
+
+    <h4 class="name" id=".spline"><span class="type-signature">(static) </span>spline<span class="signature">(continuty, bias, tension, density, points, loop<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Array.&lt;number>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p><a href="https://en.wikipedia.org/wiki/Cubic_Hermite_spline">Cubic Hermite spline</a> tween using <a href="https://en.wikipedia.org/wiki/Kochanek%25E2%2580%2593Bartels_spline">Kochanek–Bartels spline</a> version</p>
+</div>
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="CalcUtils.js.html">CalcUtils.js</a>, <a href="CalcUtils.js.html#line6424">line 6424</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>continuty</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>bias</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>tension</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>density</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>number</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                <p>like time</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>points</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>Array.&lt;number></code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                <p>control points [x1, y1, x2, y2, ...]</p>
+                
+            </td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>loop</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><code>boolean</code></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                <p><code>true</code> is looped</p>
+                
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="section-returns">
+<h5>Returns:</h5>
+
+        
+
+<dl class="param-type">
+    <dt>
+        Type:
+    </dt>
+    <dd>
+        
+<span class="param-type"><code>Array.&lt;number></code></span>
+
+
+    </dd>
+</dl>
+
+
+<div class="param-desc">
+    <p>Return array of points [x1, y1, x2, y2, ...]</p>
+</div>
+
+    
+</div>
+
+
+
+<div class="section-examples">
+<h5>Example</h5>
+
+    <pre class="prettyprint"><code>Tween.spline(1, 1, 1, 0.5, [1, 1, 3, 2], false);//[1, 1, 2, 1.5, 3, 2]</code></pre>
+
+</div>
+
+</div>
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sat Nov 11 2017 18:20:37 GMT-0800 (Pacific Standard Time) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
