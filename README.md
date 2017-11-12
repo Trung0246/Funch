@@ -27,3 +27,5 @@ Version 0.1a (Alpha version)
   - This is my first library. There maybe some bad coding practice in the codebase :(
   
   - I am very inexperienced in Node and modules related stuff, any helps really appreciated :D
+  
+  - Also I am still don't know how to use git and github properly yet...
