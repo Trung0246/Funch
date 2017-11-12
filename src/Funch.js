@@ -1,6 +1,6 @@
 (function(window) {
 	/*
-    Funch.js, v0.1a
+		Funch.js, v0.1a
 
 		MIT License
 
@@ -40,7 +40,7 @@
 
 	/*
 		TODO list:
-	  - Need to improve namespace to make it work with ES6 export, Node, amd,... If anyone can find a script that do this I am really appreciated (Medium)
+		- Need to improve namespace to make it work with ES6 export, Node, amd,... If anyone can find a script that do this I am really appreciated (Medium)
 		- Find another version of derivative function that did not use array (Medium)
 		- Optimize distLine function (Medium)
 		- Improve Bezier function (Medium)
