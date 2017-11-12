@@ -1,4 +1,7 @@
 # Funch
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/426b8adb46464fcfb618dc22d4c7d73d)](https://www.codacy.com/app/Trung0246/Funch?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Trung0246/Funch&amp;utm_campaign=Badge_Grade)
+![Shields Badge](https://img.shields.io/badge/license-MIT-blue.svg)
+
 An all-in-one library that dedicated to improve Javascript default functions and provide more functions mostly focus on game development.
 
 Version 0.1a (Alpha version)
