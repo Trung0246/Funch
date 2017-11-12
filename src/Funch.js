@@ -174,7 +174,7 @@
 		2.5 / 2.75, 2.25 / 2.75, 2.625 / 2.75,
 	],
 	_random_1_ = [],
-	_helper9_1 = 1 / 3,
+	_helper9_1_ = 1 / 3,
 	_helper19_1_ = 3 / 4,
 	_helper19_2_ = [],
 	_helper23_1_ = [],
@@ -196,230 +196,408 @@
 	oldPow = Math.pow,
 	oldRandom = Math.random;
 
-	for (let i = 0; 6 > i; i++) _poly_stack_.push({
-		x: 0,
-		y: 0,
-		flag: false
-	});
-
-	function _helper1(d, e, f, g) {
-		e = Utils.default(e, 0), f = Utils.default(f, 10);
-		let h, j;
-		return j = Math.pow(f, e), h = _helper3(g, d * j) / j, h
+	for (var i = 0; i < 6; i ++) {
+		_poly_stack_.push({
+			x: 0,
+			y: 0,
+			flag: false
+		});
 	}
 
-	function _helper2(d, e, f, g) {
-		e = Utils.default(e, 0), f = Utils.default(f, 10);
-		let h, j, k, l;
-		h = Utils.default(f, 10);
-		let o = Math.abs(d);
-		return j = 10 === h ? Math.log10(o) : 2 === h ? Math.exp(o) : Math.log(o, h), j = oldFloor(j - e + 1), k = Math.pow(h, Math.abs(j)),
-		l = 0 > j ? _helper3(g, d * k) / k : _helper3(g, d / k) * k, l
+	function _helper1(num, digits, base, type) {
+		digits = Utils.default(digits, 0);
+		base = Utils.default(base, 10);
+		let result, temp;
+		temp = Math.pow(base, digits);
+		result = _helper3(type, num * temp) / temp;
+		return result;
 	}
 
-	function _helper3(d, e) {
-		switch (d) {
+	function _helper2(num, digits, base, type) {
+		digits = Utils.default(digits, 0);
+		base = Utils.default(base, 10);
+		let base2, exp, temp, temp2;
+		base2 = Utils.default(base, 10);
+		let absX = Math.abs(num);
+		if (base2 === 10) {
+			exp = Math.log10(absX);
+		} else if (base2 === 2) {
+			exp = Math.exp(absX);
+		} else {
+			exp = Math.log(absX, base2);
+		}
+		exp = oldFloor(exp - digits + 1.0);
+		temp = Math.pow(base2, Math.abs(exp));
+		if (exp < 0) {
+			temp2 = _helper3(type, num * temp) / temp;
+		} else {
+			temp2 = _helper3(type, num / temp) * temp;
+		}
+		return temp2;
+	}
+
+	function _helper3(type, num) {
+		switch (type) {
 			case 0:
-				return oldRound(e);
+				{
+					return oldRound(num);
+				}
 				break;
 			case 1:
-				return oldFloor(e);
+				{
+					return oldFloor(num);
+				}
 				break;
 			case 2:
-				return oldCeil(e);
+				{
+					return oldCeil(num);
+				}
 				break;
 			case 3:
-				return oldTrunc(e);
+				{
+					return oldTrunc(num);
+				}
 				break;
 			case 4:
-				return 0 < e ? oldCeil(e) : oldFloor(e);
+				{
+					return (num > 0) ? oldCeil(num) : oldFloor(num);
+				}
+				break;
 		}
 	}
 
-	function _helper4(d) {
-		if (d !== oldFloor(d)) return NaN;
-		if (0 > d) return NaN;
-		if (170 < d) return NaN;
-		if (0 === d || 1 === d) return 1;
-		let e = 1;
-		for (let f = 2; f <= d; f++) e *= f;
-		return e
+	function _helper4(num) {
+		if (num !== oldFloor(num)) {
+			return NaN;
+		} else if (num < 0) {
+			return NaN;
+		} else if (num > 170) {
+			return NaN;
+		} else if (0 === num || 1 === num) {
+			return 1;
+		}
+		let t = 1;
+		for (let r = 2; r <= num; r++) {
+			t *= r;
+		}
+		return t;
 	}
 
-	function _helper5(d, e) {
-		d *= -1, e *= -1;
-		let f;
-		if ((0 > d && (d = -d), 0 > e && (e = -e), e > d) && (f = e, e = d, d = f), 0 === e) return d;
-		for (let g = d % e; 0 < g;)
-			d = e, e = g, g = d % e;
-		return e
+	function _helper5(num1, num2) {
+		num1 *= -1;
+		num2 *= -1;
+		let temp;
+		if (num1 < 0 && (num1 = -num1), num2 < 0 && (num2 = -num2), num2 > num1) {
+			temp = num2;
+			num2 = num1;
+			num1 = temp;
+		}
+		if (0 === num2) {
+			return num1;
+		}
+		for (let r = num1 % num2; r > 0;) {
+			num1 = num2;
+			num2 = r;
+			r = num1 % num2;
+		}
+		return num2;
 	}
 
-	function _helper6(d, e) {
-		return d * e / _helper5(d, e)
+	function _helper6(num1, num2) {
+		return (num1 * num2) / _helper5(num1, num2);
 	}
 
 	function _helper7() {
-		let d = _random_1_[0],
-			e = _random_1_[1],
-			f = _random_1_[2],
-			g = _random_1_[3],
-			h = (g >>> 0) + (e >>> 0),
-			j = f + d + (h / 2 >>> 31) >>> 0;
-		_random_1_[0] = f, _random_1_[1] = g;
-		let l = 0,
-			o = 0,
-			q = 0,
-			s = 0,
-			w = 23;
-		l = d << w | (e & 4294967295 << 32 - w) >>> 32 - w, o = e << w, d ^= l, e ^= o, l = d ^ f, o = e ^ g;
-		let z = 18;
-		q = d >>> z, s = e >>> z | (d & 4294967295 >>> 32 - z) << 32 - z, l ^= q, o ^= s;
-		let F = 5;
-		q = f >>> F, s = g >>> F | (f & 4294967295 >>> 32 - F) << 32 - F, l ^= q, o ^= s, _random_1_[2] = l, _random_1_[3] = o,
-			_random_1_[4] = j, _random_1_[5] = h >>> 0
+		let s1U = _random_1_[0], s1L = _random_1_[1],
+				s0U = _random_1_[2], s0L = _random_1_[3];
+		let sumL = (s0L >>> 0) + (s1L >>> 0);
+		let resU = (s0U + s1U + (sumL / 2 >>> 31)) >>> 0,
+				resL = sumL >>> 0;
+		_random_1_[0] = s0U;
+		_random_1_[1] = s0L;
+		let t1U = 0, t1L = 0,
+				t2U = 0, t2L = 0;
+		let a1 = 23;
+		let m1 = 0xFFFFFFFF << (32 - a1);
+		t1U = (s1U << a1) | ((s1L & m1) >>> (32 - a1));
+		t1L = s1L << a1;
+		s1U = s1U ^ t1U;
+		s1L = s1L ^ t1L;
+		t1U = s1U ^ s0U;
+		t1L = s1L ^ s0L;
+		let a2 = 18;
+		let m2 = 0xFFFFFFFF >>> (32 - a2);
+		t2U = s1U >>> a2;
+		t2L = (s1L >>> a2) | ((s1U & m2) << (32 - a2));
+		t1U = t1U ^ t2U;
+		t1L = t1L ^ t2L;
+		let a3 = 5;
+		let m3 = 0xFFFFFFFF >>> (32 - a3);
+		t2U = s0U >>> a3;
+		t2L = (s0L >>> a3) | ((s0U & m3) << (32 - a3));
+		t1U = t1U ^ t2U;
+		t1L = t1L ^ t2L;
+		_random_1_[2] = t1U;
+		_random_1_[3] = t1L;
+		_random_1_[4] = resU;
+		_random_1_[5] = resL;
 	}
 
-	function _helper8(d) {
-		if (Number.isNaN(d) || !Number.isFinite(d)) return NaN;
-		if (0 === d) return 0;
-		if (d % 1 || 2 > d * d) return 1;
-		if (0 == d % 2) return 2;
-		if (0 == d % 3) return 3;
-		if (0 == d % 5) return 5;
-		let e = Math.sqrt(d);
-		for (let f = 7; f <= e; f += 30) {
-			if (0 == d % f) return f;
-			if (0 == d % (f + 4)) return f + 4;
-			if (0 == d % (f + 6)) return f + 6;
-			if (0 == d % (f + 10)) return f + 10;
-			if (0 == d % (f + 12)) return f + 12;
-			if (0 == d % (f + 16)) return f + 16;
-			if (0 == d % (f + 22)) return f + 22;
-			if (0 == d % (f + 24)) return f + 24
+	function _helper8(num) {
+		if (Number.isNaN(num) || !Number.isFinite(num)) return NaN;
+		if (num === 0) return 0;
+		if (num % 1 || num * num < 2) return 1;
+		if (num % 2 === 0) return 2;
+		if (num % 3 === 0) return 3;
+		if (num % 5 === 0) return 5;
+		let m = Math.sqrt(num);
+		for (let i = 7; i <= m; i += 30) {
+			if (num % i === 0) return i;
+			if (num % (i + 4) === 0) return i + 4;
+			if (num % (i + 6) === 0) return i + 6;
+			if (num % (i + 10) === 0) return i + 10;
+			if (num % (i + 12) === 0) return i + 12;
+			if (num % (i + 16) === 0) return i + 16;
+			if (num % (i + 22) === 0) return i + 22;
+			if (num % (i + 24) === 0) return i + 24;
 		}
-		return d
+		return num;
 	}
 
-	function _helper9(d) {
-		let f, g, h, j, k, l, o, q, s, e = 40;
-		return d *= 10, f = -27 * d, g = -54 * d, h = e * e * e, j = e * e, k = f * f * f, l = f * f,
-			o = (27 * j * f + 2 * k - 9 * e * f * g) / (54 * h), q = (3 * e * g - l) / (9 * j), s = Math.sqrt(o * o + q * q * q),
-			Math.pow(-o + s, _helper9_1) + Math.pow(-o - s, _helper9_1) - f / (3 * e)
+	function _helper9(p) {
+		let a = 40, b, c, aaa, aa, bbb, bb, m, n, r;
+		p *= 10;
+
+		b = -27 * p;
+		c = -54 * p;
+
+		aaa = a * a * a;
+		aa = a * a;
+		bbb = b * b * b;
+		bb = b * b;
+
+		m = (27 * aa * b + 2 * bbb - 9 * a * b * c) / (54 * aaa);
+		n = (3 * a * c - bb) / (9 * aa);
+
+		r = Math.sqrt(m * m + n * n * n);
+
+		return Math.pow(-m + r, _helper9_1_) + Math.pow(-m - r, _helper9_1_) - b / (3 * a);
 	}
 
-	function _helper10(d) {
-		return 1 - (d + 3) / (3 * d + 3)
+	function _helper10(overShoot) {
+		return 1 - (overShoot + 3) / (3 * overShoot + 3);
 	}
 
-	function _helper11(d, e, f) {
-		return Math.nCr(f, e) * Math.pow(d, e) * Math.pow(1 - d, f - e)
+	function _helper11(x, v, n) {
+		return Math.nCr(n, v) * Math.pow(x, v) * Math.pow(1 - x, n - v);
 	}
 
-	function _helper13(d, e) {
-		return Geometry.distPnt(_slicePoly_1_.x, _slicePoly_1_.y, d.x, d.y, true) - Geometry.distPnt(_slicePoly_1_.x, _slicePoly_1_.y, e.x, e.y, true)
+	function _helper13(u, v) {
+		return Geometry.distPnt(_slicePoly_1_.x, _slicePoly_1_.y, u.x, u.y, true) - Geometry.distPnt(_slicePoly_1_.x, _slicePoly_1_.y, v.x, v.y, true);
 	}
 
-	function _helper14(d, e) {
-		for (let f = d.length;;)
-			if (e = (e + 1) % f, d[e].flag) return e
-	}
-
-	function _helper15(d, e, f) {
-		let g = d.length,
-			h = [];
-		f < e && (f += g);
-		for (let j = e; j <= f; j++) h.push(d[j % g]);
-		return h
-	}
-
-	function _helper17(d, e, f, g, h, j, k, l) {
-		let o = Geometry.distPnt(j.x, j.y, f.x, f.y, true);
-		if (o < l.dist) {
-			let q = 1 / Geometry.distPnt(h.x, h.y, g.x, g.y, true),
-				s = -(h.y - g.y) * q,
-				w =
-				(h.x - g.x) * q,
-				y = 2 * (d * s + e * w);
-			l.dist = o, l.norm_x = s, l.norm_y = w, l.refl_x = -y * s + d, l.refl_y = -y * w + e, l.edge = k
+	function _helper14(ps, ind) {
+		let n = ps.length;
+		while (true) {
+			ind = (ind + 1) % n;
+			if (ps[ind].flag) {
+				return ind;
+			}
 		}
 	}
 
-	function _helper18(d, e, f, g, h) {
-		let j, k, l, o, q = d.x - e.x,
-			s = d.y - e.y,
-			w =
-			f.x - e.x,
-			y = f.y - e.y;
-		o = (q * w + s * y) / (w * w + y * y), 0 > o || e.x == f.x && e.y == f.y ? (j = e.x, k = e.y) : 1 < o ? (j = f.x, k = f.y) : (j = e.x + o * w, k = e.y + o * y),
-			l = Geometry.distPnt(j, k, d.x, d.y, true), l < h.dist && (h.dist = l, h.edge = g, h.point_x = j, h.point_y = k)
-	}
-
-	function _helper19(d, e, f, g, h) {
-		_helper19_2_.length = 0, g /= h, f /= h, e /= h, d /= h;
-		let j, k, l, o, q = g * g,
-			s = 2 * f,
-			w = 4 * d,
-			y = 0,
-			z = _helper20(4 * f * d - e * e - q * d, e * g - w, -f, 1),
-			E = q * _helper19_1_,
-			F = q / 4 - f + z,
-			G = Math.sqrt(F),
-			H = -g / 4,
-			I = G / 2;
-		return 0 === F ? (j = E - s, k = 2 * Math.sqrt(z * z - w), l = j + k, o = j - k) : (j = E - F - s, k = (4 * g * f - 8 * e - q * g) / (4 * G),
-			l = j + k, o = j - k), j = H + I, 0 <= l && (k = Math.sqrt(l) / 2, _helper19_2_[y++] = j + k, _helper19_2_[y++] = j - k),
-			j = H - I, 0 <= o && (k = Math.sqrt(o) / 2, _helper19_2_[y++] = j + k, _helper19_2_[y++] = j - k), y
-	}
-
-	function _helper20(d, e, f, g) {
-		f /= g, e /= g, d /= g;
-		let h = f * f,
-			j = (3 * e - h) / 9,
-			k = (9 * f * e - 27 * d - 2 * h * f) / 54,
-			l = j * j * j,
-			o = l + k * k;
-		if (0 <= o) {
-			let q = Math.sqrt(o),
-				s = Math.cbrt(k + q),
-				w = Math.cbrt(k - q);
-			return -f / 3 + s + w
+	function _helper15(ps, ind0, ind1) {
+		let n = ps.length,
+			nps = [];
+		if (ind1 < ind0) ind1 += n;
+		for (let i = ind0; i <= ind1; i++) {
+			nps.push(ps[i % n]);
 		}
-		return 2 * Math.sqrt(-j) * Math.cos(Math.acos(k / Math.sqrt(-l)) / 3) - f / 3
+		return nps;
 	}
 
-	function _helper21(d, e, f, g, h) {
-		let j = d.x - e.x,
-			k = f.x - g.x,
-			l = d.y - e.y,
-			o = f.y - g.y;
-		let q = j * o - l * k;
-		if (0 == q) return null;
-		let s = d.x * e.y - d.y * e.x,
-			w = f.x * g.y - f.y * g.x;
-		let y = 1 / q;
-		return h.x = (s * k - j * w) * y, h.y = (s * o - l * w) * y, _helper22(h, f, g) ? 0 < l && h.y > d.y || 0 > l && h.y < d.y ? null : 0 < j &&
-			h.x > d.x || 0 > j && h.x < d.x ? null : h : null
+	function _helper16(points, normal_x, normal_y, data) {
+		let min = Number.MAX_VALUE,
+			max = -Number.MAX_VALUE,
+			i = points.length,
+			dot;
+		while (i -= 2) {
+			dot = Math.dotVec(points[i], points[i + 1], normal_x, normal_y);
+			if (dot < min) min = dot;
+			if (dot > max) max = dot;
+		}
+		data[0] = min;
+		data[1] = min;
 	}
 
-	function _helper22(d, e, f) {
-		let g = Math.min(e.x, f.x),
-			h = Math.max(e.x, f.x),
-			j = Math.min(e.y, f.y),
-			k = Math.max(e.y, f.y);
-		return g == h ? j <= d.y &&
-			d.y <= k : j == k ? g <= d.x && d.x <= h : g <= d.x + 1e-10 && d.x - 1e-10 <= h && j <= d.y + 1e-10 && d.y - 1e-10 <= k
+	function _helper17(dx, dy, a1, b1, b2, c, edge, isc) {
+		let nrl = Geometry.distPnt(c.x, c.y, a1.x, a1.y, true);
+		if (nrl < isc.dist) {
+			let ibl = 1 / Geometry.distPnt(b2.x, b2.y, b1.x, b1.y, true);
+			let nx = -(b2.y - b1.y) * ibl,
+				ny = (b2.x - b1.x) * ibl;
+			let ddot = 2 * (dx * nx + dy * ny);
+			isc.dist = nrl;
+			isc.norm_x = nx;
+			isc.norm_y = ny;
+			isc.refl_x = -ddot * nx + dx;
+			isc.refl_y = -ddot * ny + dy;
+			isc.edge = edge;
+		}
 	}
 
-	function _helper23(a, b, c, d) {
-		let e, f = 1e-10,
-			g = true,
-			h = 2 === d ? 1 : -1;
-		if (_helper23_1_.length = 0, _helper23_2_.length = 0, _helper23_3_.length = 0, "number" == typeof c || c instanceof Number || (c = 10), a === h * Infinity) return NaN;
-		for (a === h * -Infinity && (a = h * -Number.MAX_VALUE / 10), 10 < c && (f = oldPow(1e-32, c / 32)), e = 0; 5 > e; e++) a += h * f, _helper23_1_.push(a), _helper23_2_.push(b(a));
-		for (e = 0; e < _helper23_2_.length; e++) _helper23_3_.push(Math.round(_helper23_2_[e], c));
-		for (e = 1; e < _helper23_3_.length; e++) g = g && _helper23_3_[e - 1] === _helper23_3_[e];
-		return true == g ? _helper23_3_[0] : NaN
+	function _helper18(p, a, b, edge, isc) {
+		let xx, yy, dst, param;
+		let A = p.x - a.x,
+			B = p.y - a.y,
+			C = b.x - a.x,
+			D = b.y - a.y;
+		param = (A * C + B * D) / (C * C + D * D);
+		if (param < 0 || (a.x == b.x && a.y == b.y)) {
+			xx = a.x;
+			yy = a.y;
+		} else if (param > 1) {
+			xx = b.x;
+			yy = b.y;
+		} else {
+			xx = a.x + param * C;
+			yy = a.y + param * D;
+		}
+		dst = Geometry.distPnt(xx, yy, p.x, p.y, true);
+		if (dst < isc.dist) {
+			isc.dist = dst;
+			isc.edge = edge;
+			isc.point_x = xx;
+			isc.point_y = yy;
+		}
+	}
+
+	function _helper19(a0, a1, a2, a3, a4) {
+		_helper19_2_.length = 0;
+		a3 /= a4;
+		a2 /= a4;
+		a1 /= a4;
+		a0 /= a4;
+		let frontPart, backPart, DSquare, ESquare, a3a3 = a3 * a3, a22 = 2 * a2, a04 = 4 * a0, length = 0;
+		let	y1 = _helper20(4 * a2 * a0 - a1 * a1 - a3a3 * a0, a1 * a3 - a04, -a2, 1),
+			a334 = a3a3 * _helper19_1_;
+		let RSquare = a3a3 / 4 - a2 + y1;
+		let R = Math.sqrt(RSquare), a34 = -a3 / 4, R2 = R / 2;
+		if (RSquare === 0) {
+			frontPart = a334 - a22;
+			backPart = 2 * Math.sqrt(y1 * y1 - a04);
+			DSquare = frontPart + backPart;
+			ESquare = frontPart - backPart;
+		} else {
+			frontPart = a334 - RSquare - a22;
+			backPart = (4 * a3 * a2 - 8 * a1 - a3a3 * a3) / (4 * R);
+			DSquare = frontPart + backPart;
+			ESquare = frontPart - backPart;
+		}
+		frontPart = a34 + R2;
+		if (DSquare >= 0) {
+			backPart = Math.sqrt(DSquare) / 2;
+			_helper19_2_[length++] = (frontPart + backPart);
+			_helper19_2_[length++] = (frontPart - backPart);
+		}
+		frontPart = a34 - R2;
+		if (ESquare >= 0) {
+			backPart = Math.sqrt(ESquare) / 2;
+			_helper19_2_[length++] = (frontPart + backPart);
+			_helper19_2_[length++] = (frontPart - backPart);
+		}
+		return length;
+	}
+
+	function _helper20(a0, a1, a2, a3) {
+		a2 /= a3;
+		a1 /= a3;
+		a0 /= a3;
+		let a2a2 = a2 * a2;
+		let Q = (3 * a1 - a2a2) / 9,
+			R = (9 * a2 * a1 - 27 * a0 - 2 * a2a2 * a2) / 54;
+		let QQQ = Q * Q * Q;
+		let D = QQQ + R * R;
+		if (D >= 0) {
+			let sqrtD = Math.sqrt(D);
+			let S = Math.cbrt(R + sqrtD),
+				T = Math.cbrt(R - sqrtD);
+			return (-a2 / 3) + S + T;
+		}
+		return 2 * Math.sqrt(-Q) * Math.cos(Math.acos(R / Math.sqrt(-QQQ)) / 3) - a2 / 3;
+	}
+
+	function _helper21(a1, a2, b1, b2, c) {
+		var dax = (a1.x - a2.x),
+			dbx = (b1.x - b2.x),
+			day = (a1.y - a2.y),
+			dby = (b1.y - b2.y);
+
+		let Den = dax * dby - day * dbx;
+		if (Den === 0) return null;
+
+		let A = (a1.x * a2.y - a1.y * a2.x),
+			B = (b1.x * b2.y - b1.y * b2.x);
+
+		var iDen = 1 / Den;
+		c.x = (A * dbx - dax * B) * iDen;
+		c.y = (A * dby - day * B) * iDen;
+
+		if (!_helper22(c, b1, b2)) return null;
+		if ((day > 0 && c.y > a1.y) || (day < 0 && c.y < a1.y)) return null;
+		if ((dax > 0 && c.x > a1.x) || (dax < 0 && c.x < a1.x)) return null;
+		return c;
+	}
+
+	function _helper22(a, b, c) {
+		var minx = Math.min(b.x, c.x),
+			maxx = Math.max(b.x, c.x),
+			miny = Math.min(b.y, c.y),
+			maxy = Math.max(b.y, c.y);
+
+		if (minx == maxx) return (miny <= a.y && a.y <= maxy);
+		if (miny == maxy) return (minx <= a.x && a.x <= maxx);
+
+		return (minx <= a.x + 1e-10 && a.x - 1e-10 <= maxx && miny <= a.y + 1e-10 && a.y - 1e-10 <= maxy);
+	}
+
+	function _helper23(num, func, places, type) {
+		let k, verySmallNumber = 1e-10, allEqual = true,
+			flip = (type === 2 ? 1 : -1);
+		_helper23_1_.length = 0;
+		_helper23_2_.length = 0;
+		_helper23_3_.length = 0;
+		if (typeof places != "number" && !(places instanceof Number)) {
+			places = 10;
+		}
+	  
+		if (num === flip * Infinity) {
+			return NaN;
+		} else if (num === flip * -Infinity) {
+			num = flip * -Number.MAX_VALUE / 10;
+		}
+	  
+		if (places > 10) {
+			verySmallNumber = oldPow(1e-32, places / 32);
+		}
+
+		for (k = 0; k < 5; k++) {
+			num += flip * verySmallNumber;
+			_helper23_1_.push(num);
+			_helper23_2_.push(func(num));
+		}
+
+		for (k = 0; k < _helper23_2_.length; k ++) {
+			_helper23_3_.push(Math.round(_helper23_2_[k], places));
+		}
+
+		for (k = 1; k < _helper23_3_.length; k++) {
+			allEqual = allEqual && (_helper23_3_[k - 1] === _helper23_3_[k]);
+		}
+		if (allEqual === true) {
+			return _helper23_3_[0];
+		}
+		return NaN;
 	}
 
 	//Utils
