@@ -4,11 +4,11 @@
 
 An all-in-one library that dedicated to improve Javascript default functions and provide more functions mostly focus on game development.
 
-Version 0.1a (Alpha version)
+Version 0.2a (Alpha version)
 
-[Download](https://cdn.rawgit.com/Trung0246/Funch/ca67cda8/src/Funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/68f12d9c/src/Funch.min.js))
+[Download](https://cdn.rawgit.com/Trung0246/Funch/75439a5b/src/Funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/75439a5b/src/Funch.min.js))
 
-[Documentation](https://cdn.rawgit.com/Trung0246/Funch/c18d910b/docs/index.html)
+[Documentation](https://cdn.rawgit.com/Trung0246/Funch/75439a5b/docs/index.html)
 
 ---
 
