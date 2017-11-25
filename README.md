@@ -4,24 +4,34 @@
 
 An all-in-one library that dedicated to improve Javascript default functions and provide more functions mostly focus on game development.
 
-Version 0.2a (Alpha version)
+Version 0.3a (Alpha version)
 
-[Download](https://cdn.rawgit.com/Trung0246/Funch/75439a5b/src/Funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/75439a5b/src/Funch.min.js))
+[Download](https://cdn.rawgit.com/Trung0246/Funch/26fa1263/src/Funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/26fa1263/src/Funch.min.js))
 
-[Documentation](https://cdn.rawgit.com/Trung0246/Funch/75439a5b/docs/index.html)
+[Documentation](https://cdn.rawgit.com/Trung0246/Funch/26fa1263/docs/index.html)
 
 ---
 
 ### Features
-- Over 130 functions that you can use right now.
+- Over 130 functions that you can use right now
 
-- Simple to add by copy `<script type="text/javascript" src="Funch.js"></script>`
+- Simple to add by copy `<script type="text/javascript" src="Funch.js"></script>` or `require("Funch.js");`
 
-- Medium-sized ? (**38.3 KB** compressed using [Babel](https://babeljs.io) -> [Prepack](https://prepack.io) -> [UglifyJS2](https://github.com/mishoo/UglifyJS2))
+- Medium-sized ? (**37.2 KB** compressed using [Babel](https://babeljs.io) -> [UglifyJS2](https://github.com/mishoo/UglifyJS2))
 
 - Easy to copy and paste any function you liked to use without include whole library *(I'm sad :( )*
 
-- No additional objects or classes
+- No additional objects or classes (except Geometry and Tween obviously for exporting functions)
+
+- No dependencies
+
+### Changelog
+
+- Fixed some tiny bugs
+
+- Added some new functions
+
+- Wrote this new changelog
 
 ##### Notes
   - When I add new functions, I followed these stuff, sorted by priorities, highest is 1:
@@ -30,6 +40,8 @@ Version 0.2a (Alpha version)
     2) Performance
     3) Size
     4) Readability
+    
+  - If a function depends on another functions, try to use Funch.js provided functions if it have...
     
   - This is my first library. There maybe some bad coding practice in the codebase :(
   
