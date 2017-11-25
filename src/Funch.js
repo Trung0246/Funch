@@ -1,6 +1,7 @@
-(function(window) {
+(function(global) {
+	"use strict";
 	/*
-	Funch.js, v0.2a
+	Funch.js, v0.3a
 
 	MIT License
 
@@ -28,17 +29,11 @@
 	*/
 
 	//Namespace
-	if (!window.Geometry) {
-		window.Geometry = {};
-	}
-	if (!window.Tween) {
-		window.Tween = {};
-	}
+	let Geometry = {}, Tween = {};
 
 	/*
 	TODO list:
 	- Need to improve namespace to make it work with ES6 export, Node, amd,... If anyone can find a script that do this I am really appreciated (Medium)
-	- Find another version of derivative function that did not use array (Medium)
 	- Optimize distLine function (Medium)
 	- Add perlin noise and simplex noise functions (both 2D and 3D ?) (Medium)
 	*/
@@ -139,12 +134,15 @@
 	Math.UPC = Math.log(1 + Math.SQRT2) + Math.SQRT2;
 
 	//Local variables and functions that store data necessary for library
-	let _gamma_1_ = [
-		0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313, -176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6,
+	let _helper7_1_ = [0xcc9e2d51, 0x1b873593, Math.pow(2, 32)],
+	_gamma_1_ = [
+		0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313,
+		-176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6,
 		1.5056327351493116e-7
 	],
 	_lnGamma_1_ = [
-		76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 0.1208650973866179e-2, -0.5395239384953e-5
+		76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155,
+		0.1208650973866179e-2, -0.5395239384953e-5
 	],
 	_erfcx_1_ = [
 		0.9999999999999999, 2.224574423459406, 2.444115549920689, 1.7057986861852539,
@@ -167,8 +165,6 @@
 		2.5 / 2.75, 2.25 / 2.75, 2.625 / 2.75,
 	],
 	_random_1_ = [],
-	_helper9_1_ = 1 / 3,
-	_helper19_1_ = 3 / 4,
 	_helper19_2_ = [],
 	_helper23_1_ = [],
 	_helper23_2_ = [],
@@ -177,6 +173,8 @@
 	_integral_2_ = [],
 	_derivative_1_ = [],
 	_gcd_1_ = [],
+	_helper9_1_ = 1 / 3,
+	_helper19_1_ = 3 / 4,
 	_toRad_1_ = Math.PI / 180,
 	_toDeg_1_ = 180 / Math.PI,
 	_erf_1_ = Math.sqrt(Math.PI),
@@ -280,7 +278,7 @@
 		_gcd_1_[2] = signY * y;
 	}
 
-	function _helper7() {
+	function _helper6() {
 		let s1U = _random_1_[0],
 			s1L = _random_1_[1],
 			s0U = _random_1_[2],
@@ -316,8 +314,31 @@
 		t1L = t1L ^ t2L;
 		_random_1_[2] = t1U;
 		_random_1_[3] = t1L;
-		_random_1_[4] = resU;
-		_random_1_[5] = resL;
+		_random_1_[5] = resU;
+		_random_1_[6] = resL;
+	}
+
+	function _helper7() {
+		let h1 = arguments[2],
+			numargs = arguments.length - 1,
+			h1b, k1, i;
+		for (i = 0; i < numargs; i++) {
+			k1 = arguments[i] | 0;
+			k1 = ((((k1 & 0xffff) * _helper7_1_[0]) + ((((k1 >>> 16) * _helper7_1_[0]) & 0xffff) << 16))) & 0xffffffff;
+			k1 = (k1 << 15) | (k1 >>> 17);
+			k1 = ((((k1 & 0xffff) * _helper7_1_[1]) + ((((k1 >>> 16) * _helper7_1_[1]) & 0xffff) << 16))) & 0xffffffff;
+			h1 ^= k1;
+			h1 = (h1 << 13) | (h1 >>> 19);
+			h1b = ((((h1 & 0xffff) * 5) + ((((h1 >>> 16) * 5) & 0xffff) << 16))) & 0xffffffff;
+			h1 = (((h1b & 0xffff) + 0x6b64) + ((((h1b >>> 16) + 0xe654) & 0xffff) << 16));
+		}
+		h1 ^= numargs;
+		h1 ^= h1 >>> 16;
+		h1 = (((h1 & 0xffff) * 0x85ebca6b) + ((((h1 >>> 16) * 0x85ebca6b) & 0xffff) << 16)) & 0xffffffff;
+		h1 ^= h1 >>> 13;
+		h1 = ((((h1 & 0xffff) * 0xc2b2ae35) + ((((h1 >>> 16) * 0xc2b2ae35) & 0xffff) << 16))) & 0xffffffff;
+		h1 ^= h1 >>> 16;
+		return (h1 >>> 0) / _helper7_1_[2];
 	}
 
 	function _helper8(num) {
@@ -681,11 +702,11 @@
 
 	/**
 	 *	
-	 * Calculate `num = num1 % num2`
+	 * Calculate `num1` divided by [remainder]{@link http://en.wikipedia.org/wiki/Remainder} of `num2`. If the remainder is negative, adjust it to a positive number in the range of `0` - `num2`
 	 *
 	 * @param {number} num1
 	 * @param {number} num2
-	 * @return {number} return `num` if `num > 0`, else return `num + num2`
+	 * @return {number}
 	 *
 	 * @example
 	 * Math.cycle(10, 3);
@@ -828,8 +849,6 @@
 	 *	
 	 * Calculate power
 	 *
-	 * Warning: this code did not work perfect when it's come to case like -9 ^ (1/4), -25 ^ (1/3), ... because imaginary number...
-	 *
 	 * @param {number} base
 	 * @param {number} exponent
 	 * @return {number}
@@ -842,43 +861,13 @@
 	 * @memberof Math
 	 **/
 	Math.pow = function(base, exponent) {
-		if (base >= 0 || (base < 0 && Number.isInteger(exponent))) {
-			return oldPow(base, exponent);
-		} else if (base < 0 && exponent >= 0) {
-			//Warning goes here
-			return -oldPow(-base, exponent);
+		let result = oldPow(base, exponent);
+		if (Number.isNaN(result)) {
+			let check = base < 0 && exponent < 0,
+				temp = check && Number.isEven(exponent) ? NaN : oldPow(Math.abs(base), exponent);
+			result = check && temp ? -temp : temp;
 		}
-		return NaN;
-	};
-
-	/**
-	 *	
-	 * Calculate nth root of base
-	 *
-	 * Warning: this code did not work perfect when it's come to case like -9 ^ (1/4), -25 ^ (1/3), ... because imaginary number...
-	 *
-	 * @param {number} base
-	 * @param {number} exponent
-	 * @return {number}
-	 *
-	 * @example
-	 * Math.nthrt(-8, 3);
-	 * //-2
-	 *
-	 * @function nthrt
-	 * @memberof Math
-	 **/
-	Math.nthrt = function(base, exponent) {
-		let negate = exponent % 2 === 1 && base < 0;
-		if (negate) {
-			base = -base;
-		}
-		let possible = Math.pow(base, 1 / exponent);
-		exponent = Math.pow(possible, exponent);
-		if (Math.abs(base - exponent) < 1 && (base > 0 === exponent > 0)) {
-			return negate ? -possible : possible;
-		}
-		return possible;
+		return result;
 	};
 
 	/**
@@ -920,7 +909,7 @@
 
 	/**
 	 *	
-	 * Calculate [integral]{@link https://en.wikipedia.org/wiki/Integral} by using trapezoid and rectangle method
+	 * Calculate [integral]{@link https://en.wikipedia.org/wiki/Integral}
 	 *
 	 * @param {number=} [a=1] - The begin of interval
 	 * @param {number=} [b=1] - The end of interval
@@ -1062,6 +1051,59 @@
 						}
 					}
 				}
+		}
+		return NaN;
+	};
+
+	/**
+	 *	
+	 * Solve a function where `f(x) = 0`
+	 *
+	 * @param {number} x0 - Minimum guessing range
+	 * @param {number} x1 - Maximum guessing range
+	 * @param {function} func - Function to calculate
+	 * @param {number=} [epsilon=1e-17]
+	 * @param {number=} [iteration=1e7]
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.solve(-100, 100, (x) => {return 3 * x + 2});
+	 * //-0.6666666666666667
+	 *
+	 * @function solve
+	 * @memberof Math
+	 **/
+	Math.solve = function(x0, x1, func, epsilon, iteration) {
+		x0 = _helper0(x0, -100);
+		x1 = _helper0(x1, 100);
+		let i = 0,
+			result0 = func(x0);
+		if (result0 * func(x1) === 0) {
+			if (result0 === 0) {
+				return x0;
+			}
+			return x1;
+		}
+		let result1 = func((x1 + x0) / 2);
+		epsilon = _helper0(epsilon, 1e-17);
+		iteration = _helper0(iteration, 1e7);
+		while (x1 - x0 > epsilon && i < iteration) {
+			if (result0 * result1 < 0) {
+				x1 = ((x1 + x0) / 2);
+			} else if (result0 * result1 > 0) {
+				x0 = ((x1 + x0) / 2);
+				result0 = func(x0);
+			} else if (result0 * func(x1) === 0) {
+				if (result0 === 0) {
+					return x0;
+				}
+				return x1;
+			}
+			result1 = func((x1 + x0) / 2);
+			i ++;
+		}
+		if (result0 * func(x1) < 0) {
+			return (x1 + x0) / 2;
 		}
 		return NaN;
 	};
@@ -1238,7 +1280,7 @@
 	 * @memberof Math
 	 **/
 	Math.ierf = function(num) {
-		return Math.invNorm((num + 1) / 2.0) / Math.SQRT2;
+		return Math.iNorm((num + 1) / 2.0) / Math.SQRT2;
 	};
 
 	/**
@@ -1256,7 +1298,7 @@
 	 * @memberof Math
 	 **/
 	Math.ierfc = function(num) {
-		return -Math.invNorm(0.5 * num) / Math.SQRT2;
+		return -Math.iNorm(0.5 * num) / Math.SQRT2;
 	};
 
 	/**
@@ -1296,13 +1338,13 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.invNorm(1);
+	 * Math.iNorm(1);
 	 * //3.5005420375954306
 	 *
 	 * @function invNorm
 	 * @memberof Math
 	 **/
-	Math.invNorm = function(num) {
+	Math.iNorm = function(num) {
 		let qw, we, er, result;
 		if (num < _invNorm_1_[21]) {
 			qw = Math.sqrt(-2 * Math.ln(num));
@@ -1317,6 +1359,24 @@
 			result = er - _pdf_1_ * (0.5 * Math.erfcx(-er / Math.SQRT2) - Math.exp(0.5 * er * er) * num);
 		}
 		return result;
+	};
+
+	/**
+	 *	
+	 * [Kelly function]{@link https://en.wikipedia.org/wiki/Kelly_criterion}
+	 *
+	 * @param {number} num
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.kelly(2, 0.5);
+	 * //0.25
+	 *
+	 * @function kelly
+	 * @memberof Math
+	 **/
+	Math.kelly = function(num1, num2) {
+		return (num2 * (num1 + 1) - 1) / num1;
 	};
 
 	/**
@@ -2066,6 +2126,34 @@
 
 	/**
 	 *	
+	 * Move back and front within range
+	 *
+	 * @param {number} num
+	 * @param {number} min
+	 * @param {number} max
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.bounce(-1, 0, 10);
+	 * //1
+	 *
+	 * @function bounce
+	 * @memberof Math
+	 **/
+	Math.bounce = function(num, min, max) {
+		max -= min;
+		if (num < 0) num = -num;
+		let mod = num % max,
+			result;
+		if (oldCeil(num / max) % 2 === 0) {
+			result = (mod === 0) ? 0 : max - mod;
+		}
+		result = (mod === 0) ? max : mod;
+		return result + min;
+	};
+
+	/**
+	 *	
 	 * Map number from a range to another range
 	 *
 	 * @param {number} num
@@ -2181,6 +2269,31 @@
 		return t;
 	};
 
+	/**
+	 *	
+	 * Calculate prime factor of a number
+	 *
+	 * @param {number} num
+	 * @return {number[]}
+	 *
+	 * @example
+	 * Math.factor(9);
+	 * //[3, 3]
+	 *
+	 * @function factor
+	 * @memberof Math
+	 **/
+	Math.factor = function(num) {
+		let factors = [], i;
+		for (i = 2; i <= num; i++) {
+			while ((num % i) === 0) {
+				factors.push(i);
+				num /= i;
+			}
+		}
+		return factors;
+	};
+
 	//if (r[0] !== 1) throw new Error('No modular inverse exists');
   //return r[1] % m;
 
@@ -2189,10 +2302,10 @@
 	 *	
 	 * Pseudo random number generator uniformly distributed with options
 	 *
-	 * @param {number} min - Minimum
-	 * @param {number} max - Maximum
+	 * @param {number=} [min=0] - Minimum
+	 * @param {number=} [max=1] - Maximum
 	 * @param {boolean=} round - `true` if generate integer
-	 * @param {number|number[]} [seed=undefined] - Put seed to generate number here (if array then maximum length is 4)
+	 * @param {number|number[]} [seed=undefined] - Put seed to generate number here (if array then maximum length is 5), every number must be int32
 	 * @param {number=} larger - return this number if `min > max`
 	 * @param {number=} equal - return this number if `min == max`
 	 *
@@ -2200,7 +2313,7 @@
 	 *
 	 * @example
 	 * Math.random(0, 1);
-	 * //Any number within 0, 1, include float
+	 * //Any number within 0, 1, not rounded
 	 *
 	 * @function random
 	 * @memberof Math
@@ -2216,8 +2329,9 @@
 			_random_1_[1] = seed[1] | 0;
 			_random_1_[2] = seed[2] | 0;
 			_random_1_[3] = seed[3] | 0;
-			_helper7();
-			returnValue = _random_1_[4] * 2.3283064365386963e-10 + (_random_1_[5] >>> 12) * 2.220446049250313e-16;
+			_random_1_[4] = seed[4] | 0;
+			_helper6();
+			returnValue = _helper7(_random_1_[5], _random_1_[6], _random_1_[4]);
 		} else {
 			returnValue = oldRandom();
 		}
@@ -2246,6 +2360,59 @@
 			returnValue = returnValue * (max - min) + min;
 		}
 		return returnValue;
+	};
+
+	/**
+	 *
+	 * Returns a [Triangular distributed]{@link https://en.wikipedia.org/wiki/Triangular_distribution} random number,
+	 * where values around `offset` are more likely.
+	 *
+	 * @param {number} min - Minimum
+	 * @param {number} max - Maximum
+	 * @param {offset=} [offset=0] - Offset
+	 * @param {seed=} [seed] - same as `Math.random`
+	 *
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.randomTri(0, 1);
+	 * //Any number within 0, 1, not rounded
+	 *
+	 * @function randomTri
+	 * @memberof Math
+	 **/
+	Math.randomTri = function(min, max, offset, seed) {
+		offset = _helper0(offset, 0);
+		let u = Math.random(0, 1, false, seed),
+			d = max - min;
+		if (u <= (offset - min) / d) return min + Math.sqrt(u * d * (offset - min));
+		return max - Math.sqrt((1 - u) * d * (max - offset));
+	};
+
+	/**
+	 *
+	 * Returns a Circular distributed random number.
+	 *
+	 * @param {number} min1 - Minimum generate range, `-1 <= min <= 1`
+	 * @param {number} max1 - Maximum generate range, `-1 <= max <= 1`
+	 * @param {number} min2 - Minimum result range
+	 * @param {number} max2 - Maximum result range
+	 * @param {seed=} [seed] - same as `Math.random`
+	 *
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.randomCirc(-1, 1, 0, 1);
+	 * //Any number within 0, 1, not rounded
+	 *
+	 * @function randomCirc
+	 * @memberof Math
+	 **/
+	Math.randomCirc = function(min1, max1, min2, max2, seed) {
+		let temp = Math.random(min1, max1, false, seed),
+			range = max2 - min2;
+		range *= range;
+		return Math.sqrt(range - range * temp * temp) + min2;
 	};
 
 	//Angle
@@ -3241,7 +3408,7 @@
 
 	/**
 	 *	
-	 * Find intersection of 2 circles (may also find middle points)
+	 * Find intersection of 2 circles
 	 *
 	 * @param {number} a_x - x position of center point of first circle
 	 * @param {number} a_y - y position of center point of first circle
@@ -3249,7 +3416,7 @@
 	 * @param {number} b_x - x position of center point of second circle
 	 * @param {number} b_y - y position of center point of second circle
 	 * @param {number} b_r - radius of second circle
-	 * @return {number[]} [x1, y1, x2, y2]
+	 * @return {number[]} [x1, y1, x2, y2], NaN if no intersection
 	 *
 	 * @example
 	 * Geometry.intrCirc(0, 0, 1, 2, 0, 1);
@@ -3262,7 +3429,9 @@
 		let c_dist = Geometry.distPnt(a_x, a_y, b_x, b_y, true);
 		let temp1 = (a_r * a_r - b_r * b_r + c_dist * c_dist) / (2 * c_dist);
 		let temp2 = temp1 / c_dist;
-		if (temp1 > a_r) temp1 = a_r;
+		if (temp1 > a_r) {
+			return NaN;
+		}
 		let tempP_x = a_x + (b_x - a_x) * temp2,
 			tempP_y = a_y + (b_y - a_y) * temp2;
 		let b = Math.sqrt(a_r * a_r - temp1 * temp1) / c_dist;
@@ -4934,7 +5103,7 @@
 	 **/
 	Math.crossVec = function(a_x, a_y, b_x, b_y) {
 		//Heavily related to sine
-		//Also called wedge ?
+		//Also called wedge ? And determinant ?
 		return a_x * b_y - a_y * b_x;
 	};
 
@@ -6595,6 +6764,11 @@
 		}
 	};
 
+	//https://github.com/foam-lib/foam-math/blob/master/Ease.js
+	/*
+	https://github.com/foam-lib/foam-math/blob/master/Utils.js
+	*/
+
 	/**
 	 *	
 	 * Overshoot
@@ -7132,6 +7306,27 @@
 		return false;
 	};
 
+	let root = {
+		Math: Math,
+		Geometry: Geometry,
+		Tween: Tween,
+		Boolean: Boolean,
+		Number: Number
+	};
+
+	if (typeof define === "function" && define.amd) {
+		define([], function () {
+			return root;
+		});
+	} else {
+		if (typeof module === "object" && module.exports) {
+			module.exports = root;
+		}
+		global.Geometry = Geometry;
+		global.Tween = Tween;
+	}
 })(
-	("undefined" !== typeof window) ? window : {}
+	typeof self !== "undefined" ? self :
+	typeof window !== "undefined" ? window :
+	typeof global !== "undefined" ? global : this
 );
