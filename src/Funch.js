@@ -1,11 +1,13 @@
+/*jshint esversion: 6*/
+/*jslint bitwise: true*/
 (function(global) {
 	"use strict";
 	/*
-	Funch.js, v0.3a
+	Funch.js, v0.4a
 
 	MIT License
 
-	Copyright (c) 2017 Trung0246 and others listed in LICENSE file
+	Copyright (c) 2017 Trung0246
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -29,13 +31,11 @@
 	*/
 
 	//Namespace
-	let Geometry = {}, Tween = {};
+	let Geometry = {}, Tween = {}, Math = global.Math, Boolean = global.Boolean, Number = global.Number;
 
 	/*
 	TODO list:
-	- Need to improve namespace to make it work with ES6 export, Node, amd,... If anyone can find a script that do this I am really appreciated (Medium)
 	- Optimize distLine function (Medium)
-	- Add perlin noise and simplex noise functions (both 2D and 3D ?) (Medium)
 	*/
 
 	/**
@@ -173,6 +173,15 @@
 	_integral_2_ = [],
 	_derivative_1_ = [],
 	_gcd_1_ = [],
+	_noise_1_ = [
+		[1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
+		[1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
+		[0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]
+	],
+	_noise_2_,
+	_noise_4_ = 0.5 * (Math.sqrt(3.0) - 1.0),
+	_noise_5_ = (3.0 - Math.sqrt(3.0)) / 6.0,
+	_noise_6_ = 1.0 / 6.0,
 	_helper9_1_ = 1 / 3,
 	_helper19_1_ = 3 / 4,
 	_toRad_1_ = Math.PI / 180,
@@ -200,7 +209,7 @@
 	}
 
 	function _helper0(current, num) {
-		return (typeof current !== 'undefined') ? current : num;
+		return (typeof current !== "undefined") ? current : num;
 	}
 
 	function _helper1(type, num) {
@@ -380,7 +389,7 @@
 
 		r = Math.sqrt(m * m + n * n * n);
 
-		return Math.pow(-m + r, _helper9_1_) + Math.pow(-m - r, _helper9_1_) - b / (3 * a);
+		return oldPow(-m + r, _helper9_1_) + oldPow(-m - r, _helper9_1_) - b / (3 * a);
 	}
 
 	function _helper10(overShoot) {
@@ -452,7 +461,7 @@
 			C = b.x - a.x,
 			D = b.y - a.y;
 		param = (A * C + B * D) / (C * C + D * D);
-		if (param < 0 || (a.x == b.x && a.y == b.y)) {
+		if (param < 0 || (a.x === b.x && a.y === b.y)) {
 			xx = a.x;
 			yy = a.y;
 		} else if (param > 1) {
@@ -471,7 +480,25 @@
 		}
 	}
 
-	function _helper19(a0, a1, a2, a3, a4) {
+	function _helper19(a0, a1, a2, a3) {
+		a2 /= a3;
+		a1 /= a3;
+		a0 /= a3;
+		let a2a2 = a2 * a2;
+		let Q = (3 * a1 - a2a2) / 9,
+			R = (9 * a2 * a1 - 27 * a0 - 2 * a2a2 * a2) / 54;
+		let QQQ = Q * Q * Q;
+		let D = QQQ + R * R;
+		if (D >= 0) {
+			let sqrtD = Math.sqrt(D);
+			let S = Math.cbrt(R + sqrtD),
+				T = Math.cbrt(R - sqrtD);
+			return (-a2 / 3) + S + T;
+		}
+		return 2 * Math.sqrt(-Q) * Math.cos(Math.acos(R / Math.sqrt(-QQQ)) / 3) - a2 / 3;
+	}
+
+	function _helper20(a0, a1, a2, a3, a4) {
 		_helper19_2_.length = 0;
 		a3 /= a4;
 		a2 /= a4;
@@ -481,7 +508,7 @@
 			a22 = 2 * a2,
 			a04 = 4 * a0,
 			length = 0;
-		let y1 = _helper20(4 * a2 * a0 - a1 * a1 - a3a3 * a0, a1 * a3 - a04, -a2, 1),
+		let y1 = _helper19(4 * a2 * a0 - a1 * a1 - a3a3 * a0, a1 * a3 - a04, -a2, 1),
 			a334 = a3a3 * _helper19_1_;
 		let RSquare = a3a3 / 4 - a2 + y1;
 		let R = Math.sqrt(RSquare),
@@ -513,25 +540,19 @@
 		return length;
 	}
 
-	function _helper20(a0, a1, a2, a3) {
-		a2 /= a3;
-		a1 /= a3;
-		a0 /= a3;
-		let a2a2 = a2 * a2;
-		let Q = (3 * a1 - a2a2) / 9,
-			R = (9 * a2 * a1 - 27 * a0 - 2 * a2a2 * a2) / 54;
-		let QQQ = Q * Q * Q;
-		let D = QQQ + R * R;
-		if (D >= 0) {
-			let sqrtD = Math.sqrt(D);
-			let S = Math.cbrt(R + sqrtD),
-				T = Math.cbrt(R - sqrtD);
-			return (-a2 / 3) + S + T;
-		}
-		return 2 * Math.sqrt(-Q) * Math.cos(Math.acos(R / Math.sqrt(-QQQ)) / 3) - a2 / 3;
+	function _helper21(a, b, c) {
+		var minx = Math.min(b.x, c.x),
+			maxx = Math.max(b.x, c.x),
+			miny = Math.min(b.y, c.y),
+			maxy = Math.max(b.y, c.y);
+
+		if (minx === maxx) return (miny <= a.y && a.y <= maxy);
+		if (miny === maxy) return (minx <= a.x && a.x <= maxx);
+
+		return (minx <= a.x + 1e-10 && a.x - 1e-10 <= maxx && miny <= a.y + 1e-10 && a.y - 1e-10 <= maxy);
 	}
 
-	function _helper21(a1, a2, b1, b2, c) {
+	function _helper22(a1, a2, b1, b2, c) {
 		var dax = (a1.x - a2.x),
 			dbx = (b1.x - b2.x),
 			day = (a1.y - a2.y),
@@ -547,22 +568,10 @@
 		c.x = (A * dbx - dax * B) * iDen;
 		c.y = (A * dby - day * B) * iDen;
 
-		if (!_helper22(c, b1, b2)) return null;
+		if (!_helper21(c, b1, b2)) return null;
 		if ((day > 0 && c.y > a1.y) || (day < 0 && c.y < a1.y)) return null;
 		if ((dax > 0 && c.x > a1.x) || (dax < 0 && c.x < a1.x)) return null;
 		return c;
-	}
-
-	function _helper22(a, b, c) {
-		var minx = Math.min(b.x, c.x),
-			maxx = Math.max(b.x, c.x),
-			miny = Math.min(b.y, c.y),
-			maxy = Math.max(b.y, c.y);
-
-		if (minx == maxx) return (miny <= a.y && a.y <= maxy);
-		if (miny == maxy) return (minx <= a.x && a.x <= maxx);
-
-		return (minx <= a.x + 1e-10 && a.x - 1e-10 <= maxx && miny <= a.y + 1e-10 && a.y - 1e-10 <= maxy);
 	}
 
 	function _helper23(num, func, places, type) {
@@ -683,7 +692,7 @@
 	 **/
 	Math.rem = function(num, left, right) {
 		//detect single-arg case, like mod-loop or fmod
-		if (right === undefined) {
+		if (!right) {
 			right = left;
 			left = 0;
 		}
@@ -2114,9 +2123,6 @@
 	 **/
 	Math.wrap = function(num, min, max) {
 		let range = max - min;
-		if (range <= 0) {
-			return 0;
-		}
 		let result = (num - min) % range;
 		if (result < 0) {
 			result += range;
@@ -2141,14 +2147,16 @@
 	 * @memberof Math
 	 **/
 	Math.bounce = function(num, min, max) {
+		num -= min;
 		max -= min;
-		if (num < 0) num = -num;
-		let mod = num % max,
-			result;
-		if (oldCeil(num / max) % 2 === 0) {
-			result = (mod === 0) ? 0 : max - mod;
+		let max2 = max * 2,
+			result = num % max2;
+		if (result < 0) {
+			result += max2;
 		}
-		result = (mod === 0) ? max : mod;
+		if (result > max) {
+			result = max2 - result;
+		}
 		return result + min;
 	};
 
@@ -2294,6 +2302,34 @@
 		return factors;
 	};
 
+	/**
+	 *	
+	 * Calculate divisor of a number
+	 *
+	 * @param {number} num
+	 * @return {number[]} Unsorted array
+	 *
+	 * @example
+	 * Math.divisor(9);
+	 * //[1, 9, 3]
+	 *
+	 * @function divisor
+	 * @memberof Math
+	 **/
+	Math.divisor = function(num) {
+		let isEven = Number.isEven(num);
+		let inc = isEven ? 1 : 2,
+			factors = [1, num],
+			compliment;
+		for (let curFactor = isEven ? 2 : 3; oldPow(curFactor, 2) <= num; curFactor += inc) {
+			if (num % curFactor !== 0) continue;
+			factors.push(curFactor);
+			compliment = num / curFactor;
+			if (compliment !== curFactor) factors.push(compliment);
+		}
+		return factors;
+	};
+
 	//if (r[0] !== 1) throw new Error('No modular inverse exists');
   //return r[1] % m;
 
@@ -2413,6 +2449,167 @@
 			range = max2 - min2;
 		range *= range;
 		return Math.sqrt(range - range * temp * temp) + min2;
+	};
+
+	/**
+	 *
+	 * Simplex noise
+	 *
+	 * @param {number[]} seed - array of numbers, must have length = 512, every number must be between 0 <= x <= 11, don't ask why...
+	 * @param {number} x
+	 * @param {number} y
+	 * @param {number=} z
+	 *
+	 * @return {number}
+	 *
+	 * @example
+	 * let arraySeed = [];
+	 * for (let i = 0; i < 512; i ++) {
+	 * 	arraySeed.push(11);
+	 * }
+	 * Math.noise(arraySeed, 100, 100);
+	 * //-0.4099981169018467
+	 *
+	 * @function noise
+	 * @memberof Math
+	 **/
+	Math.noise = function(seed, x, y, z) {
+		if (_noise_2_ !== seed) {
+			_noise_2_ = seed;
+		}
+		let tempI, tempI2, tempI3, tempJ, tempJ2, tempJ3, tempK, tempK2, tempK3, tempX, tempY, tempZ, tempX2, tempY2, tempZ2, tempG, tempM, sum = 0;
+		if (typeof z === "number") {
+			tempM = (x + y + z) * _helper9_1_;
+			tempI = oldFloor(x + tempM);
+			tempJ = oldFloor(y + tempM);
+			tempK = oldFloor(z + tempM);
+			tempM = (tempI + tempJ + tempK) * _noise_6_;
+			tempX = x - (tempI - tempM);
+			tempY = y - (tempJ - tempM);
+			tempZ = z - (tempK - tempM);
+			if (tempX >= tempY) {
+				if (tempY >= tempZ) {
+					tempI2 = 1;
+					tempJ2 = 0;
+					tempK2 = 0;
+					tempI3 = 1;
+					tempJ3 = 1;
+					tempK3 = 0;
+				} else if (tempX >= tempZ) {
+					tempI2 = 1;
+					tempJ2 = 0;
+					tempK2 = 0;
+					tempI3 = 1;
+					tempJ3 = 0;
+					tempK3 = 1;
+				} else {
+					tempI2 = 0;
+					tempJ2 = 0;
+					tempK2 = 1;
+					tempI3 = 1;
+					tempJ3 = 0;
+					tempK3 = 1;
+				}
+			} else {
+				if (tempY < tempZ) {
+					tempI2 = 0;
+					tempJ2 = 0;
+					tempK2 = 1;
+					tempI3 = 0;
+					tempJ3 = 1;
+					tempK3 = 1;
+				} else if (tempX < tempZ) {
+					tempI2 = 0;
+					tempJ2 = 1;
+					tempK2 = 0;
+					tempI3 = 0;
+					tempJ3 = 1;
+					tempK3 = 1;
+				} else {
+					tempI2 = 0;
+					tempJ2 = 1;
+					tempK2 = 0;
+					tempI3 = 1;
+					tempJ3 = 1;
+					tempK3 = 0;
+				}
+			}
+			tempI &= 255;
+			tempJ &= 255;
+			tempK &= 255;
+			tempM = 0.6 - tempX * tempX - tempY * tempY - tempZ * tempZ;
+			tempG = _noise_2_[tempI + _noise_2_[tempJ + _noise_2_[tempK]]];
+			if (tempM >= 0) {
+				tempM *= tempM;
+				sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX, tempY);
+			}
+			tempX2 = tempX - tempI2 + _noise_6_;
+			tempY2 = tempY - tempJ2 + _noise_6_;
+			tempZ2 = tempZ - tempK2 + _noise_6_;
+			tempM = 0.6 - tempX2 * tempX2 - tempY2 * tempY2 - tempZ2 * tempZ2;
+			tempG = _noise_2_[tempI + tempI2 + _noise_2_[tempJ + tempJ2 + _noise_2_[tempK + tempK2]]];
+			if (tempM >= 0) {
+				tempM *= tempM;
+				sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
+			}
+			tempX2 = tempX - tempI3 + 2.0 * _noise_6_;
+			tempY2 = tempY - tempJ3 + 2.0 * _noise_6_;
+			tempZ2 = tempZ - tempK3 + 2.0 * _noise_6_;
+			tempM = 0.6 - tempX2 * tempX2 - tempY2 * tempY2 - tempZ2 * tempZ2;
+			tempG = _noise_2_[tempI + tempI3 + _noise_2_[tempJ + tempJ3 + _noise_2_[tempK + tempK3]]];
+			if (tempM >= 0) {
+				tempM *= tempM;
+				sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
+			}
+			tempX2 = tempX - 1.0 + 3.0 * _noise_6_;
+			tempY2 = tempY - 1.0 + 3.0 * _noise_6_;
+			tempZ2 = tempZ - 1.0 + 3.0 * _noise_6_;
+			tempM = 0.6 - tempX2 * tempX2 - tempY2 * tempY2 - tempZ2 * tempZ2;
+			tempG = _noise_2_[tempI + 1 + _noise_2_[tempJ + 1 + _noise_2_[tempK + 1]]];
+			if (tempM >= 0) {
+				tempM *= tempM;
+				sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
+			}
+			return 32.0 * sum;
+		}
+		tempI2 = (x + y) * _noise_4_;
+		tempI = oldFloor(x + tempI2);
+		tempJ = oldFloor(y + tempI2);
+		tempJ2 = (tempI + tempJ) * _noise_5_;
+		tempX = x - (tempI - tempJ2);
+		tempY = y - (tempJ - tempJ2);
+		if (tempX > tempY) {
+			tempI2 = 1;
+			tempJ2 = 0;
+		} else {
+			tempI2 = 0;
+			tempJ2 = 1;
+		}
+		tempI &= 255;
+		tempJ &= 255;
+		tempM = 0.5 - tempX * tempX - tempY * tempY;
+		tempG = _noise_2_[tempI + _noise_2_[tempJ]];
+		if (tempM >= 0) {
+			tempM *= tempM;
+			sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX, tempY);
+		}
+		tempX2 = tempX - tempI2 + _noise_5_;
+		tempY2 = tempY - tempJ2 + _noise_5_;
+		tempM = 0.5 - tempX2 * tempX2 - tempY2 * tempY2;
+		tempG = _noise_2_[tempI + tempI2 + _noise_2_[tempJ + tempJ2]];
+		if (tempM >= 0) {
+			tempM *= tempM;
+			sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
+		}
+		tempX2 = tempX - 1.0 + 2.0 * _noise_5_;
+		tempY2 = tempY - 1.0 + 2.0 * _noise_5_;
+		tempM = 0.5 - tempX2 * tempX2 - tempY2 * tempY2;
+		tempG = _noise_2_[tempI + 1 + _noise_2_[tempJ + 1]];
+		if (tempM >= 0) {
+			tempM *= tempM;
+			sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
+		}
+		return 70.0 * sum;
 	};
 
 	//Angle
@@ -3588,7 +3785,7 @@
 			de2 = 2 * d * e;
 		let result = [],
 			l, t2, t2_1, t2_2;
-		l = _helper19(
+		l = _helper20(
 			aa + ab2 + bb + dd + de2 + ee - rr,
 			ac4 + bc4 + df4 + ef4,
 			2 * aa - 2 * bb + 4 * c * c + 2 * dd - 2 * ee + 4 * f * f - 2 * rr,
@@ -4753,14 +4950,14 @@
 			b1.y = points[i + 1];
 			b2.x = points[i + 2];
 			b2.y = points[i + 3];
-			nisc = _helper21(a1, a2, b1, b2, c);
+			nisc = _helper22(a1, a2, b1, b2, c);
 			if (nisc) _helper17(b_x, b_y, a1, b1, b2, c, i / 2, isc);
 		}
 		b1.x = b2.x;
 		b1.y = b2.y;
 		b2.x = points[0];
 		b2.y = points[1];
-		nisc = _helper21(a1, a2, b1, b2, c);
+		nisc = _helper22(a1, a2, b1, b2, c);
 		if (nisc) _helper17(b_x, b_y, a1, b1, b2, c, (points.length / 2) - 1, isc);
 
 		return isc;
@@ -6795,16 +6992,17 @@
 	 *
 	 * @param {number} time
 	 * @param {number[]} points - control points [x1, y1, x2, y2, ...]
+	 * @param {number[]} weight - weight of points [a, b, ...]
 	 * @return {number}
 	 *
 	 * @example
-	 * Tween.curve(0.25, [0.25, 0.5]);
+	 * Tween.poly(0.25, [0.25, 0.5], [1, 1]);
 	 * //0.5
 	 *
-	 * @function curve
+	 * @function poly
 	 * @memberof Tween
 	 **/
-	Tween.curve = function(time, points) {
+	Tween.poly = function(time, points, weight) {
 		let temp1 = 0,
 			temp2;
 		for (let i = 0; i < points.length; i += 2) {
@@ -6815,7 +7013,7 @@
 				}
 				temp2 *= (time - points[j]) / (points[i] - points[j]);
 			}
-			temp1 += points[i + 1] * temp2;
+			temp1 += points[i + 1] * Math.pow(temp2, weight[i / 2]);
 		}
 		return temp1;
 	};
