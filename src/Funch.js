@@ -1,5 +1,3 @@
-/*jshint esversion: 6*/
-/*jslint bitwise: true*/
 (function(global) {
 	"use strict";
 	/*
@@ -178,7 +176,6 @@
 		[1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
 		[0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]
 	],
-	_noise_2_,
 	_noise_4_ = 0.5 * (Math.sqrt(3.0) - 1.0),
 	_noise_5_ = (3.0 - Math.sqrt(3.0)) / 6.0,
 	_noise_6_ = 1.0 / 6.0,
@@ -2474,9 +2471,6 @@
 	 * @memberof Math
 	 **/
 	Math.noise = function(seed, x, y, z) {
-		if (_noise_2_ !== seed) {
-			_noise_2_ = seed;
-		}
 		let tempI, tempI2, tempI3, tempJ, tempJ2, tempJ3, tempK, tempK2, tempK3, tempX, tempY, tempZ, tempX2, tempY2, tempZ2, tempG, tempM, sum = 0;
 		if (typeof z === "number") {
 			tempM = (x + y + z) * _helper9_1_;
@@ -2538,7 +2532,7 @@
 			tempJ &= 255;
 			tempK &= 255;
 			tempM = 0.6 - tempX * tempX - tempY * tempY - tempZ * tempZ;
-			tempG = _noise_2_[tempI + _noise_2_[tempJ + _noise_2_[tempK]]];
+			tempG = seed[tempI + seed[tempJ + seed[tempK]]];
 			if (tempM >= 0) {
 				tempM *= tempM;
 				sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX, tempY);
@@ -2547,7 +2541,7 @@
 			tempY2 = tempY - tempJ2 + _noise_6_;
 			tempZ2 = tempZ - tempK2 + _noise_6_;
 			tempM = 0.6 - tempX2 * tempX2 - tempY2 * tempY2 - tempZ2 * tempZ2;
-			tempG = _noise_2_[tempI + tempI2 + _noise_2_[tempJ + tempJ2 + _noise_2_[tempK + tempK2]]];
+			tempG = seed[tempI + tempI2 + seed[tempJ + tempJ2 + seed[tempK + tempK2]]];
 			if (tempM >= 0) {
 				tempM *= tempM;
 				sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
@@ -2556,7 +2550,7 @@
 			tempY2 = tempY - tempJ3 + 2.0 * _noise_6_;
 			tempZ2 = tempZ - tempK3 + 2.0 * _noise_6_;
 			tempM = 0.6 - tempX2 * tempX2 - tempY2 * tempY2 - tempZ2 * tempZ2;
-			tempG = _noise_2_[tempI + tempI3 + _noise_2_[tempJ + tempJ3 + _noise_2_[tempK + tempK3]]];
+			tempG = seed[tempI + tempI3 + seed[tempJ + tempJ3 + seed[tempK + tempK3]]];
 			if (tempM >= 0) {
 				tempM *= tempM;
 				sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
@@ -2565,7 +2559,7 @@
 			tempY2 = tempY - 1.0 + 3.0 * _noise_6_;
 			tempZ2 = tempZ - 1.0 + 3.0 * _noise_6_;
 			tempM = 0.6 - tempX2 * tempX2 - tempY2 * tempY2 - tempZ2 * tempZ2;
-			tempG = _noise_2_[tempI + 1 + _noise_2_[tempJ + 1 + _noise_2_[tempK + 1]]];
+			tempG = seed[tempI + 1 + seed[tempJ + 1 + seed[tempK + 1]]];
 			if (tempM >= 0) {
 				tempM *= tempM;
 				sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
@@ -2588,7 +2582,7 @@
 		tempI &= 255;
 		tempJ &= 255;
 		tempM = 0.5 - tempX * tempX - tempY * tempY;
-		tempG = _noise_2_[tempI + _noise_2_[tempJ]];
+		tempG = seed[tempI + seed[tempJ]];
 		if (tempM >= 0) {
 			tempM *= tempM;
 			sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX, tempY);
@@ -2596,7 +2590,7 @@
 		tempX2 = tempX - tempI2 + _noise_5_;
 		tempY2 = tempY - tempJ2 + _noise_5_;
 		tempM = 0.5 - tempX2 * tempX2 - tempY2 * tempY2;
-		tempG = _noise_2_[tempI + tempI2 + _noise_2_[tempJ + tempJ2]];
+		tempG = seed[tempI + tempI2 + seed[tempJ + tempJ2]];
 		if (tempM >= 0) {
 			tempM *= tempM;
 			sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
@@ -2604,7 +2598,7 @@
 		tempX2 = tempX - 1.0 + 2.0 * _noise_5_;
 		tempY2 = tempY - 1.0 + 2.0 * _noise_5_;
 		tempM = 0.5 - tempX2 * tempX2 - tempY2 * tempY2;
-		tempG = _noise_2_[tempI + 1 + _noise_2_[tempJ + 1]];
+		tempG = seed[tempI + 1 + seed[tempJ + 1]];
 		if (tempM >= 0) {
 			tempM *= tempM;
 			sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
