@@ -4,11 +4,11 @@
 
 An all-in-one library that dedicated to improve Javascript default functions and provide more functions mostly focus on game development.
 
-Version 0.3a (Alpha version)
+Version 0.4a (Alpha version)
 
-[Download](https://cdn.rawgit.com/Trung0246/Funch/26fa1263/src/Funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/26fa1263/src/Funch.min.js))
+[Download](https://cdn.rawgit.com/Trung0246/Funch/db9cfdf4/src/Funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/db9cfdf4/src/Funch.min.js))
 
-[Documentation](https://cdn.rawgit.com/Trung0246/Funch/26fa1263/docs/index.html)
+[Documentation](https://cdn.rawgit.com/Trung0246/Funch/db9cfdf4/docs/index.html)
 
 ---
 
@@ -27,11 +27,9 @@ Version 0.3a (Alpha version)
 
 ### Changelog
 
-- Fixed some tiny bugs
+- Fixed some bugs
 
-- Added some new functions
-
-- Wrote this new changelog
+- Added new functions
 
 ##### Notes
   - When I add new functions, I followed these stuff, sorted by priorities, highest is 1:
@@ -41,7 +39,7 @@ Version 0.3a (Alpha version)
     3) Size
     4) Readability
     
-  - If a function depends on another functions, try to use Funch.js provided functions if it have...
+  - If a function depends on another functions, try to use Funch.js provided functions if it have, else ask me if that function can be generalized...
     
   - This is my first library. There maybe some bad coding practice in the codebase :(
   
