@@ -1,7 +1,7 @@
 (function(global) {
 	"use strict";
 	/*
-	Funch.js, v0.4a
+	funch.js, v0.4a
 
 	MIT License
 
