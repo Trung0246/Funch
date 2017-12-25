@@ -15,7 +15,7 @@ Version 0.4a (Alpha version)
 ### Features
 - Over 130 functions that you can use right now
 
-- Simple to add by copy `<script type="text/javascript" src="Funch.js"></script>` or `require("Funch.js");`
+- Simple to add by copy `<script type="text/javascript" src="funch.js"></script>` or `require("funch.js");`
 
 - Medium-sized ? (**37.2 KB** compressed using [Babel](https://babeljs.io) -> [UglifyJS2](https://github.com/mishoo/UglifyJS2))
 
