@@ -4,9 +4,9 @@
 
 An all-in-one library that dedicated to improve Javascript default functions and provide more functions mostly focus on game development.
 
-Version 0.4a (Alpha version)
+Version 0.5a (Alpha version)
 
-[Download](https://cdn.rawgit.com/Trung0246/Funch/db9cfdf4/src/Funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/db9cfdf4/src/Funch.min.js))
+[Download](https://cdn.rawgit.com/Trung0246/Funch/b4d5666e/src/Funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/b4d5666e/src/Funch.min.js))
 
 [Documentation](https://cdn.rawgit.com/Trung0246/Funch/db9cfdf4/docs/index.html)
 
@@ -17,7 +17,7 @@ Version 0.4a (Alpha version)
 
 - Simple to add by copy `<script type="text/javascript" src="funch.js"></script>` or `require("funch.js");`
 
-- Medium-sized ? (**37.2 KB** compressed using [Babel](https://babeljs.io) -> [UglifyJS2](https://github.com/mishoo/UglifyJS2))
+- Medium-sized ? (**32.3 KB** compressed using [Babel](https://babeljs.io) -> [Closure Complier](https://closure-compiler.appspot.com/home) -> [UglifyJS2](https://github.com/mishoo/UglifyJS2))
 
 - Easy to copy and paste any function you liked to use without include whole library *(I'm sad :( )*
 
