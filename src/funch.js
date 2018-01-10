@@ -1,7 +1,7 @@
 (function(global) {
 	"use strict";
 	/*
-	funch.js, v0.4a
+	Funch.js, v0.5a
 
 	MIT License
 
@@ -1371,7 +1371,8 @@
 	 *	
 	 * [Kelly function]{@link https://en.wikipedia.org/wiki/Kelly_criterion}
 	 *
-	 * @param {number} num
+	 * @param {number} num1
+	 * @param {number} num2
 	 * @return {number}
 	 *
 	 * @example
@@ -1691,7 +1692,7 @@
 	 * Attempt to correct rounding off error
 	 *
 	 * @param {number} num
-	 * @param {epsilon=} [epsilon=13] - Accuracy 
+	 * @param {number=} [epsilon=13] - Accuracy 
 	 * @return {number}
 	 *
 	 * @example
@@ -1759,7 +1760,7 @@
 		offset = _helper0(offset, 0);
 		if (gap === 0) return num;
 		num -= offset;
-		num = gap * Math.adjust2(type, num / gap, digits, base, type);
+		num = gap * Math.adjust2(type, num / gap, digits, base);
 		return offset + num;
 	};
 
@@ -2402,8 +2403,8 @@
 	 *
 	 * @param {number} min - Minimum
 	 * @param {number} max - Maximum
-	 * @param {offset=} [offset=0] - Offset
-	 * @param {seed=} [seed] - same as `Math.random`
+	 * @param {number=} [offset=0] - Offset
+	 * @param {number|number[]=} [seed] - same as `Math.random`
 	 *
 	 * @return {number}
 	 *
@@ -2430,7 +2431,7 @@
 	 * @param {number} max1 - Maximum generate range, `-1 <= max <= 1`
 	 * @param {number} min2 - Minimum result range
 	 * @param {number} max2 - Maximum result range
-	 * @param {seed=} [seed] - same as `Math.random`
+	 * @param {number|number[]=} [seed] - same as `Math.random`
 	 *
 	 * @return {number}
 	 *
@@ -2996,7 +2997,7 @@
 	 * @param {number} a_y - y position of first point
 	 * @param {number} b_x - x position of second point
 	 * @param {number} b_y - y position of second point
-	 * @param {number} o_x - circle radius
+	 * @param {number} r - circle radius
 	 * @return {Object} Return two center points (both point will be NaN if there is no possible center)
 	 *
 	 * @example
@@ -3111,7 +3112,7 @@
 	 * @param {number} b_x - x position of second point of the segment
 	 * @param {number} b_y - y position of second point of the segment
 	 * @param {number} x_x - x position of the point
-	 * @param {number} y_y - y position of the point
+	 * @param {number} x_y - y position of the point
 	 * @param {boolean=} [square=false] - `false` if you want distance squared
 	 * @return {number}
 	 *
@@ -3184,7 +3185,6 @@
 	 * @param {number} c_y - y position of first point of the second segment
 	 * @param {number} d_x - x position of second point of the second segment
 	 * @param {number} d_y - y position of second point of the second segment
-	 * @param {boolean=} [square=false] - `false` if you want distance squared
 	 * @return {{x: number, y: number, onLine1: boolean, onLine2: boolean}} returnData.onLine1 will true if intersection point is on line a_x a_y b_x b_y and otherwise
 	 *
 	 * @example
@@ -3247,7 +3247,6 @@
 	 * @param {number} o_x - x position of circle center
 	 * @param {number} o_y - y position of circle center
 	 * @param {number} radius - radius of circle center
-	 * @param {boolean=} [square=false] - `false` if you want distance squared
 	 * @return {{x: number, y: number, x1: number, y1: number, x2: number, y2: number, onLine: boolean, onLine1: boolean, onLine2: boolean}}
 	 *
 	 * returnData.onLine will true if perpendicular intersection point is on line a_x a_y b_x b_y.
@@ -4169,12 +4168,12 @@
 	 *	
 	 * Calculate area of the triangle
 	 *
-	 * @param {number} a_x - x position of the first vertex
-	 * @param {number} a_y - y position of the first vertex
-	 * @param {number} b_x - x position of the second vertex
-	 * @param {number} b_y - y position of the second vertex
-	 * @param {number} c_x - x position of the third vertex
-	 * @param {number} c_y - y position of the third vertex
+	 * @param {number} x_1 - x position of the first vertex
+	 * @param {number} y_1 - y position of the first vertex
+	 * @param {number} x_2 - x position of the second vertex
+	 * @param {number} y_2 - y position of the second vertex
+	 * @param {number} x_3 - x position of the third vertex
+	 * @param {number} y_3 - y position of the third vertex
 	 * @return {number}
 	 *
 	 * @example
@@ -4228,8 +4227,8 @@
 	 * @param {number} y_min - y position of top-left corner
 	 * @param {number} x_max - x position of bottom-right corner
 	 * @param {number} y_max - y position of bottom-right corner
-	 * @param {number} o_x - x position of the point
-	 * @param {number} o_y - y position of the point
+	 * @param {number} x - x position of the point
+	 * @param {number} y - y position of the point
 	 * @return {boolean}
 	 *
 	 * @example
@@ -4254,10 +4253,10 @@
 	 * @param {number} y_min - y position of top-left corner of first rectangle
 	 * @param {number} x_max - x position of bottom-right corner of first rectangle
 	 * @param {number} y_max - y position of bottom-right corner of first rectangle
-	 * @param {number} x_min - x position of top-left corner of second rectangle
-	 * @param {number} y_min - y position of top-left corner of second rectangle
-	 * @param {number} x_max - x position of bottom-right corner of second rectangle
-	 * @param {number} y_max - y position of bottom-right corner of second rectangle
+	 * @param {number} x2_min - x position of top-left corner of second rectangle
+	 * @param {number} y2_min - y position of top-left corner of second rectangle
+	 * @param {number} x2_max - x position of bottom-right corner of second rectangle
+	 * @param {number} y2_max - y position of bottom-right corner of second rectangle
 	 * @return {boolean}
 	 *
 	 * @example
@@ -4706,12 +4705,8 @@
 		}
 
 		for (i = 0; i < ps.length; i++) {
-			isc = {
-				x: 0,
-				y: 0,
-				flag: false
-			};
-			isc = Geometry.intrLine(a.x, a.y, b.x, b.y, ps[i].x, ps[i].y, ps[(i + 1) % ps.length].x, ps[(i + 1) % ps.length].y, isc.x, isc.y);
+			isc = Geometry.intrLine(a.x, a.y, b.x, b.y, ps[i].x, ps[i].y, ps[(i + 1) % ps.length].x, ps[(i + 1) % ps.length].y);
+			isc.flag = false;
 			fisc = iscs[0] || {};
 			lisc = iscs[iscs.length - 1] || {};
 			if (
@@ -4936,7 +4931,7 @@
 			norm_x: 0,
 			norm_y: 0,
 			refl_x: 0,
-			relf_y: 0
+			refl_y: 0
 		};
 
 		for (let i = 0; i < len; i += 2) {
@@ -7514,9 +7509,9 @@
 		if (typeof module === "object" && module.exports) {
 			module.exports = root;
 		}
-		global.Geometry = Geometry;
-		global.Tween = Tween;
 	}
+	global.Geometry = Geometry;
+	global.Tween = Tween;
 })(
 	typeof self !== "undefined" ? self :
 	typeof window !== "undefined" ? window :
