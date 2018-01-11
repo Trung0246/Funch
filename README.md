@@ -6,7 +6,7 @@ An all-in-one library that dedicated to improve Javascript default functions and
 
 Version 0.5a (Alpha version)
 
-[Download](https://cdn.rawgit.com/Trung0246/Funch/b4d5666e/src/Funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/b4d5666e/src/Funch.min.js))
+[Download](https://cdn.rawgit.com/Trung0246/Funch/8eae1ca6/src/Funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/8eae1ca6/src/Funch.min.js))
 
 [Documentation](https://cdn.rawgit.com/Trung0246/Funch/db9cfdf4/docs/index.html)
 
