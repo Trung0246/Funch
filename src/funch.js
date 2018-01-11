@@ -2780,7 +2780,7 @@
 	 * @memberof Geometry
 	 **/
 	Geometry.diffAngle = function(num1, num2) {
-		return -((num1 - num2 + _diffAngle_1_) % Math.TAU - Math.PI);
+		return Math.PI - (num1 - num2 + _diffAngle_1_) % Math.TAU;
 	};
 
 	/**
