@@ -1,7 +1,7 @@
-(function(global) {
+(function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.5a
+	Funch.js, v0.6a
 
 	MIT License
 
@@ -29,110 +29,9 @@
 	*/
 
 	//Namespace
-	let Geometry = {}, Tween = {}, Math = global.Math, Boolean = global.Boolean, Number = global.Number;
+	let Math = global.Math, Boolean = global.Boolean, Number = global.Number,
+	//let Geometry = {}, Tween = {}, Math = global.Math, Boolean = global.Boolean, Number = global.Number;
 
-	/*
-	TODO list:
-	- Optimize distLine function (Medium)
-	*/
-
-	/**
-	 *
-	 * All of general math functions 
-	 *
-	 * @namespace Math
-	 *
-	 **/
-	/**
-	 *
-	 *	All of functions that related to Vector
-	 *
-	 * @namespace Vector
-	 *
-	 **/
-	/**
-	 *
-	 * All of functions that related to Trigonometry
-	 *
-	 * @namespace Trigonometry
-	 *
-	 **/
-	/**
-	 *
-	 * All of functions that related to Geometry
-	 *
-	 * @namespace Geometry
-	 *
-	 **/
-	/**
-	 *
-	 * All of functions that dealing with checking a number
-	 *
-	 * @namespace Number
-	 *
-	 **/
-	/**
-	 *
-	 * All of functions that related to Boolean
-	 *
-	 * @namespace Boolean
-	 *
-	 **/
-	/**
-	 *
-	 * All of functions that related to Tween (see [here]{@link http://easings.net/} for more infos)
-	 *
-	 * @namespace Tween
-	 *
-	 **/
-
-	/**
-	 * @constant {number} HALFPI
-	 * 
-	 * Equal to half of `Math.PI`, specific value is `1.5707963267948966`
-	 *
-	 * @memberof Math
-	 */
-	Math.HALFPI = Math.PI / 2;
-
-	/**
-	 * @constant {number} TAU
-	 * 
-	 * Equal to double of `Math.PI`, specific value is `6.283185307179586`
-	 *
-	 * @memberof Math
-	 */
-	Math.TAU = Math.PI * 2;
-
-	/**
-	 * @constant {number} PHI
-	 * 
-	 * [Golden ratio]{@link https://en.wikipedia.org/wiki/Golden_ratio}, specific value is `1.618033988749895`
-	 *
-	 * @memberof Math
-	 */
-	Math.PHI = (1 + Math.sqrt(5)) / 2;
-
-	/**
-	 * @constant {number} SILVER
-	 * 
-	 * [Silver ratio]{@link https://en.wikipedia.org/wiki/Silver_ratio}, specific value is `2.414213562373095`
-	 *
-	 * @memberof Math
-	 */
-	Math.SILVER = 1 + Math.SQRT2;
-
-	/**
-	 * @constant {number} UPC
-	 * 
-	 * [Universal parabolic constant]{@link https://en.wikipedia.org/wiki/Universal_parabolic_constant}, specific value is `2.295587149392638`
-	 *
-	 * @memberof Math
-	 */
-	Math.UPC = Math.log(1 + Math.SQRT2) + Math.SQRT2;
-
-	//Local variables and functions that store data necessary for library
-	let _helper7_1_ = [0xcc9e2d51, 0x1b873593, Math.pow(2, 32)],
 	_gamma_1_ = [
 		0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313,
 		-176.61502916214059, 12.507343278686905, -0.13857109526572012, 9.9843695780195716e-6,
@@ -162,20 +61,12 @@
 		1 / 2.75, 2 / 2.75, 1.5 / 2.75,
 		2.5 / 2.75, 2.25 / 2.75, 2.625 / 2.75,
 	],
-	_random_1_ = [],
-	_helper19_2_ = [],
-	_helper23_1_ = [],
-	_helper23_2_ = [],
-	_helper23_3_ = [],
-	_integral_1_ = [],
-	_integral_2_ = [],
-	_derivative_1_ = [],
-	_gcd_1_ = [],
 	_noise_1_ = [
 		[1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
 		[1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
 		[0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]
 	],
+	_helper7_1_ = Math.pow(2, 32),
 	_noise_4_ = 0.5 * (Math.sqrt(3.0) - 1.0),
 	_noise_5_ = (3.0 - Math.sqrt(3.0)) / 6.0,
 	_noise_6_ = 1.0 / 6.0,
@@ -183,19 +74,19 @@
 	_helper19_1_ = 3 / 4,
 	_toRad_1_ = Math.PI / 180,
 	_toDeg_1_ = 180 / Math.PI,
-	_erf_1_ = Math.sqrt(Math.PI),
-	_pdf_1_ = Math.sqrt(Math.TAU),
 	_diffAngle_1_ = Math.PI * 3,
 	_triEquil_1_ = Math.sqrt(3) / 2,
-	_epsilon_1_ = 4 / 3 - 1,
-	_slicePoly_1_,
-	_poly_stack_ = [],
 	oldRound = Math.round,
 	oldFloor = Math.floor,
 	oldCeil = Math.ceil,
 	oldTrunc = Math.trunc,
 	oldPow = Math.pow,
-	oldRandom = Math.random;
+	oldRandom = Math.random,
+	_memory_1_ = [],
+	_memory_2_ = [],
+	_memory_3_ = [],
+	_memory2_1_ = {},
+	_poly_stack_ = [];
 
 	for (var i = 0; i < 6; i++) {
 		_poly_stack_.push({
@@ -206,10 +97,24 @@
 	}
 
 	function _helper0(current, num) {
-		return (typeof current !== "undefined") ? current : num;
+		return (typeof current === typeof num) ? current : num;
 	}
 
-	function _helper1(type, num) {
+	function _helper1() {
+		_memory_1_.length = 0;
+		_memory_2_.length = 0;
+		_memory_3_.length = 0;
+	}
+
+	function _helper2() {
+		for (let key in _memory2_1_) {
+			if (_memory2_1_.hasOwnProperty(key)) {
+				delete _memory2_1_[key];
+			}
+		}
+	}
+
+	function _helper3(type, num) {
 		switch (type) {
 			case 0:
 				{
@@ -239,12 +144,12 @@
 		}
 	}
 
-	function _helper4(num) {
-		if (num !== oldFloor(num)) {
-			return NaN;
-		} else if (num < 0) {
-			return NaN;
-		} else if (num > 170) {
+	function _helper4(num1, num2) {
+		return ((((num1 & 0xffff) * num2) + ((((num1 >>> 16) * num2) & 0xffff) << 16))) & 0xffffffff;
+	}
+
+	function _helper5(num) {
+		if (num !== oldFloor(num) || num < 0 || num > 170) {
 			return NaN;
 		} else if (0 === num || 1 === num) {
 			return 1;
@@ -256,7 +161,7 @@
 		return t;
 	}
 
-	function _helper5(num1, num2) {
+	function _helper6(num1, num2) {
 		let signX = (num1 < 0) ? -1 : 1,
 			signY = (num2 < 0) ? -1 : 1,
 			x = 0,
@@ -279,21 +184,21 @@
 			oldX = m;
 			oldY = n;
 		}
-		_gcd_1_[0] = num2;
-		_gcd_1_[1] = signX * x;
-		_gcd_1_[2] = signY * y;
+		_memory_1_[0] = num2;
+		_memory_1_[1] = signX * x;
+		_memory_1_[2] = signY * y;
 	}
 
-	function _helper6() {
-		let s1U = _random_1_[0],
-			s1L = _random_1_[1],
-			s0U = _random_1_[2],
-			s0L = _random_1_[3];
+	function _helper7() {
+		let s1U = _memory_1_[0],
+			s1L = _memory_1_[1],
+			s0U = _memory_1_[2],
+			s0L = _memory_1_[3];
 		let sumL = (s0L >>> 0) + (s1L >>> 0);
 		let resU = (s0U + s1U + (sumL / 2 >>> 31)) >>> 0,
 			resL = sumL >>> 0;
-		_random_1_[0] = s0U;
-		_random_1_[1] = s0L;
+		_memory_1_[0] = s0U;
+		_memory_1_[1] = s0L;
 		let t1U = 0,
 			t1L = 0,
 			t2U = 0,
@@ -318,21 +223,21 @@
 		t2L = (s0L >>> a3) | ((s0U & m3) << (32 - a3));
 		t1U = t1U ^ t2U;
 		t1L = t1L ^ t2L;
-		_random_1_[2] = t1U;
-		_random_1_[3] = t1L;
-		_random_1_[5] = resU;
-		_random_1_[6] = resL;
+		_memory_1_[2] = t1U;
+		_memory_1_[3] = t1L;
+		_memory_1_[5] = resU;
+		_memory_1_[6] = resL;
 	}
 
-	function _helper7() {
+	function _helper8() {
 		let h1 = arguments[2],
 			numargs = arguments.length - 1,
 			h1b, k1, i;
 		for (i = 0; i < numargs; i++) {
 			k1 = arguments[i] | 0;
-			k1 = ((((k1 & 0xffff) * _helper7_1_[0]) + ((((k1 >>> 16) * _helper7_1_[0]) & 0xffff) << 16))) & 0xffffffff;
+			k1 = _helper4(k1, 0xcc9e2d51);
 			k1 = (k1 << 15) | (k1 >>> 17);
-			k1 = ((((k1 & 0xffff) * _helper7_1_[1]) + ((((k1 >>> 16) * _helper7_1_[1]) & 0xffff) << 16))) & 0xffffffff;
+			k1 = _helper4(k1, 0x1b873593);
 			h1 ^= k1;
 			h1 = (h1 << 13) | (h1 >>> 19);
 			h1b = ((((h1 & 0xffff) * 5) + ((((h1 >>> 16) * 5) & 0xffff) << 16))) & 0xffffffff;
@@ -340,14 +245,14 @@
 		}
 		h1 ^= numargs;
 		h1 ^= h1 >>> 16;
-		h1 = (((h1 & 0xffff) * 0x85ebca6b) + ((((h1 >>> 16) * 0x85ebca6b) & 0xffff) << 16)) & 0xffffffff;
+		h1 = _helper4(h1, 0x85ebca6b);
 		h1 ^= h1 >>> 13;
-		h1 = ((((h1 & 0xffff) * 0xc2b2ae35) + ((((h1 >>> 16) * 0xc2b2ae35) & 0xffff) << 16))) & 0xffffffff;
+		h1 = _helper4(h1, 0xc2b2ae35);
 		h1 ^= h1 >>> 16;
-		return (h1 >>> 0) / _helper7_1_[2];
+		return (h1 >>> 0) / _helper7_1_;
 	}
 
-	function _helper8(num) {
+	function _helper9(num) {
 		if (Number.isNaN(num) || !Number.isFinite(num)) return NaN;
 		if (num === 0) return 0;
 		if (num % 1 || num * num < 2) return 1;
@@ -368,7 +273,7 @@
 		return num;
 	}
 
-	function _helper9(p) {
+	function _helper10(p) {
 		let a = 40,
 			b, c, aaa, aa, bbb, bb, m, n, r;
 		p *= 10;
@@ -389,15 +294,11 @@
 		return oldPow(-m + r, _helper9_1_) + oldPow(-m - r, _helper9_1_) - b / (3 * a);
 	}
 
-	function _helper10(overShoot) {
+	function _helper11(overShoot) {
 		return 1 - (overShoot + 3) / (3 * overShoot + 3);
 	}
 
-	function _helper11(x, v, n) {
-		return Math.nCr(n, v) * Math.pow(x, v) * Math.pow(1 - x, n - v);
-	}
-
-	function _helper13(u, v) {
+	/*function _helper13(u, v) {
 		return Geometry.distPnt(_slicePoly_1_.x, _slicePoly_1_.y, u.x, u.y, true) - Geometry.distPnt(_slicePoly_1_.x, _slicePoly_1_.y, v.x, v.y, true);
 	}
 
@@ -411,34 +312,19 @@
 		}
 	}
 
-	function _helper15(ps, ind0, ind1) {
-		let n = ps.length,
-			nps = [];
+	function _helper15(ps, ind0, ind1, nps) {
+		let n = ps.length;
 		if (ind1 < ind0) ind1 += n;
 		for (let i = ind0; i <= ind1; i++) {
 			nps.push(ps[i % n]);
 		}
 		return nps;
-	}
-
-	function _helper16(points, normal_x, normal_y, data) {
-		let min = Number.MAX_VALUE,
-			max = -Number.MAX_VALUE,
-			i = points.length,
-			dot;
-		while (i -= 2) {
-			dot = Math.dotVec(points[i], points[i + 1], normal_x, normal_y);
-			if (dot < min) min = dot;
-			if (dot > max) max = dot;
-		}
-		data[0] = min;
-		data[1] = min;
-	}
+	}*/
 
 	function _helper17(dx, dy, a1, b1, b2, c, edge, isc) {
-		let nrl = Geometry.distPnt(c.x, c.y, a1.x, a1.y, true);
+		let nrl = Geometry_distPnt(c.x, c.y, a1.x, a1.y, true);
 		if (nrl < isc.dist) {
-			let ibl = 1 / Geometry.distPnt(b2.x, b2.y, b1.x, b1.y, true);
+			let ibl = 1 / Geometry_distPnt(b2.x, b2.y, b1.x, b1.y, true);
 			let nx = -(b2.y - b1.y) * ibl,
 				ny = (b2.x - b1.x) * ibl;
 			let ddot = 2 * (dx * nx + dy * ny);
@@ -468,7 +354,7 @@
 			xx = a.x + param * C;
 			yy = a.y + param * D;
 		}
-		dst = Geometry.distPnt(xx, yy, p.x, p.y, true);
+		dst = Geometry_distPnt(xx, yy, p.x, p.y, true);
 		if (dst < isc.dist) {
 			isc.dist = dst;
 			isc.edge = edge;
@@ -496,7 +382,7 @@
 	}
 
 	function _helper20(a0, a1, a2, a3, a4) {
-		_helper19_2_.length = 0;
+		_memory_1_.length = 0;
 		a3 /= a4;
 		a2 /= a4;
 		a1 /= a4;
@@ -525,20 +411,20 @@
 		frontPart = a34 + R2;
 		if (DSquare >= 0) {
 			backPart = Math.sqrt(DSquare) / 2;
-			_helper19_2_[length++] = (frontPart + backPart);
-			_helper19_2_[length++] = (frontPart - backPart);
+			_memory_1_[length++] = (frontPart + backPart);
+			_memory_1_[length++] = (frontPart - backPart);
 		}
 		frontPart = a34 - R2;
 		if (ESquare >= 0) {
 			backPart = Math.sqrt(ESquare) / 2;
-			_helper19_2_[length++] = (frontPart + backPart);
-			_helper19_2_[length++] = (frontPart - backPart);
+			_memory_1_[length++] = (frontPart + backPart);
+			_memory_1_[length++] = (frontPart - backPart);
 		}
 		return length;
 	}
 
 	function _helper21(a, b, c) {
-		var minx = Math.min(b.x, c.x),
+		let minx = Math.min(b.x, c.x),
 			maxx = Math.max(b.x, c.x),
 			miny = Math.min(b.y, c.y),
 			maxy = Math.max(b.y, c.y);
@@ -550,7 +436,7 @@
 	}
 
 	function _helper22(a1, a2, b1, b2, c) {
-		var dax = (a1.x - a2.x),
+		let dax = (a1.x - a2.x),
 			dbx = (b1.x - b2.x),
 			day = (a1.y - a2.y),
 			dby = (b1.y - b2.y);
@@ -561,7 +447,7 @@
 		let A = (a1.x * a2.y - a1.y * a2.x),
 			B = (b1.x * b2.y - b1.y * b2.x);
 
-		var iDen = 1 / Den;
+		let iDen = 1 / Den;
 		c.x = (A * dbx - dax * B) * iDen;
 		c.y = (A * dby - day * B) * iDen;
 
@@ -572,12 +458,13 @@
 	}
 
 	function _helper23(num, func, places, type) {
+		_helper1();
 		let k, verySmallNumber = 1e-10,
 			allEqual = true,
 			flip = (type === 2 ? 1 : -1);
-		_helper23_1_.length = 0;
-		_helper23_2_.length = 0;
-		_helper23_3_.length = 0;
+		_memory_1_.length = 0;
+		_memory_2_.length = 0;
+		_memory_3_.length = 0;
 		if (typeof places != "number" && !(places instanceof Number)) {
 			places = 10;
 		}
@@ -594,24 +481,95 @@
 
 		for (k = 0; k < 5; k++) {
 			num += flip * verySmallNumber;
-			_helper23_1_.push(num);
-			_helper23_2_.push(func(num));
+			_memory_1_.push(num);
+			_memory_2_.push(func(num));
 		}
 
-		for (k = 0; k < _helper23_2_.length; k++) {
-			_helper23_3_.push(Math.round(_helper23_2_[k], places));
+		for (k = 0; k < _memory_2_.length; k++) {
+			_memory_3_.push(Math_round(_memory_2_[k], places));
 		}
 
-		for (k = 1; k < _helper23_3_.length; k++) {
-			allEqual = allEqual && (_helper23_3_[k - 1] === _helper23_3_[k]);
+		for (k = 1; k < _memory_3_.length; k++) {
+			allEqual = allEqual && (_memory_3_[k - 1] === _memory_3_[k]);
 		}
 		if (allEqual === true) {
-			return _helper23_3_[0];
+			return _memory_3_[0];
 		}
 		return NaN;
 	}
 
-	//Math
+	/**
+	 * @constant {number} HALFPI
+	 * 
+	 * Equal to half of `Math.PI`, specific value is `1.5707963267948966`
+	 *
+	 * @memberof Math
+	 */
+	Math.HALFPI = Math.PI / 2;
+
+	/**
+	 * @constant {number} TAU
+	 * 
+	 * Equal to double of `Math.PI`, specific value is `6.283185307179586`
+	 *
+	 * @memberof Math
+	 */
+	Math.TAU = Math.PI * 2;
+
+	/**
+	 * @constant {number} SQRTPI
+	 * 
+	 * Square root of `Math.PI`, specific value is `1.7724538509055159`
+	 *
+	 * @memberof Math
+	 */
+
+	Math.SQRTPI = Math.sqrt(Math.PI);
+
+	/**
+	 * @constant {number} SQRTTAU
+	 * 
+	 * Square root of `Math.TAU`, specific value is `2.5066282746310002`
+	 *
+	 * @memberof Math
+	 */
+
+	Math.SQRTTAU = Math.sqrt(Math.TAU);
+
+	/**
+	 * @constant {number} PHI
+	 * 
+	 * [Golden ratio]{@link https://en.wikipedia.org/wiki/Golden_ratio}, specific value is `1.618033988749895`
+	 *
+	 * @memberof Math
+	 */
+	Math.PHI = (1 + Math.sqrt(5)) / 2;
+
+	/**
+	 * @constant {number} SILVER
+	 * 
+	 * [Silver ratio]{@link https://en.wikipedia.org/wiki/Silver_ratio}, specific value is `2.414213562373095`
+	 *
+	 * @memberof Math
+	 */
+	Math.SILVER = 1 + Math.SQRT2;
+
+	/**
+	 * @constant {number} UPC
+	 * 
+	 * [Universal parabolic constant]{@link https://en.wikipedia.org/wiki/Universal_parabolic_constant}, specific value is `2.295587149392638`
+	 *
+	 * @memberof Math
+	 */
+	Math.UPC = Math.log(1 + Math.SQRT2) + Math.SQRT2;
+
+	/**
+	 *
+	 * All of general math functions 
+	 *
+	 * @namespace Math
+	 *
+	 **/
 
 	/**
 	 *	
@@ -627,7 +585,7 @@
 	 * Math.ln(10);
 	 * //2.302585092994046
 	 **/
-	Math.ln = Math.log;
+	let Math_ln = Math.log;
 
 	/**
 	 *	
@@ -644,10 +602,10 @@
 	 * @function log
 	 * @memberof Math
 	 **/
-	Math.log = function(num, base) {
+	function Math_log(num, base) {
 		base = _helper0(base, Math.E);
-		return Math.ln(num) / Math.ln(base);
-	};
+		return Math_ln(num) / Math_ln(base);
+	}
 
 	/**
 	 *	
@@ -664,9 +622,9 @@
 	 * @function mod
 	 * @memberof Math
 	 **/
-	Math.mod = function(num1, num2) {
+	function Math_mod(num1, num2) {
 		return num1 - oldFloor(num1 / num2) * num2;
-	};
+	}
 
 	/**
 	 *	
@@ -687,7 +645,7 @@
 	 * @function rem
 	 * @memberof Math
 	 **/
-	Math.rem = function(num, left, right) {
+	function Math_rem(num, left, right) {
 		//detect single-arg case, like mod-loop or fmod
 		if (!right) {
 			right = left;
@@ -704,7 +662,7 @@
 		if (num < left) num += frame;
 		if (num > right) num -= frame;
 		return num;
-	};
+	}
 
 	/**
 	 *	
@@ -724,16 +682,17 @@
 	 * @function cycle
 	 * @memberof Math
 	 **/
-	Math.cycle = function(num1, num2) {
+	function Math_cycle(num1, num2) {
 		num1 %= num2;
 		return num1 > 0 ? num1 : num1 + num2;
-	};
+	}
 
 	/**
 	 *	
 	 * Gamma function
 	 *
 	 * @param {number} num - The number to calculate
+	 * @param {number=} accuracy
 	 * @return {number}
 	 *
 	 * @example
@@ -743,10 +702,10 @@
 	 * @function gamma
 	 * @memberof Math
 	 **/
-	Math.gamma = function(num, accuracy) {
+	function Math_gamma(num, accuracy) {
 		accuracy = _helper0(accuracy, 7);
 		if (num < 0.5) {
-			return Math.PI / Math.sin(num * Math.PI) / Math.gamma(1 - num);
+			return Math.PI / (Math.sin(num * Math.PI) * Math_gamma(1 - num));
 		} else {
 			num--;
 			let temp = _gamma_1_[0];
@@ -754,9 +713,9 @@
 				temp += _gamma_1_[i] / (num + i);
 			}
 			let temp2 = num + accuracy + 0.5;
-			return _pdf_1_ * Math.pow(temp2, (num + 0.5)) * Math.exp(-temp2) * temp;
+			return Math.SQRTTAU * Math_pow(temp2, (num + 0.5)) * Math.exp(-temp2) * temp;
 		}
-	};
+	}
 
 	/**
 	 *	
@@ -772,17 +731,17 @@
 	 * @function lnGamma
 	 * @memberof Math
 	 **/
-	Math.lnGamma = function(num) {
+	function Math_lnGamma(num) {
 		let j = 0,
 			ser = 1.000000000190015,
 			xx, y, tmp;
 		tmp = (y = xx = num) + 5.5;
-		tmp -= (xx + 0.5) * Math.ln(tmp);
+		tmp -= (xx + 0.5) * Math_ln(tmp);
 		for (; j < 6; j++) {
 			ser += _lnGamma_1_[j] / ++y;
 		}
-		return Math.ln(2.5066282746310005 * ser / xx) - tmp;
-	};
+		return Math_ln(2.5066282746310005 * ser / xx) - tmp;
+	}
 
 	/**
 	 *	
@@ -798,10 +757,10 @@
 	 * @function factorial
 	 * @memberof Math
 	 **/
-	Math.factorial = function(num) {
+	function Math_factorial(num) {
 		num++;
-		return num === oldFloor(num) ? _helper4(num - 1) : num < 0 ? Math.PI / (Math.sin(Math.PI * num) * Math.gamma(1 - num)) : Math.exp(Math.lnGamma(num));
-	};
+		return num === oldFloor(num) ? _helper5(num - 1) : num < 0 ? Math.PI / (Math.sin(Math.PI * num) * Math_gamma(1 - num)) : Math.exp(Math_lnGamma(num));
+	}
 
 	/**
 	 *	
@@ -820,13 +779,13 @@
 	 * @function nCr
 	 * @memberof Math
 	 **/
-	Math.nCr = function(num1, num2) {
+	function Math_nCr(num1, num2) {
 		let result = 1;
 		for (let i = 0; i < num2; i++) {
 			result *= (num1 - i) / (i + 1);
 		}
 		return result;
-	};
+	}
 
 	/**
 	 *	
@@ -843,13 +802,13 @@
 	 * @function nPr
 	 * @memberof Math
 	 **/
-	Math.nPr = function(num1, num2) {
+	function Math_nPr(num1, num2) {
 		let result = 1;
 		for (let i = 0; i < num2; i++) {
 			result *= num1 - i;
 		}
 		return result;
-	};
+	}
 
 	/**
 	 *	
@@ -866,15 +825,15 @@
 	 * @function pow
 	 * @memberof Math
 	 **/
-	Math.pow = function(base, exponent) {
+	function Math_pow(base, exponent) {
 		let result = oldPow(base, exponent);
 		if (Number.isNaN(result)) {
 			let check = base < 0 && exponent < 0,
-				temp = check && Number.isEven(exponent) ? NaN : oldPow(Math.abs(base), exponent);
+				temp = check && Number_isEven(exponent) ? NaN : oldPow(Math.abs(base), exponent);
 			result = check && temp ? -temp : temp;
 		}
 		return result;
-	};
+	}
 
 	/**
 	 *	
@@ -890,9 +849,9 @@
 	 * @function sigmoid
 	 * @memberof Math
 	 **/
-	Math.sigmoid = function(num) {
-		return 1 / (1 + Math.pow(Math.E, -num));
-	};
+	function Math_sigmoid(num) {
+		return 1 / (1 + Math_pow(Math.E, -num));
+	}
 
 	/**
 	 *	
@@ -909,16 +868,16 @@
 	 * @function pair
 	 * @memberof Math
 	 **/
-	Math.pair = function(num1, num2) {
-		return 0.5 * (num1 + num2 - 2) * (num1 + num2 - 1) + num1;
-	};
+	function Math_pair(num1, num2) {
+		return (num1 + num2 - 2) * (num1 + num2 - 1) / 2 + num1;
+	}
 
 	/**
 	 *	
 	 * Calculate [integral]{@link https://en.wikipedia.org/wiki/Integral}
 	 *
-	 * @param {number=} [a=1] - The begin of interval
-	 * @param {number=} [b=1] - The end of interval
+	 * @param {number} [a=1] - The begin of interval
+	 * @param {number} [b=1] - The end of interval
 	 * @param {function} func - The function to calculate
 	 * @param {number=} [epsilon=1e-17]
 	 * @param {number=} [iteration=11]
@@ -931,7 +890,8 @@
 	 * @function integral
 	 * @memberof Math
 	 **/
-	Math.integral = function (a, b, func, epsilon, iteration) {
+	function Math_integral(a, b, func, epsilon, iteration) {
+		_helper1();
 		epsilon = _helper0(epsilon, 1e-17);
 		iteration = _helper0(iteration, 11);
 		let h = oldPow(2, -iteration),
@@ -939,9 +899,9 @@
 		for (k = 0; k < 20 * oldPow(2, iteration); k++) {
 			t = k * h;
 			sinht = Math.sinh(t);
-			_integral_1_[k] = Math.tanh(Math.HALFPI * sinht);
-			_integral_2_[k] = Math.PI * Math.cosh(t) / (Math.cosh(Math.PI * sinht) + 1);
-			if (Math.abs(1 - _integral_1_[k]) < epsilon) {
+			_memory_1_[k] = Math.tanh(Math.HALFPI * sinht);
+			_memory_2_[k] = Math.PI * Math.cosh(t) / (Math.cosh(Math.PI * sinht) + 1);
+			if (Math.abs(1 - _memory_1_[k]) < epsilon) {
 				break;
 			}
 		}
@@ -953,16 +913,16 @@
 			for (i = 0; i < nt; i += oldPow(2, iteration - k)) {
 				if (i % oldPow(2, iteration - k + 1) !== 0 || k === 1) {
 					if (i === 0) {
-						sum += _integral_2_[0] * func(mid);
+						sum += _memory_2_[0] * func(mid);
 					} else {
-						t = len * _integral_1_[i];
-						sum += _integral_2_[i] * (func(mid - t) + func(mid + t));
+						t = len * _memory_1_[i];
+						sum += _memory_2_[i] * (func(mid - t) + func(mid + t));
 					}
 				}
 			}
 		}
 		return 2 * len * h * sum;
-	};
+	}
 
 	/**
 	 *	
@@ -982,29 +942,30 @@
 	 * @function derivative
 	 * @memberof Math
 	 **/
-	Math.derivative = function(num, func, columns, accuracy1, accuracy2) {
+	function Math_derivative(num, func, columns, accuracy1, accuracy2) {
+		_helper1();
 		columns = _helper0(columns, 6);
 		accuracy1 = _helper0(accuracy1, 1e-15); //tol
 		accuracy2 = _helper0(accuracy2, 1);
 		let d1, d2, h2;
-		_derivative_1_[0] = (func(num + accuracy2) - func(num - accuracy2)) / (accuracy2 * 2.0);
+		_memory_1_[0] = (func(num + accuracy2) - func(num - accuracy2)) / (accuracy2 * 2.0);
 		for (let j = 1; j <= columns - 1; j++) {
-			_derivative_1_[j] = 0.0;
-			d1 = _derivative_1_[0];
+			_memory_1_[j] = 0.0;
+			d1 = _memory_1_[0];
 			h2 = accuracy2;
 			accuracy2 *= 0.5;
-			_derivative_1_[0] = (func(num + accuracy2) - func(num - accuracy2)) / h2;
+			_memory_1_[0] = (func(num + accuracy2) - func(num - accuracy2)) / h2;
 			for (let m = 4, i = 1; i <= j; i++, m *= 4) {
-				d2 = _derivative_1_[i];
-				_derivative_1_[i] = (m * _derivative_1_[i - 1] - d1) / (m - 1);
+				d2 = _memory_1_[i];
+				_memory_1_[i] = (m * _memory_1_[i - 1] - d1) / (m - 1);
 				d1 = d2;
 			}
-			if (Math.abs(_derivative_1_[j] - _derivative_1_[j - 1]) < accuracy1) {
-				return _derivative_1_[j];
+			if (Math.abs(_memory_1_[j] - _memory_1_[j - 1]) < accuracy1) {
+				return _memory_1_[j];
 			}
 		}
 		return NaN;
-	};
+	}
 
 	/**
 	 *	
@@ -1023,7 +984,7 @@
 	 * @function limit
 	 * @memberof Math
 	 **/
-	Math.limit = function(type, num, func, places) {
+	function Math_limit(type, num, func, places) {
 		if (typeof places != "number" && !(places instanceof Number)) {
 			places = 10;
 		}
@@ -1059,7 +1020,7 @@
 				}
 		}
 		return NaN;
-	};
+	}
 
 	/**
 	 *	
@@ -1079,7 +1040,7 @@
 	 * @function solve
 	 * @memberof Math
 	 **/
-	Math.solve = function(x0, x1, func, epsilon, iteration) {
+	function Math_solve(x0, x1, func, epsilon, iteration) {
 		x0 = _helper0(x0, -100);
 		x1 = _helper0(x1, 100);
 		let i = 0,
@@ -1112,7 +1073,7 @@
 			return (x1 + x0) / 2;
 		}
 		return NaN;
-	};
+	}
 
 	/**
 	 *	
@@ -1120,6 +1081,7 @@
 	 *
 	 * @param {number} num - The number to calculate
 	 * @param {number=} [iteration=0] - Denominator must not larger than this number
+	 * @param {array=} returnData - Array to put data
 	 * @return {number[]} [numerator, denominator]
 	 *
 	 * @example
@@ -1132,14 +1094,18 @@
 	 * @function rational
 	 * @memberof Math
 	 **/
-	Math.rational = function(num, iteration) {
+	function Math_rational(num, iteration, returnData) {
 		iteration = _helper0(iteration, 0); //16
 		let approx = 0,
 			error = 0,
 			best = 0,
 			besterror = 0,
-			result = [num, 1],
-			i = 1;
+			i = 1,
+			result = _helper0(returnData, []);
+
+		result[0] = num;
+		result[1] = 1;
+
 		do {
 			approx = oldRound(num * i); //x / (1 / i)
 			error = (num - (approx / i));
@@ -1162,7 +1128,7 @@
 			result[1] = 1;
 		}
 		return result;
-	};
+	}
 
 	/**
 	 *	
@@ -1181,11 +1147,11 @@
 	 * @function pdf
 	 * @memberof Math
 	 **/
-	Math.pdf = function(mean, variance, std, num) {
-		let m = std * _pdf_1_,
-			e = Math.exp(-Math.pow(num - mean, 2) / (2 * variance));
+	function Math_pdf(mean, variance, std, num) {
+		let m = std * Math.SQRTTAU,
+			e = Math.exp(-Math_pow(num - mean, 2) / (2 * variance));
 		return e / m;
-	};
+	}
 
 	/**
 	 *	
@@ -1203,9 +1169,9 @@
 	 * @function cdf
 	 * @memberof Math
 	 **/
-	Math.cdf = function(mean, std, num) {
-		return 0.5 * Math.erfc(-(num - mean) / (std * Math.SQRT2));
-	};
+	function Math_cdf(mean, std, num) {
+		return Math_erfc((mean - num) / (std * Math.SQRT2)) / 2;
+	}
 
 	/**
 	 *	
@@ -1223,15 +1189,16 @@
 	 * @function ppf
 	 * @memberof Math
 	 **/
-	Math.ppf = function(mean, std, num) {
-		return mean - std * Math.SQRT2 * Math.ierfc(2 * num);
-	};
+	function Math_ppf(mean, std, num) {
+		return mean - std * Math.SQRT2 * Math_ierfc(2 * num);
+	}
 
 	/**
 	 *	
 	 * [Error function]{@link https://en.wikipedia.org/wiki/Error_function}
 	 *
 	 * @param {number} num
+	 * @param {number=} [accuracy=50]
 	 * @return {number}
 	 *
 	 * @example
@@ -1241,23 +1208,27 @@
 	 * @function erf
 	 * @memberof Math
 	 **/
-	Math.erf = function(num) {
-		let m = 1.00,
-			s = 1.00,
+	function Math_erf(num, accuracy) {
+		let m = 1,
+			s = 1,
 			sum = num; // * 1.0
-		for (let i = 1; i < 50; i++) {
+
+		accuracy = _helper0(accuracy, 50);
+
+		for (let i = 1; i < accuracy; i++) {
 			m *= i;
 			s *= -1;
-			sum += (s * oldPow(num, 2.0 * i + 1.0)) / (m * (2.0 * i + 1.0));
+			sum += (s * oldPow(num, 2 * i + 1)) / (m * (2 * i + 1));
 		}
-		return 2 * sum / _erf_1_;
-	};
+		return 2 * sum / Math.SQRTPI;
+	}
 
 	/**
 	 *	
 	 * [Complementary error function]{@link https://en.wikipedia.org/wiki/Error_function#Complementary_error_function}
 	 *
 	 * @param {number} num
+	 * @param {number=} [accuracy=50]
 	 * @return {number}
 	 *
 	 * @example
@@ -1267,9 +1238,9 @@
 	 * @function erfc
 	 * @memberof Math
 	 **/
-	Math.erfc = function(num) {
-		return 1 - Math.erf(num);
-	};
+	function Math_erfc(num, accuracy) {
+		return 1 - Math_erf(num, accuracy);
+	}
 
 	/**
 	 *	
@@ -1285,9 +1256,9 @@
 	 * @function ierf
 	 * @memberof Math
 	 **/
-	Math.ierf = function(num) {
-		return Math.iNorm((num + 1) / 2.0) / Math.SQRT2;
-	};
+	function Math_ierf(num) {
+		return Math_iNorm((num + 1) / 2) / Math.SQRT2;
+	}
 
 	/**
 	 *	
@@ -1303,9 +1274,9 @@
 	 * @function ierfc
 	 * @memberof Math
 	 **/
-	Math.ierfc = function(num) {
-		return -Math.iNorm(0.5 * num) / Math.SQRT2;
-	};
+	function Math_ierfc(num) {
+		return -Math_iNorm(num / 2) / Math.SQRT2;
+	}
 
 	/**
 	 *	
@@ -1321,9 +1292,9 @@
 	 * @function erfcx
 	 * @memberof Math
 	 **/
-	Math.erfcx = function(num) {
+	function Math_erfcx(num) {
 		if (num < 0) {
-			return num < -6.1 ? 2 * Math.exp(num * num) : 2 * Math.exp(num * num) - Math.erfcx(-num);
+			return num < -6.1 ? 2 * Math.exp(num * num) : 2 * Math.exp(num * num) - Math_erfcx(-num);
 		}
 		if (num > 50) {
 			let nm = num * num;
@@ -1334,7 +1305,7 @@
 			I = _erfcx_1_[10] + num * (_erfcx_1_[11] + num * (_erfcx_1_[12] + num * (_erfcx_1_[13] + num * (_erfcx_1_[14] + num * (_erfcx_1_[15] +
 				num * (_erfcx_1_[16] + num * (_erfcx_1_[17] + num * (_erfcx_1_[18] + num * (_erfcx_1_[19] + num * _erfcx_1_[20])))))))));
 		return E / I;
-	};
+	}
 
 	/**
 	 *	
@@ -1350,10 +1321,10 @@
 	 * @function invNorm
 	 * @memberof Math
 	 **/
-	Math.iNorm = function(num) {
+	function Math_iNorm(num) {
 		let qw, we, er, result;
 		if (num < _invNorm_1_[21]) {
-			qw = Math.sqrt(-2 * Math.ln(num));
+			qw = Math.sqrt(-2 * Math_ln(num));
 			er = (((((_invNorm_1_[11] * qw + _invNorm_1_[12]) * qw + _invNorm_1_[13]) * qw + _invNorm_1_[14]) * qw + _invNorm_1_[15]) * qw + _invNorm_1_[16]) /
 				((((_invNorm_1_[17] * qw + _invNorm_1_[18]) * qw + _invNorm_1_[19]) * qw + _invNorm_1_[20]) * qw + 1);
 			result = er;
@@ -1362,10 +1333,10 @@
 			we = qw * qw;
 			er = (((((_invNorm_1_[0] * we + _invNorm_1_[1]) * we + _invNorm_1_[2]) * we + _invNorm_1_[3]) * we + _invNorm_1_[4]) * we + _invNorm_1_[5]) * qw /
 				(((((_invNorm_1_[6] * we + _invNorm_1_[7]) * we + _invNorm_1_[8]) * we + _invNorm_1_[9]) * we + _invNorm_1_[10]) * we + 1);
-			result = er - _pdf_1_ * (0.5 * Math.erfcx(-er / Math.SQRT2) - Math.exp(0.5 * er * er) * num);
+			result = er - Math.SQRTTAU * (0.5 * Math_erfcx(-er / Math.SQRT2) - Math.exp(0.5 * er * er) * num);
 		}
 		return result;
-	};
+	}
 
 	/**
 	 *	
@@ -1382,9 +1353,95 @@
 	 * @function kelly
 	 * @memberof Math
 	 **/
-	Math.kelly = function(num1, num2) {
+	function Math_kelly(num1, num2) {
 		return (num2 * (num1 + 1) - 1) / num1;
-	};
+	}
+
+	/**
+	 *	
+	 * [Bernstein function]{@link https://en.wikipedia.org/wiki/Bernstein_polynomial}
+	 *
+	 * @param {number} x
+	 * @param {number} v
+	 * @param {number} n
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.bernstein(2, 2, 2);
+	 * //4
+	 *
+	 * @function bernstein
+	 * @memberof Math
+	 **/
+	function Math_bernstein(x, v, n) {
+		return Math_nCr(n, v) * Math_pow(x, v) * Math_pow(1 - x, n - v);
+	}
+
+	/**
+	 *	
+	 * Adjust decimal of a number
+	 *
+	 * @param {number} type - 0: round, 1: floor, 2: ceil, 3: trunc, 4: away
+	 * @param {number} num
+	 * @param {number=} [digits=0]
+	 * @param {number=} base
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.adjust(0, Math.PI, 2);
+	 * //3.14 (same as Math.round)
+	 *
+	 * @function adjust
+	 * @memberof Math
+	 **/
+	function Math_adjust(type, num, digits, base) {
+		digits = _helper0(digits, 0);
+		base = _helper0(base, 10);
+		let result, temp;
+		temp = Math_pow(base, digits);
+		result = _helper3(type, num * temp) / temp;
+		return result;
+	}
+
+	/**
+	 *	
+	 * Adjust decimal of a number by digit location and base
+	 *
+	 * @param {number} type - 0: round, 1: floor, 2: ceil, 3: trunc, 4: away
+	 * @param {number} num
+	 * @param {number=} [digits=0]
+	 * @param {number=} base
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.adjust2(0, Math.PI, 2);
+	 * //3.1 (same as Math.round2)
+	 *
+	 * @function adjust2
+	 * @memberof Math
+	 **/
+	function Math_adjust2(type, num, digits, base) {
+		digits = _helper0(digits, 0);
+		base = _helper0(base, 10);
+		let base2, exp, temp, temp2;
+		base2 = _helper0(base, 10);
+		let absX = Math.abs(num);
+		if (base2 === 10) {
+			exp = Math.log10(absX);
+		} else if (base2 === 2) {
+			exp = Math.exp(absX);
+		} else {
+			exp = Math_log(absX, base2);
+		}
+		exp = oldFloor(exp - digits + 1.0);
+		temp = Math_pow(base2, Math.abs(exp));
+		if (exp < 0) {
+			temp2 = _helper3(type, num * temp) / temp;
+		} else {
+			temp2 = _helper3(type, num / temp) * temp;
+		}
+		return temp2;
+	}
 
 	/**
 	 *	
@@ -1406,9 +1463,7 @@
 	 * @function round
 	 * @memberof Math
 	 **/
-	Math.round = function(num, digits, base) {
-		return Math.adjust(0, num, digits, base);
-	};
+	let Math_round = Math_adjust.bind(this, 0);
 
 	/**
 	 *	
@@ -1430,9 +1485,7 @@
 	 * @function floor
 	 * @memberof Math
 	 **/
-	Math.floor = function(num, digits, base) {
-		return Math.adjust(1, num, digits, base);
-	};
+	let Math_floor = Math_adjust.bind(this, 1);
 
 	/**
 	 *	
@@ -1454,9 +1507,7 @@
 	 * @function ceil
 	 * @memberof Math
 	 **/
-	Math.ceil = function(num, digits, base) {
-		return Math.adjust(2, num, digits, base);
-	};
+	let Math_ceil = Math_adjust.bind(this, 2);
 
 	/**
 	 *	
@@ -1478,9 +1529,7 @@
 	 * @function trunc
 	 * @memberof Math
 	 **/
-	Math.trunc = function(num, digits, base) {
-		return Math.adjust(3, num, digits, base);
-	};
+	let Math_trunc = Math_adjust.bind(this, 3);
 
 	/**
 	 *	
@@ -1502,9 +1551,7 @@
 	 * @function away
 	 * @memberof Math
 	 **/
-	Math.away = function(num, digits, base) {
-		return Math.adjust(4, num, digits, base);
-	};
+	let Math_away = Math_adjust.bind(this, 4);
 
 	/**
 	 *	
@@ -1525,9 +1572,7 @@
 	 * @function round2
 	 * @memberof Math
 	 **/
-	Math.round2 = function(num, digits, base) {
-		return Math.adjust2(0, num, digits, base);
-	};
+	let Math_round2 = Math_adjust2.bind(this, 0);
 
 	/**
 	 *	
@@ -1548,9 +1593,7 @@
 	 * @function floor2
 	 * @memberof Math
 	 **/
-	Math.floor2 = function(num, digits, base) {
-		return Math.adjust2(1, num, digits, base);
-	};
+	let Math_floor2 = Math_adjust2.bind(this, 1);
 
 	/**
 	 *	
@@ -1571,9 +1614,7 @@
 	 * @function ceil2
 	 * @memberof Math
 	 **/
-	Math.ceil2 = function(num, digits, base) {
-		return Math.adjust2(2, num, digits, base);
-	};
+	let Math_ceil2 = Math_adjust2.bind(this, 2);
 
 	/**
 	 *	
@@ -1594,9 +1635,7 @@
 	 * @function trunc2
 	 * @memberof Math
 	 **/
-	Math.trunc2 = function(num, digits, base) {
-		return Math.adjust2(3, num, digits, base);
-	};
+	let Math_trunc2 = Math_adjust2.bind(this, 3);
 
 	/**
 	 *	
@@ -1617,75 +1656,7 @@
 	 * @function away2
 	 * @memberof Math
 	 **/
-	Math.away2 = function(num, digits, base) {
-		return Math.adjust2(4, num, digits, base);
-	};
-
-	/**
-	 *	
-	 * Adjust decimal of a number
-	 *
-	 * @param {number} type - 0: round, 1: floor, 2: ceil, 3: trunc, 4: away
-	 * @param {number} num
-	 * @param {number=} [digits=0]
-	 * @param {number=} base
-	 * @return {number}
-	 *
-	 * @example
-	 * Math.adjust(0, Math.PI, 2);
-	 * //3.14 (same as Math.round)
-	 *
-	 * @function adjust
-	 * @memberof Math
-	 **/
-	Math.adjust = function(type, num, digits, base) {
-		digits = _helper0(digits, 0);
-		base = _helper0(base, 10);
-		let result, temp;
-		temp = Math.pow(base, digits);
-		result = _helper1(type, num * temp) / temp;
-		return result;
-	};
-
-	/**
-	 *	
-	 * Adjust decimal of a number by digit location and base
-	 *
-	 * @param {number} type - 0: round, 1: floor, 2: ceil, 3: trunc, 4: away
-	 * @param {number} num
-	 * @param {number=} [digits=0]
-	 * @param {number=} base
-	 * @return {number}
-	 *
-	 * @example
-	 * Math.adjust2(0, Math.PI, 2);
-	 * //3.1 (same as Math.round2)
-	 *
-	 * @function adjust2
-	 * @memberof Math
-	 **/
-	Math.adjust2 = function(type, num, digits, base) {
-		digits = _helper0(digits, 0);
-		base = _helper0(base, 10);
-		let base2, exp, temp, temp2;
-		base2 = _helper0(base, 10);
-		let absX = Math.abs(num);
-		if (base2 === 10) {
-			exp = Math.log10(absX);
-		} else if (base2 === 2) {
-			exp = Math.exp(absX);
-		} else {
-			exp = Math.log(absX, base2);
-		}
-		exp = oldFloor(exp - digits + 1.0);
-		temp = Math.pow(base2, Math.abs(exp));
-		if (exp < 0) {
-			temp2 = _helper1(type, num * temp) / temp;
-		} else {
-			temp2 = _helper1(type, num / temp) * temp;
-		}
-		return temp2;
-	};
+	let Math_away2 = Math_adjust2.bind(this, 4);
 
 	/**
 	 *	
@@ -1702,13 +1673,13 @@
 	 * @function correct
 	 * @memberof Math
 	 **/
-	Math.correct = function(num, epsilon) {
+	function Math_correct(num, epsilon) {
 		epsilon = _helper0(epsilon, 13);
-		if (Math.round(num, epsilon) === Math.round(num, epsilon - 1)) {
-			return Math.round(num, epsilon);
+		if (Math_round(num, epsilon) === Math_round(num, epsilon - 1)) {
+			return Math_round(num, epsilon);
 		}
 		return num;
-	};
+	}
 
 	/**
 	 *	
@@ -1729,13 +1700,13 @@
 	 * @function snap
 	 * @memberof Math
 	 **/
-	Math.snap = function(type, num, gap, offset, digits, base) {
+	function Math_snap(type, num, gap, offset, digits, base) {
 		offset = _helper0(offset, 0);
 		if (gap === 0) return num;
 		num -= offset;
-		num = gap * Math.adjust(type, num / gap, digits, base);
+		num = gap * Math_adjust(type, num / gap, digits, base);
 		return offset + num;
-	};
+	}
 
 	/**
 	 *	
@@ -1756,13 +1727,13 @@
 	 * @function snap2
 	 * @memberof Math
 	 **/
-	Math.snap2 = function(type, num, gap, offset, digits, base) {
+	function Math_snap2(type, num, gap, offset, digits, base) {
 		offset = _helper0(offset, 0);
 		if (gap === 0) return num;
 		num -= offset;
-		num = gap * Math.adjust2(type, num / gap, digits, base);
+		num = gap * Math_adjust2(type, num / gap, digits, base);
 		return offset + num;
-	};
+	}
 
 	/**
 	 *	
@@ -1778,11 +1749,11 @@
 	 * @function shear
 	 * @memberof Math
 	 **/
-	Math.shear = function(num) {
+	function Math_shear(num) {
 		num = Math.abs(num);
 		return num - oldFloor(num);
 		//Can also n % 1
-	};
+	}
 
 	/**
 	 *	
@@ -1798,7 +1769,7 @@
 	 * @function precision
 	 * @memberof Math
 	 **/
-	Math.precision = function(num) {
+	function Math_precision(num) {
 		if (!Number.isFinite(num)) {
 			return 0;
 		}
@@ -1809,7 +1780,7 @@
 			p++;
 		}
 		return p;
-	};
+	}
 
 	/**
 	 *	
@@ -1825,9 +1796,9 @@
 	 * @function order
 	 * @memberof Math
 	 **/
-	Math.order = function(num) {
-		return oldFloor(Math.ln(Math.abs(num)) / Math.LN10);
-	};
+	function Math_order(num) {
+		return oldFloor(Math_ln(Math.abs(num)) / Math.LN10);
+	}
 
 	/**
 	 *	
@@ -1843,12 +1814,12 @@
 	 * @function ramp
 	 * @memberof Math
 	 **/
-	Math.ramp = function(num) {
+	function Math_ramp(num) {
 		if (num > 0) {
 			return num;
 		}
 		return 0.0; //Handle -0
-	};
+	}
 
 	/**
 	 *	
@@ -1865,23 +1836,23 @@
 	 * @function heaviside
 	 * @memberof Math
 	 **/
-	Math.heaviside = function(type, num) {
+	function Math_heaviside(type, num) {
 		if (Number.isNaN(num)) {
 			return NaN;
 		}
-		if (num > 0.0) {
-			return 1.0;
+		if (num > 0) {
+			return 1;
 		}
-		if (num === 0.0) {
+		if (num === 0) {
 			switch (type) {
 				case 1:
 					{
-						return 0.0;
+						return 0;
 					}
 					break;
 				case 2:
 					{
-						return 1.0;
+						return 1;
 					}
 					break;
 				default:
@@ -1891,8 +1862,8 @@
 					break;
 			}
 		}
-		return 0.0;
-	};
+		return 0;
+	}
 
 	/**
 	 *	
@@ -1908,14 +1879,14 @@
 	 * @function haar
 	 * @memberof Math
 	 **/
-	Math.haar = function(num) {
+	function Math_haar(num) {
 		if (0.5 > num && num >= 0) {
 			return 1;
 		} else if (1 >= num && num > 0.5) {
 			return -1;
 		}
 		return 0;
-	};
+	}
 
 	/**
 	 *	
@@ -1931,7 +1902,7 @@
 	 * @function rect
 	 * @memberof Math
 	 **/
-	Math.rect = function(num) {
+	function Math_rect(num) {
 		num = Math.abs(num);
 		if (num > 0.5) {
 			return 0;
@@ -1941,7 +1912,7 @@
 			return 1;
 		}
 		return NaN;
-	};
+	}
 
 	/**
 	 *	
@@ -1957,13 +1928,13 @@
 	 * @function tri
 	 * @memberof Math
 	 **/
-	Math.tri = function(num) {
+	function Math_tri(num) {
 		num = Math.abs(num);
 		if (num >= 1) {
 			return 0;
 		}
 		return 1 - num;
-	};
+	}
 
 	/**
 	 *	
@@ -1980,7 +1951,7 @@
 	 * @function fold
 	 * @memberof Math
 	 **/
-	Math.fold = function(type, num) {
+	function Math_fold(type, num) {
 		if (type) {
 			if (num > 0) {
 				return 2 * num - 1;
@@ -1991,7 +1962,7 @@
 			return 2 * num;
 		}
 		return 2 * Math.abs(num) - 1;
-	};
+	}
 
 	/**
 	 *	
@@ -2007,9 +1978,28 @@
 	 * @function one
 	 * @memberof Math
 	 **/
-	Math.one = function(num) {
+	function Math_one(num) {
 		return (oldRound(num) % 2) * 2 - 1;
-	};
+	}
+
+	/**
+	 *	
+	 * Flip sign of num
+	 *
+	 * @param {number} num
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.flip(2);
+	 * //-2
+	 *
+	 * @function flip
+	 * @memberof Math
+	 **/
+	function Math_flip(num) {
+		return num - num * 2;
+		////x = ~x + 1
+	}
 
 	/**
 	 *	
@@ -2030,7 +2020,7 @@
 	 * @function range
 	 * @memberof Math
 	 **/
-	Math.range = function(num, min, max, equalMin, equalMax, accuracy) {
+	function Math_range(num, min, max, equalMin, equalMax, accuracy) {
 		accuracy = _helper0(accuracy, 1);
 		if (equalMin && equalMax) {
 			return num >= (min * accuracy) && num <= (max * accuracy);
@@ -2041,7 +2031,7 @@
 		} else {
 			return num > (min * accuracy) && num < (max * accuracy);
 		}
-	};
+	}
 
 	/**
 	 *	
@@ -2061,7 +2051,7 @@
 	 * @function compare
 	 * @memberof Math
 	 **/
-	Math.compare = function(num1, num2, equal, reverse, accuracy) {
+	function Math_compare(num1, num2, equal, reverse, accuracy) {
 		accuracy = _helper0(accuracy, 1);
 		if (reverse) {
 			if (equal) {
@@ -2076,7 +2066,7 @@
 				return num1 > (num2 * accuracy);
 			}
 		}
-	};
+	}
 
 	/**
 	 *	
@@ -2094,14 +2084,14 @@
 	 * @function clamp
 	 * @memberof Math
 	 **/
-	Math.clamp = function(num, min, max) {
+	function Math_clamp(num, min, max) {
 		if (num < min) {
 			num = min;
 		} else if (num > max) {
 			num = max;
 		}
 		return num;
-	};
+	}
 
 	/**
 	 *	
@@ -2119,14 +2109,14 @@
 	 * @function wrap
 	 * @memberof Math
 	 **/
-	Math.wrap = function(num, min, max) {
+	function Math_wrap(num, min, max) {
 		let range = max - min;
 		let result = (num - min) % range;
 		if (result < 0) {
 			result += range;
 		}
 		return result + min;
-	};
+	}
 
 	/**
 	 *	
@@ -2144,7 +2134,7 @@
 	 * @function bounce
 	 * @memberof Math
 	 **/
-	Math.bounce = function(num, min, max) {
+	function Math_bounce(num, min, max) {
 		num -= min;
 		max -= min;
 		let max2 = max * 2,
@@ -2156,7 +2146,7 @@
 			result = max2 - result;
 		}
 		return result + min;
-	};
+	}
 
 	/**
 	 *	
@@ -2176,10 +2166,10 @@
 	 * @function map
 	 * @memberof Math
 	 **/
-	Math.map = function(num, min1, max1, min2, max2) {
+	function Math_map(num, min1, max1, min2, max2) {
 		let percent = (num - min1) / (max1 - min1);
 		return min2 + percent * (max2 - min2);
-	};
+	}
 
 	/**
 	 *	
@@ -2197,9 +2187,9 @@
 	 * @function norm
 	 * @memberof Math
 	 **/
-	Math.norm = function(num, min, max) {
+	function Math_norm(num, min, max) {
 		return (num - min) / (max - min);
-	};
+	}
 
 	/**
 	 *	
@@ -2217,15 +2207,15 @@
 	 * @function lerp
 	 * @memberof Math
 	 **/
-	Math.lerp = function(num, min, max) {
+	function Math_lerp(num, min, max) {
 		return (1 - num) * min + num * max;
-	};
+	}
 
 	/**
 	 *	
 	 * Calculate [greatest common divisor]{@link https://en.wikipedia.org/wiki/Greatest_common_divisor}
 	 *
-	 * No limit of parameter, but all of them must be number
+	 * No limit of parameter, but all of them must be number, except final one maybe array if you want to pass return data to that array
 	 *
 	 * @return {number[]}
 	 *
@@ -2236,16 +2226,18 @@
 	 * @function gcd
 	 * @memberof Math
 	 **/
-	Math.gcd = function() {
-		if (0 === arguments.length) {
+	function Math_gcd() {
+		_helper1();
+		let returnData = _helper0(arguments[arguments.length - 1], []);
+		if (0 === arguments.length - 1) {
 			return NaN;
 		}
-		_gcd_1_[0] = arguments[0];
-		for (let r = 1; r < arguments.length; r++) {
-			_helper5(_gcd_1_[0], arguments[r]);
+		_memory_1_[0] = arguments[0];
+		for (let r = 1; r < arguments.length - 1; r++) {
+			_helper6(_memory_1_[0], arguments[r]);
 		}
-		return [].concat(_gcd_1_);
-	};
+		return returnData.concat(_memory_1_);
+	}
 
 	/**
 	 *	
@@ -2262,24 +2254,26 @@
 	 * @function lcm
 	 * @memberof Math
 	 **/
-	Math.lcm = function() {
+	function Math_lcm() {
+		_helper1();
 		if (0 === arguments.length) {
 			return NaN;
 		}
 		let t = arguments[0];
-		_gcd_1_[0] = t;
+		_memory_1_[0] = t;
 		for (let r = 1; r < arguments.length; r++) {
-			_helper5(t, arguments[r]);
-			t = (t * arguments[r]) / _gcd_1_[0];
+			_helper6(t, arguments[r]);
+			t = (t * arguments[r]) / _memory_1_[0];
 		}
 		return t;
-	};
+	}
 
 	/**
 	 *	
 	 * Calculate prime factor of a number
 	 *
 	 * @param {number} num
+	 * @param {array=} returnData - Array to put data
 	 * @return {number[]}
 	 *
 	 * @example
@@ -2289,8 +2283,8 @@
 	 * @function factor
 	 * @memberof Math
 	 **/
-	Math.factor = function(num) {
-		let factors = [], i;
+	function Math_factor(num, returnData) {
+		let factors = _helper0(returnData, []), i;
 		for (i = 2; i <= num; i++) {
 			while ((num % i) === 0) {
 				factors.push(i);
@@ -2298,13 +2292,14 @@
 			}
 		}
 		return factors;
-	};
+	}
 
 	/**
 	 *	
 	 * Calculate divisor of a number
 	 *
 	 * @param {number} num
+	 * @param {array=} returnData - Array to put data
 	 * @return {number[]} Unsorted array
 	 *
 	 * @example
@@ -2314,11 +2309,13 @@
 	 * @function divisor
 	 * @memberof Math
 	 **/
-	Math.divisor = function(num) {
-		let isEven = Number.isEven(num);
+	function Math_divisor(num, returnData) {
+		let isEven = Number_isEven(num);
 		let inc = isEven ? 1 : 2,
-			factors = [1, num],
+			factors = _helper0(returnData, []),
 			compliment;
+		factors[0] = 1;
+		factors[1] = num;
 		for (let curFactor = isEven ? 2 : 3; oldPow(curFactor, 2) <= num; curFactor += inc) {
 			if (num % curFactor !== 0) continue;
 			factors.push(curFactor);
@@ -2326,10 +2323,10 @@
 			if (compliment !== curFactor) factors.push(compliment);
 		}
 		return factors;
-	};
+	}
 
 	//if (r[0] !== 1) throw new Error('No modular inverse exists');
-  //return r[1] % m;
+	//return r[1] % m;
 
 	//Random
 	/**
@@ -2352,20 +2349,21 @@
 	 * @function random
 	 * @memberof Math
 	 **/
-	Math.random = function(min, max, round, seed, larger, equal) {
+	function Math_random(min, max, round, seed, larger, equal) {
 		let returnValue;
 		if (seed) {
+			_helper1();
 			if (typeof seed === "number") {
-				_random_1_[0] = seed;
+				_memory_1_[0] = seed;
 			} else {
-				_random_1_[0] = seed[0] | 0;
+				_memory_1_[0] = seed[0] || 0;
 			}
-			_random_1_[1] = seed[1] | 0;
-			_random_1_[2] = seed[2] | 0;
-			_random_1_[3] = seed[3] | 0;
-			_random_1_[4] = seed[4] | 0;
-			_helper6();
-			returnValue = _helper7(_random_1_[5], _random_1_[6], _random_1_[4]);
+			_memory_1_[1] = seed[1] || 0;
+			_memory_1_[2] = seed[2] || 0;
+			_memory_1_[3] = seed[3] || 0;
+			_memory_1_[4] = seed[4] || 0;
+			_helper7();
+			returnValue = _helper8(_memory_1_[5], _memory_1_[6], _memory_1_[4]);
 		} else {
 			returnValue = oldRandom();
 		}
@@ -2394,7 +2392,7 @@
 			returnValue = returnValue * (max - min) + min;
 		}
 		return returnValue;
-	};
+	}
 
 	/**
 	 *
@@ -2415,13 +2413,13 @@
 	 * @function randomTri
 	 * @memberof Math
 	 **/
-	Math.randomTri = function(min, max, offset, seed) {
+	function Math_randomTri(min, max, offset, seed) {
 		offset = _helper0(offset, 0);
-		let u = Math.random(0, 1, false, seed),
+		let u = Math_random(0, 1, false, seed),
 			d = max - min;
 		if (u <= (offset - min) / d) return min + Math.sqrt(u * d * (offset - min));
 		return max - Math.sqrt((1 - u) * d * (max - offset));
-	};
+	}
 
 	/**
 	 *
@@ -2442,12 +2440,12 @@
 	 * @function randomCirc
 	 * @memberof Math
 	 **/
-	Math.randomCirc = function(min1, max1, min2, max2, seed) {
-		let temp = Math.random(min1, max1, false, seed),
+	function Math_randomCirc(min1, max1, min2, max2, seed) {
+		let temp = Math_random(min1, max1, false, seed),
 			range = max2 - min2;
 		range *= range;
 		return Math.sqrt(range - range * temp * temp) + min2;
-	};
+	}
 
 	/**
 	 *
@@ -2463,7 +2461,7 @@
 	 * @example
 	 * let arraySeed = [];
 	 * for (let i = 0; i < 512; i ++) {
-	 * 	arraySeed.push(11);
+	 *	arraySeed.push(11);
 	 * }
 	 * Math.noise(arraySeed, 100, 100);
 	 * //-0.4099981169018467
@@ -2471,7 +2469,7 @@
 	 * @function noise
 	 * @memberof Math
 	 **/
-	Math.noise = function(seed, x, y, z) {
+	function Math_noise(seed, x, y, z) {
 		let tempI, tempI2, tempI3, tempJ, tempJ2, tempJ3, tempK, tempK2, tempK3, tempX, tempY, tempZ, tempX2, tempY2, tempZ2, tempG, tempM, sum = 0;
 		if (typeof z === "number") {
 			tempM = (x + y + z) * _helper9_1_;
@@ -2536,7 +2534,7 @@
 			tempG = seed[tempI + seed[tempJ + seed[tempK]]];
 			if (tempM >= 0) {
 				tempM *= tempM;
-				sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX, tempY);
+				sum += tempM * tempM * Math_dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX, tempY);
 			}
 			tempX2 = tempX - tempI2 + _noise_6_;
 			tempY2 = tempY - tempJ2 + _noise_6_;
@@ -2545,7 +2543,7 @@
 			tempG = seed[tempI + tempI2 + seed[tempJ + tempJ2 + seed[tempK + tempK2]]];
 			if (tempM >= 0) {
 				tempM *= tempM;
-				sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
+				sum += tempM * tempM * Math_dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
 			}
 			tempX2 = tempX - tempI3 + 2.0 * _noise_6_;
 			tempY2 = tempY - tempJ3 + 2.0 * _noise_6_;
@@ -2554,7 +2552,7 @@
 			tempG = seed[tempI + tempI3 + seed[tempJ + tempJ3 + seed[tempK + tempK3]]];
 			if (tempM >= 0) {
 				tempM *= tempM;
-				sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
+				sum += tempM * tempM * Math_dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
 			}
 			tempX2 = tempX - 1.0 + 3.0 * _noise_6_;
 			tempY2 = tempY - 1.0 + 3.0 * _noise_6_;
@@ -2563,7 +2561,7 @@
 			tempG = seed[tempI + 1 + seed[tempJ + 1 + seed[tempK + 1]]];
 			if (tempM >= 0) {
 				tempM *= tempM;
-				sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
+				sum += tempM * tempM * Math_dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
 			}
 			return 32.0 * sum;
 		}
@@ -2586,7 +2584,7 @@
 		tempG = seed[tempI + seed[tempJ]];
 		if (tempM >= 0) {
 			tempM *= tempM;
-			sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX, tempY);
+			sum += tempM * tempM * Math_dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX, tempY);
 		}
 		tempX2 = tempX - tempI2 + _noise_5_;
 		tempY2 = tempY - tempJ2 + _noise_5_;
@@ -2594,7 +2592,7 @@
 		tempG = seed[tempI + tempI2 + seed[tempJ + tempJ2]];
 		if (tempM >= 0) {
 			tempM *= tempM;
-			sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
+			sum += tempM * tempM * Math_dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
 		}
 		tempX2 = tempX - 1.0 + 2.0 * _noise_5_;
 		tempY2 = tempY - 1.0 + 2.0 * _noise_5_;
@@ -2602,12 +2600,19 @@
 		tempG = seed[tempI + 1 + seed[tempJ + 1]];
 		if (tempM >= 0) {
 			tempM *= tempM;
-			sum += tempM * tempM * Math.dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
+			sum += tempM * tempM * Math_dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
 		}
 		return 70.0 * sum;
-	};
+	}
 
-	//Angle
+	/**
+	 *
+	 * All of functions that related to Geometry
+	 *
+	 * @namespace Geometry
+	 *
+	 **/
+
 	/**
 	 *	
 	 * Normalize angle in radians
@@ -2622,13 +2627,13 @@
 	 * @function normRad
 	 * @memberof Geometry
 	 **/
-	Geometry.normRad = function(num) {
-		num = Geometry.fullRad(num);
+	function Geometry_normRad(num) {
+		num = Geometry_fullRad(num);
 		if (num > Math.PI) {
 			num -= Math.TAU;
 		}
 		return num;
-	};
+	}
 
 	/**
 	 *	
@@ -2644,9 +2649,9 @@
 	 * @function toRad
 	 * @memberof Geometry
 	 **/
-	Geometry.toRad = function(num) {
+	function Geometry_toRad(num) {
 		return num * _toRad_1_;
-	};
+	}
 
 	/**
 	 *	
@@ -2662,9 +2667,9 @@
 	 * @function fullRad
 	 * @memberof Geometry
 	 **/
-	Geometry.fullRad = function(num) {
+	function Geometry_fullRad(num) {
 		return (Math.TAU + (num % Math.TAU)) % Math.TAU;
-	};
+	}
 
 	/**
 	 *	
@@ -2680,13 +2685,13 @@
 	 * @function normDeg
 	 * @memberof Geometry
 	 **/
-	Geometry.normDeg = function(num) {
-		num = Geometry.fullDeg(num);
+	function Geometry_normDeg(num) {
+		num = Geometry_fullDeg(num);
 		if (num > 180) {
 			num -= 360;
 		}
 		return num;
-	};
+	}
 
 	/**
 	 *	
@@ -2702,9 +2707,9 @@
 	 * @function toDeg
 	 * @memberof Geometry
 	 **/
-	Geometry.toDeg = function(num) {
+	function Geometry_toDeg(num) {
 		return num * _toDeg_1_;
-	};
+	}
 
 	/**
 	 *	
@@ -2720,9 +2725,9 @@
 	 * @function fullDeg
 	 * @memberof Geometry
 	 **/
-	Geometry.fullDeg = function(num) {
+	function Geometry_fullDeg(num) {
 		return (360 + (num % 360)) % 360;
-	};
+	}
 
 	/**
 	 *	
@@ -2741,9 +2746,9 @@
 	 * @function getAngle
 	 * @memberof Geometry
 	 **/
-	Geometry.getAngle = function(a_x, a_y, b_x, b_y) {
+	function Geometry_getAngle(a_x, a_y, b_x, b_y) {
 		return Math.atan2(b_y - a_y, b_x - a_x);
-	};
+	}
 
 	/**
 	 *	
@@ -2760,9 +2765,9 @@
 	 * @function relfAngle
 	 * @memberof Geometry
 	 **/
-	Geometry.relfAngle = function(num, mirror) {
+	function Geometry_relfAngle(num, mirror) {
 		return 2 * mirror - num;
-	};
+	}
 
 	/**
 	 *	
@@ -2779,9 +2784,9 @@
 	 * @function diffAngle
 	 * @memberof Geometry
 	 **/
-	Geometry.diffAngle = function(num1, num2) {
+	function Geometry_diffAngle(num1, num2) {
 		return Math.PI - (num1 - num2 + _diffAngle_1_) % Math.TAU;
-	};
+	}
 
 	/**
 	 *	
@@ -2799,16 +2804,16 @@
 	 * @function isBetwAngle
 	 * @memberof Geometry
 	 **/
-	Geometry.isBetwAngle = function(num, min, max) {
-		num = Geometry.fullRad(num);
-		min = Geometry.fullRad(min);
-		max = Geometry.fullRad(max);
+	function Geometry_isBetwAngle(num, min, max) {
+		num = Geometry_fullRad(num);
+		min = Geometry_fullRad(min);
+		max = Geometry_fullRad(max);
 		if (min < max) {
 			return min <= num && num <= max;
 		} else {
 			return min <= num || num <= max;
 		}
-	};
+	}
 
 	/**
 	 *	
@@ -2829,9 +2834,9 @@
 	 * @function colliAnglePnt
 	 * @memberof Geometry
 	 **/
-	Geometry.colliAnglePnt = function(o_1, o_2, o_x, o_y, a_x, a_y) {
-		return Geometry.isBetwAngle(Geometry.getAngle(o_x, o_y, a_x, a_y), o_1, o_2);
-	};
+	function Geometry_colliAnglePnt(o_1, o_2, o_x, o_y, a_x, a_y) {
+		return Geometry_isBetwAngle(Geometry_getAngle(o_x, o_y, a_x, a_y), o_1, o_2);
+	}
 
 	//Point
 	/**
@@ -2852,7 +2857,7 @@
 	 * @function distPnt
 	 * @memberof Geometry
 	 **/
-	Geometry.distPnt = function(a_x, a_y, b_x, b_y, square) {
+	function Geometry_distPnt(a_x, a_y, b_x, b_y, square) {
 		let result, temp1 = a_x - b_x,
 			temp2 = a_y - b_y;
 		result = temp1 * temp1 + temp2 * temp2;
@@ -2860,7 +2865,7 @@
 			result = Math.sqrt(result);
 		}
 		return result;
-	};
+	}
 
 	/**
 	 *	
@@ -2880,13 +2885,13 @@
 	 * @function polarDistPnt
 	 * @memberof Geometry
 	 **/
-	Geometry.polarDistPnt = function(r_1, a_1, r_2, a_2, square) {
+	function Geometry_polarDistPnt(r_1, a_1, r_2, a_2, square) {
 		let temp = r_1 * r_1 + r_2 * r_2 - 2 * r_1 * r_2 * Math.cos(a_2 - a_1);
 		if (square) {
 			temp = Math.sqrt(temp);
 		}
 		return temp;
-	};
+	}
 
 	/**
 	 *	
@@ -2905,9 +2910,9 @@
 	 * @function manDistPnt
 	 * @memberof Geometry
 	 **/
-	Geometry.manDistPnt = function(a_x, a_y, b_x, b_y) {
+	function Geometry_manDistPnt(a_x, a_y, b_x, b_y) {
 		return Math.abs(a_x - b_x) + Math.abs(a_y - b_y);
-	};
+	}
 
 	/**
 	 *	
@@ -2926,9 +2931,9 @@
 	 * @function chevDistPnt
 	 * @memberof Geometry
 	 **/
-	Geometry.chevDistPnt = function(a_x, a_y, b_x, b_y) {
+	function Geometry_chevDistPnt(a_x, a_y, b_x, b_y) {
 		return Math.max(Math.abs(a_x - b_x), Math.abs(a_y - b_y));
-	};
+	}
 
 	/**
 	 *	
@@ -2942,6 +2947,7 @@
 	 * @param {number} b_y - y position of current point
 	 * @param {number} x_x - x angle in radians to rotate
 	 * @param {number} x_y - y angle in radians to rotate
+	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number}}
 	 *
 	 * @example
@@ -2951,16 +2957,16 @@
 	 * @function rotPnt
 	 * @memberof Geometry
 	 **/
-	Geometry.rotPnt = function(a_x, a_y, b_x, b_y, x_x, x_y) {
+	function Geometry_rotPnt(a_x, a_y, b_x, b_y, x_x, x_y, returnData) {
 		let s = Math.sin(x_y),
 			c = Math.cos(x_x);
 		b_x -= a_x;
 		b_y -= a_y;
-		return {
-			x: b_x * c - b_y * s + a_x,
-			y: b_x * s + b_y * c + a_y,
-		};
-	};
+		returnData = _helper0(returnData, {});
+		returnData.x = b_x * c - b_y * s + a_x;
+		returnData.y = b_x * s + b_y * c + a_y;
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -2981,13 +2987,13 @@
 	 * @function anglePnt
 	 * @memberof Geometry
 	 **/
-	Geometry.anglePnt = function(a_x, a_y, b_x, b_y, o_x, o_y) {
+	function Geometry_anglePnt(a_x, a_y, b_x, b_y, o_x, o_y) {
 		let temp1 = a_x - o_x,
 			temp2 = a_y - o_y,
 			temp3 = b_x - o_x,
 			temp4 = b_y - o_y;
-		return Math.acos(Math.dotVec(temp1, temp2, temp3, temp4) / Math.sqrt((temp1 * temp1 + temp2 * temp2) * (temp3 * temp3 + temp4 * temp4)));
-	};
+		return Math.acos(Math_dotVec(temp1, temp2, temp3, temp4) / Math.sqrt((temp1 * temp1 + temp2 * temp2) * (temp3 * temp3 + temp4 * temp4)));
+	}
 
 	/**
 	 *	
@@ -2997,8 +3003,9 @@
 	 * @param {number} a_y - y position of first point
 	 * @param {number} b_x - x position of second point
 	 * @param {number} b_y - y position of second point
+	 * @param {object=} returnData - Object to put data
 	 * @param {number} r - circle radius
-	 * @return {Object} Return two center points (both point will be NaN if there is no possible center)
+	 * @return {{x1: number, y1: number, x2: number, y2: number}} Return two center points (both point will be NaN if there is no possible center)
 	 *
 	 * @example
 	 * Geometry.cntrPnt(1, 0, -1, 0, 2);
@@ -3007,21 +3014,22 @@
 	 * @function cntrPnt
 	 * @memberof Geometry
 	 **/
-	Geometry.cntrPnt = function(a_x, a_y, b_x, b_y, r) {
-		let p, q, c_x, c_y, dataOne, dataTwo;
-		q = Geometry.distPnt(b_x, b_y, a_x, a_y, true);
+	function Geometry_cntrPnt(a_x, a_y, b_x, b_y, r, returnData) {
+		let p, q, c_x, c_y, dataOne, dataTwo, pq;
+		q = Geometry_distPnt(b_x, b_y, a_x, a_y, true);
 		c_x = (a_x + b_x) / 2;
 		c_y = (a_y + b_y) / 2;
 		p = Math.sqrt(r * r - oldPow(q / 2, 2));
-		dataOne = p * (a_y - b_y) / q;
-		dataTwo = p * (b_x - a_x) / q;
-		return {
-			x1: c_x + dataOne,
-			y1: c_y + dataTwo,
-			x2: c_x - dataOne,
-			y2: c_y - dataTwo,
-		};
-	};
+		pq = p / q;
+		dataOne = (a_y - b_y) * pq;
+		dataTwo = (b_x - a_x) * pq;
+		returnData = _helper0(returnData, {});
+		returnData.x1 = c_x + dataOne;
+		returnData.y1 = c_y + dataTwo;
+		returnData.x2 = c_x - dataOne;
+		returnData.y2 = c_y - dataTwo;
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -3041,12 +3049,12 @@
 	 * @function cmpPnt
 	 * @memberof Geometry
 	 **/
-	Geometry.cmpPnt = function(a_x, a_y, b_x, b_y, accuracy) {
+	function Geometry_cmpPnt(a_x, a_y, b_x, b_y, accuracy) {
 		accuracy = _helper0(accuracy, 1e-10);
 		if (Math.abs(a_x - b_x) > accuracy) return a_x > b_x ? 1 : -1;
 		if (Math.abs(a_y - b_y) > accuracy) return a_y > b_y ? 1 : -1;
 		return 0;
-	};
+	}
 
 	//Line
 	/**
@@ -3066,9 +3074,9 @@
 	 * @function slopeLine
 	 * @memberof Geometry
 	 **/
-	Geometry.slopeLine = function(a_x, a_y, b_x, b_y) {
+	function Geometry_slopeLine(a_x, a_y, b_x, b_y) {
 		return (b_y - a_y) / (b_x - a_x);
-	};
+	}
 
 	/**
 	 *	
@@ -3078,6 +3086,7 @@
 	 * @param {number} a_y - y position of first point of the segment
 	 * @param {number} b_x - x position of second point of the segment
 	 * @param {number} b_y - y position of second point of the segment
+	 * @param {object=} returnData - Object to put data
 	 * @return {{a: number, b: number, c: number}}
 	 *
 	 * @example
@@ -3087,20 +3096,20 @@
 	 * @function stdLine
 	 * @memberof Geometry
 	 **/
-	Geometry.stdLine = function(a_x, a_y, b_x, b_y) {
-		let result = {};
+	function Geometry_stdLine(a_x, a_y, b_x, b_y, returnData) {
+		let result = _helper0(returnData, {});
 		if (b_x - a_x === 0) {
 			result.a = -1;
 			result.b = 0;
 			result.c = a_x;
 		} else {
-			let temp = Geometry.slopeLine(a_x, a_y, b_x, b_y);
+			let temp = Geometry_slopeLine(a_x, a_y, b_x, b_y);
 			result.a = temp;
 			result.b = -1;
 			result.c = -b_x * temp + b_y;
 		}
 		return result;
-	};
+	}
 
 	/**
 	 *	
@@ -3123,19 +3132,19 @@
 	 * @function distLinePnt
 	 * @memberof Geometry
 	 **/
-	Geometry.distLinePnt = function(type, a_x, a_y, b_x, b_y, x_x, x_y, square) {
+	function Geometry_distLinePnt(type, a_x, a_y, b_x, b_y, x_x, x_y, square) {
 		if (type) {
-			return Math.abs((b_y - a_y) * x_x - (b_x - a_x) * x_y + b_x * a_y - b_y * a_x) / Geometry.distPnt(a_x, a_y, b_x, b_y, true);
+			return Math.abs((b_y - a_y) * x_x - (b_x - a_x) * x_y + b_x * a_y - b_y * a_x) / Geometry_distPnt(a_x, a_y, b_x, b_y, true);
 		} else {
-			let l2 = Geometry.distPnt(a_x, a_y, b_x, b_y, false);
+			let l2 = Geometry_distPnt(a_x, a_y, b_x, b_y, false);
 			if (l2 === 0) {
-				return Geometry.distPnt(x_x, x_y, a_x, a_y, square); //maybe false?
+				return Geometry_distPnt(x_x, x_y, a_x, a_y, square); //maybe false?
 			}
-			let t = Math.dotVec(x_x - a_x, x_y - a_y, b_x - a_x, b_y - a_y) / l2;
+			let t = Math_dotVec(x_x - a_x, x_y - a_y, b_x - a_x, b_y - a_y) / l2;
 			t = Math.max(0, Math.min(1, t));
-			return Geometry.distPnt(x_x, x_y, a_x + t * (b_x - a_x), a_y + t * (b_y - a_y), square);
+			return Geometry_distPnt(x_x, x_y, a_x + t * (b_x - a_x), a_y + t * (b_y - a_y), square);
 		}
-	};
+	}
 
 	/**
 	 *	
@@ -3160,18 +3169,18 @@
 	 * @function distLine
 	 * @memberof Geometry
 	 **/
-	Geometry.distLine = function(type, a_x, a_y, b_x, b_y, c_x, c_y, d_x, d_y, square) {
-		let dist1 = Geometry.distLinePnt(type, c_x, c_y, d_x, d_y, a_x, a_y, square),
+	function Geometry_distLine(type, a_x, a_y, b_x, b_y, c_x, c_y, d_x, d_y, square) {
+		let dist1 = Geometry_distLinePnt(type, c_x, c_y, d_x, d_y, a_x, a_y, square),
 			dist2;
 		if (dist1 > 0) {
-			dist2 = Geometry.distLinePnt(type, c_x, c_y, d_x, d_y, b_x, b_y, square);
+			dist2 = Geometry_distLinePnt(type, c_x, c_y, d_x, d_y, b_x, b_y, square);
 			if (dist1 < dist2) {
 				return dist1;
 			}
 			return dist2;
 		}
 		return 0;
-	};
+	}
 
 	/**
 	 *	
@@ -3185,6 +3194,7 @@
 	 * @param {number} c_y - y position of first point of the second segment
 	 * @param {number} d_x - x position of second point of the second segment
 	 * @param {number} d_y - y position of second point of the second segment
+	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number, onLine1: boolean, onLine2: boolean}} returnData.onLine1 will true if intersection point is on line a_x a_y b_x b_y and otherwise
 	 *
 	 * @example
@@ -3194,13 +3204,13 @@
 	 * @function intrLine
 	 * @memberof Geometry
 	 **/
-	Geometry.intrLine = function(a_x, a_y, b_x, b_y, c_x, c_y, d_x, d_y) {
-		let denominator, a, b, s1_x, s1_y, s2_x, s2_y, numerator1, numerator2, result = {
-			x: null,
-			y: null,
-			onLine1: false,
-			onLine2: false,
-		};
+	function Geometry_intrLine(a_x, a_y, b_x, b_y, c_x, c_y, d_x, d_y, returnData) {
+		let denominator, a, b, s1_x, s1_y, s2_x, s2_y, numerator1, numerator2, result = _helper0(returnData, {});
+
+		result.x = null;
+		result.y = null;
+		result.onLine1 = false;
+		result.onLine2 = false;
 
 		s1_x = b_x - a_x;
 		s1_y = b_y - a_y;
@@ -3213,10 +3223,10 @@
 		if (denominator === 0) {
 			//Check if parallel and on same line
 			if (
-				Number.isNaN(Geometry.slopeLine(s2_x * s1_y, s1_x * a, s1_x * s2_y, s1_y * b)) &&
-				Number.isNaN(Geometry.slopeLine(s1_x * s2_y, s2_y * b, s2_x * s1_y, s2_x * a))
+				Number.isNaN(Geometry_slopeLine(s2_x * s1_y, s1_x * a, s1_x * s2_y, s1_y * b)) &&
+				Number.isNaN(Geometry_slopeLine(s1_x * s2_y, s2_y * b, s2_x * s1_y, s2_x * a))
 			) {
-				result.onLine1 = (Geometry.colliLinePnt(true, a_x, a_y, b_x, b_y, c_x, c_y) || Geometry.colliLinePnt(true, a_x, a_y, b_x, b_y, d_x, d_y));
+				result.onLine1 = (Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, c_x, c_y) || Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, d_x, d_y));
 				result.onLine2 = result.onLine1;
 			}
 			return result;
@@ -3234,7 +3244,7 @@
 			result.onLine2 = true;
 		}
 		return result;
-	};
+	}
 
 	/**
 	 *	
@@ -3247,6 +3257,7 @@
 	 * @param {number} o_x - x position of circle center
 	 * @param {number} o_y - y position of circle center
 	 * @param {number} radius - radius of circle center
+	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number, x1: number, y1: number, x2: number, y2: number, onLine: boolean, onLine1: boolean, onLine2: boolean}}
 	 *
 	 * returnData.onLine will true if perpendicular intersection point is on line a_x a_y b_x b_y.
@@ -3260,34 +3271,36 @@
 	 * @function intrLineCirc
 	 * @memberof Geometry
 	 **/
-	Geometry.intrLineCirc = function(a_x, a_y, b_x, b_y, o_x, o_y, radius) {
+	function Geometry_intrLineCirc(a_x, a_y, b_x, b_y, o_x, o_y, radius, returnData) {
 		//xy is perpendicular intersection
-		let dist1, dist2, d_x, d_y, t, dt, returnData = {
-			x: null,
-			y: null,
-			x1: null,
-			y1: null,
-			x2: null,
-			y2: null,
-			onLine: false,
-			onLine1: false,
-			onLine2: false,
-		};
-		dist1 = Geometry.distPnt(a_x, a_y, b_x, b_y, true);
+		let dist1, dist2, d_x, d_y, t, dt;
+
+		returnData = _helper0(returnData, {});
+		returnData.x = null;
+		returnData.y = null;
+		returnData.x1 = null;
+		returnData.y1 = null;
+		returnData.x2 = null;
+		returnData.y2 = null;
+		returnData.onLine = false;
+		returnData.onLine1 = false;
+		returnData.onLine2 = false;
+		
+		dist1 = Geometry_distPnt(a_x, a_y, b_x, b_y, true);
 		d_x = (b_x - a_x) / dist1;
 		d_y = (b_y - a_y) / dist1;
 		t = d_x * (o_x - a_x) + d_y * (o_y - a_y);
 		returnData.x = t * d_x + a_x;
 		returnData.y = t * d_y + a_y;
-		dist2 = Geometry.distPnt(returnData.x, returnData.y, o_x, o_y, true);
+		dist2 = Geometry_distPnt(returnData.x, returnData.y, o_x, o_y, true);
 		if (dist2 < radius) {
 			dt = Math.sqrt(radius * radius - dist2 * dist2);
 			returnData.x1 = (t - dt) * d_x + a_x;
 			returnData.y1 = (t - dt) * d_y + a_y;
-			returnData.onLine1 = Geometry.colliLinePnt(true, a_x, a_y, b_x, b_y, returnData.x1, returnData.y1);
+			returnData.onLine1 = Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, returnData.x1, returnData.y1);
 			returnData.x2 = (t + dt) * d_x + a_x;
 			returnData.y2 = (t + dt) * d_y + a_y;
-			returnData.onLine2 = Geometry.colliLinePnt(true, a_x, a_y, b_x, b_y, returnData.x2, returnData.y2);
+			returnData.onLine2 = Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, returnData.x2, returnData.y2);
 		} else if (dist2 === radius) {
 			//One intersection
 			returnData.onLine = true;
@@ -3297,7 +3310,7 @@
 			returnData.y = null;
 		}
 		return returnData;
-	};
+	}
 
 	/**
 	 *	
@@ -3322,9 +3335,9 @@
 	 * @function sideLine
 	 * @memberof Geometry
 	 **/
-	Geometry.sideLine = function(a_x, a_y, b_x, b_y, o_x, o_y) {
-		return Math.crossVec(b_x - a_x, b_y - a_y, o_x - a_x, o_y - a_y);
-	};
+	function Geometry_sideLine(a_x, a_y, b_x, b_y, o_x, o_y) {
+		return Math_crossVec(b_x - a_x, b_y - a_y, o_x - a_x, o_y - a_y);
+	}
 
 	/**
 	 *	
@@ -3335,6 +3348,7 @@
 	 * @param {number} b_x - x position of second point of the line segment
 	 * @param {number} b_y - y position of second point of the line segment
 	 * @param {number} scale - the location of the point on the line, 0 to 1, but can be larger or smaller than that range
+	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number}}
 	 *
 	 * @example
@@ -3344,16 +3358,17 @@
 	 * @function onLine
 	 * @memberof Geometry
 	 **/
-	Geometry.onLine = function(a_x, a_y, b_x, b_y, scale) {
+	function Geometry_onLine(a_x, a_y, b_x, b_y, scale, returnData) {
 		let xlen = b_x - a_x,
 			ylen = b_y - a_y;
 		let smallerXLen = xlen * scale,
 			smallerYLen = ylen * scale;
-		return {
-			x: a_x + smallerXLen,
-			y: a_y + smallerYLen,
-		};
-	};
+
+		returnData = _helper0(returnData, {});
+		returnData.x = a_x + smallerXLen;
+		returnData.y = a_y + smallerYLen;
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -3376,15 +3391,15 @@
 	 * @function colliLinePnt
 	 * @memberof Geometry
 	 **/
-	Geometry.colliLinePnt = function(type, a_x, a_y, b_x, b_y, o_x, o_y, accuracy) {
+	function Geometry_colliLinePnt(type, a_x, a_y, b_x, b_y, o_x, o_y, accuracy) {
 		accuracy = _helper0(accuracy, 1e-10);
 		let v_x = a_x - o_x,
 			v_y = a_y - o_y,
 			w_x = o_x - b_x,
 			w_y = o_y - b_y;
-		let temp = Math.crossVec(v_x, v_y, w_x, w_y); //compare equal to 0
-		return (temp >= -accuracy && temp <= accuracy && (Math.dotVec(v_x, v_y, w_x, w_y) >= 0 || !type));
-	};
+		let temp = Math_crossVec(v_x, v_y, w_x, w_y); //compare equal to 0
+		return (temp >= -accuracy && temp <= accuracy && (Math_dotVec(v_x, v_y, w_x, w_y) >= 0 || !type));
+	}
 
 	/**
 	 *	
@@ -3404,7 +3419,7 @@
 	 * @function getXLine
 	 * @memberof Geometry
 	 **/
-	Geometry.getXLine = function(a_x, a_y, b_x, b_y, num) {
+	function Geometry_getXLine(a_x, a_y, b_x, b_y, num) {
 		let a_numberator = b_y - a_y,
 			a_denominator = b_x - a_x;
 		if (a_numberator === 0) {
@@ -3416,7 +3431,7 @@
 			let x3 = b_x + xDist;
 			return x3;
 		}
-	};
+	}
 
 	/**
 	 *	
@@ -3436,7 +3451,7 @@
 	 * @function getYLine
 	 * @memberof Geometry
 	 **/
-	Geometry.getYLine = function(a_x, a_y, b_x, b_y, num) {
+	function Geometry_getYLine(a_x, a_y, b_x, b_y, num) {
 		let a_numberator = b_y - a_y,
 			a_denominator = b_x - a_x;
 		if (a_denominator === 0) {
@@ -3448,7 +3463,7 @@
 			let y3 = b_y + yDist;
 			return y3;
 		}
-	};
+	}
 
 	/**
 	 *	
@@ -3471,7 +3486,7 @@
 	 * @function colliRayRect
 	 * @memberof Geometry
 	 **/
-	Geometry.colliRayRect = function(a_x, a_y, b_x, b_y, x_min, y_min, x_max, y_max) {
+	function Geometry_colliRayRect(a_x, a_y, b_x, b_y, x_min, y_min, x_max, y_max) {
 		b_x = 1 / b_x;
 		b_y = 1 / b_y;
 		let t1 = (x_min - a_x) * b_x,
@@ -3487,7 +3502,7 @@
 		tmax = Math.min(tmax, Math.max(t1, t2));
 
 		return tmax > Math.max(tmin, 0.0);
-	};
+	}
 
 	//Circle
 	/**
@@ -3512,13 +3527,13 @@
 	 * @function colliArcCircPnt
 	 * @memberof Geometry
 	 **/
-	Geometry.colliArcCircPnt = function(a_x, a_y, o_x, o_y, o_r, x_x, x_y, y_x, y_y) {
+	function Geometry_colliArcCircPnt(a_x, a_y, o_x, o_y, o_r, x_x, x_y, y_x, y_y) {
 		let temp_x = a_x - o_x,
 			temp_y = a_y - o_y;
-		return !Math.clockWiseVec(x_x, x_y, temp_x, temp_y) &&
-			Math.clockWiseVec(y_x, y_y, temp_x, temp_y) &&
-			Geometry.colliCirc(0, 0, 0, temp_x, temp_y, o_r);
-	};
+		return !Math_clockWiseVec(x_x, x_y, temp_x, temp_y) &&
+			Math_clockWiseVec(y_x, y_y, temp_x, temp_y) &&
+			Geometry_colliCirc(0, 0, 0, temp_x, temp_y, o_r);
+	}
 
 	/**
 	 *	
@@ -3539,12 +3554,12 @@
 	 * @function colliCircPnt
 	 * @memberof Geometry
 	 **/
-	Geometry.colliCircPnt = function(a_x, a_y, o_x, o_y, o_r, accuracy) {
+	function Geometry_colliCircPnt(a_x, a_y, o_x, o_y, o_r, accuracy) {
 		accuracy = _helper0(accuracy, 1e-10);
-		let dist = Geometry.distPnt(a_x, a_y, o_x, o_y, false),
+		let dist = Geometry_distPnt(a_x, a_y, o_x, o_y, false),
 			rSq = o_r * o_r;
 		return dist < rSq ? 1 : Math.abs(dist - rSq) < accuracy ? 0 : -1;
-	};
+	}
 
 	/**
 	 *	
@@ -3565,12 +3580,12 @@
 	 * @function colliCirc
 	 * @memberof Geometry
 	 **/
-	Geometry.colliCirc = function(a_x, a_y, a_r, b_x, b_y, b_r) {
+	function Geometry_colliCirc(a_x, a_y, a_r, b_x, b_y, b_r) {
 		let temp1 = b_x - a_x,
 			temp2 = b_y - a_y,
 			temp3 = a_r + b_r;
 		return temp1 * temp1 + temp2 * temp2 <= temp3 * temp3;
-	};
+	}
 
 	/**
 	 *	
@@ -3592,9 +3607,9 @@
 	 * @function colliCircRect
 	 * @memberof Geometry
 	 **/
-	Geometry.colliCircRect = function(o_x, o_y, o_r, x_min, y_min, x_max, y_max) {
-		return Geometry.distPnt(Math.clamp(o_x, x_min, x_max), Math.clamp(o_y, y_min, y_max), o_x, o_y, false) <= o_r * o_r;
-	};
+	function Geometry_colliCircRect(o_x, o_y, o_r, x_min, y_min, x_max, y_max) {
+		return Geometry_distPnt(Math_clamp(o_x, x_min, x_max), Math_clamp(o_y, y_min, y_max), o_x, o_y, false) <= o_r * o_r;
+	}
 
 	/**
 	 *	
@@ -3606,6 +3621,7 @@
 	 * @param {number} b_x - x position of center point of second circle
 	 * @param {number} b_y - y position of center point of second circle
 	 * @param {number} b_r - radius of second circle
+	 * @param {array=} returnData - Array to put data
 	 * @return {number[]} [x1, y1, x2, y2], NaN if no intersection
 	 *
 	 * @example
@@ -3615,8 +3631,8 @@
 	 * @function intrCirc
 	 * @memberof Geometry
 	 **/
-	Geometry.intrCirc = function(a_x, a_y, a_r, b_x, b_y, b_r) {
-		let c_dist = Geometry.distPnt(a_x, a_y, b_x, b_y, true);
+	function Geometry_intrCirc(a_x, a_y, a_r, b_x, b_y, b_r, returnData) {
+		let c_dist = Geometry_distPnt(a_x, a_y, b_x, b_y, true);
 		let temp1 = (a_r * a_r - b_r * b_r + c_dist * c_dist) / (2 * c_dist);
 		let temp2 = temp1 / c_dist;
 		if (temp1 > a_r) {
@@ -3627,11 +3643,13 @@
 		let b = Math.sqrt(a_r * a_r - temp1 * temp1) / c_dist;
 		temp1 = (b_y - a_y);
 		temp2 = (b_x - a_x);
-		return [
-			tempP_x - b * temp1, tempP_y + b * temp2,
-			tempP_x + b * temp1, tempP_y - b * temp2
-		];
-	};
+		returnData = _helper0(returnData, []);
+		returnData[0] = tempP_x - b * temp1;
+		returnData[1] = tempP_y + b * temp2;
+		returnData[2] = tempP_x + b * temp1;
+		returnData[3] = tempP_y - b * temp2;
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -3640,6 +3658,7 @@
 	 * @param {number} x - x position of center point
 	 * @param {number} y - y position of center point
 	 * @param {number} radius - radius of the circle
+	 * @param {object=} returnData - Object to put data
 	 * @param {boolean=} [uniform=false] - `true` if generate uniformly
 	 * @return {{x: number, y: number}} returnData.x and returnData.y
 	 *
@@ -3650,7 +3669,7 @@
 	 * @function randomCirc
 	 * @memberof Geometry
 	 **/
-	Geometry.randomCirc = function(x, y, radius, uniform) {
+	function Geometry_randomCirc(x, y, radius, uniform, returnData) {
 		let a = oldRandom(),
 			b = oldRandom(),
 			c;
@@ -3659,11 +3678,10 @@
 			b = a;
 			a = c;
 		}
-		return Math.rec(x, y, b * radius, Math.TAU * a / b);
-	};
+		return Math_rec(x, y, b * radius, Math.TAU * a / b, returnData);
+	}
 
 	//Ellipse
-
 	/**
 	 *	
 	 * Calculate point on an ellipse
@@ -3674,7 +3692,8 @@
 	 * @param {number} radius2 - radius of minor axis
 	 * @param {number} angle - rotation of ellipse in radians
 	 * @param {number} angle2 - angle from center to point in radians
-	 *	@return {{x: number, y: number}} returnData.x and returnData.y
+	 * @param {object=} returnData - Object to put data
+	 * @return {{x: number, y: number}} returnData.x and returnData.y
 	 *
 	 * @example
 	 * Geometry.onElli(0, 0, 2, 1, 0, 0);
@@ -3683,16 +3702,16 @@
 	 * @function onElli
 	 * @memberof Geometry
 	 **/
-	Geometry.onElli = function(x, y, radius1, radius2, angle, angle2) {
+	function Geometry_onElli(x, y, radius1, radius2, angle, angle2, returnData) {
 		let angle_2 = Math.sin(angle),
 			angle2_2 = Math.sin(angle2);
 		angle = Math.cos(angle);
 		angle2 = Math.cos(angle2);
-		return {
-			x: radius1 * angle2 * angle - radius2 * angle2_2 * angle_2 + x,
-			y: radius2 * angle2_2 * angle + radius1 * angle2 * angle_2 + y,
-		};
-	};
+		returnData = _helper0(returnData, {});
+		returnData.x = radius1 * angle2 * angle - radius2 * angle2_2 * angle_2 + x;
+		returnData.y = radius2 * angle2_2 * angle + radius1 * angle2 * angle_2 + y;
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -3705,7 +3724,7 @@
 	 * @param {number} angle - rotation of ellipse in radians
 	 * @param {number} o_x - x position of point
 	 * @param {number} o_y - y position of point
-	 *	@return {boolean}
+	 * @return {boolean}
 	 *
 	 * @example
 	 * Geometry.colliElliPnt(0, 0, 2, 1, 0, 1, 0);
@@ -3714,7 +3733,7 @@
 	 * @function colliElliPnt
 	 * @memberof Geometry
 	 **/
-	Geometry.colliElliPnt = function(x, y, radius1, radius2, angle, o_x, o_y) {
+	function Geometry_colliElliPnt(x, y, radius1, radius2, angle, o_x, o_y) {
 		let cosa = Math.cos(angle),
 			sina = Math.sin(angle);
 		o_x -= x;
@@ -3723,7 +3742,7 @@
 		sina = sina * o_x - cosa * o_y;
 		cosa = temp;
 		return (4 * cosa * cosa) / (radius1 * radius1) + (4 * sina * sina) / (radius2 * radius2) <= 1;
-	};
+	}
 
 	/**
 	 *	
@@ -3739,7 +3758,8 @@
 	 * @param {number} radius1_2 - radius of major axis of second ellipse
 	 * @param {number} radius2_2 - radius of minor axis of second ellipse
 	 * @param {number} angle_2 - rotation of ellipse in radians of second ellipse
-	 *	@return {Array} [x1, y1, x2, y2, ...]
+	 * @param {array=} returnData - Array to put data
+	 * @return {Array} [x1, y1, x2, y2, ...]
 	 *
 	 * @example
 	 * Geometry.intrElli(0, 0, 2, 1, Math.PI / 4, 0, 0, 2, 1, -Math.PI / 4);
@@ -3751,7 +3771,8 @@
 	 * @function intrElli
 	 * @memberof Geometry
 	 **/
-	Geometry.intrElli = function(x_1, y_1, radius1_1, radius2_1, angle_1, x_2, y_2, radius1_2, radius2_2, angle_2) {
+	function Geometry_intrElli(x_1, y_1, radius1_1, radius2_1, angle_1, x_2, y_2, radius1_2, radius2_2, angle_2, returnData) {
+		_helper1();
 		let tempAngle1_1 = Math.cos(angle_1),
 			tempAngle1_2 = Math.sin(angle_1),
 			tempAngle2_1 = Math.cos(angle_2),
@@ -3776,7 +3797,7 @@
 			df4 = 4 * d * f,
 			ab2 = 2 * a * b,
 			de2 = 2 * d * e;
-		let result = [],
+		let result = _helper0(returnData, []),
 			l, t2, t2_1, t2_2;
 		l = _helper20(
 			aa + ab2 + bb + dd + de2 + ee - rr,
@@ -3786,14 +3807,14 @@
 			aa - ab2 + bb + dd - de2 + ee - rr
 		);
 		for (let n = 0; n < l; ++n) {
-			t2 = 2 * Math.atan(_helper19_2_[n]);
+			t2 = 2 * Math.atan(_memory_1_[n]);
 			t2_1 = Math.cos(t2) * radius1_2;
 			t2_2 = Math.sin(t2) * radius2_2;
 			result[n * 2] = x_2 + t2_1 * tempAngle2_1 - t2_2 * tempAngle2_2;
 			result[n * 2 + 1] = y_2 + t2_1 * tempAngle2_2 + t2_2 * tempAngle2_1;
 		}
 		return result;
-	};
+	}
 
 	/**
 	 *	
@@ -3808,7 +3829,8 @@
 	 * @param {number} a_y - y position of first point of the line
 	 * @param {number} b_x - x position of second point of the line
 	 * @param {number} b_y - y position of second point of the line
-	 *	@return {Array} [x1, y1, x2, y2, ...]
+	 * @param {array=} returnData - Array to put data
+	 * @return {Array} [x1, y1, x2, y2, ...]
 	 *
 	 * @example
 	 * Geometry.intrElliLine(0, 0, 2, 1, 0, 0, 2, 0, -2);
@@ -3817,7 +3839,7 @@
 	 * @function intrElliLine
 	 * @memberof Geometry
 	 **/
-	Geometry.intrElliLine = function(x, y, radius1, radius2, angle, a_x, a_y, b_x, b_y) {
+	function Geometry_intrElliLine(x, y, radius1, radius2, angle, a_x, a_y, b_x, b_y, returnData) {
 		let c2 = Math.sin(angle);
 		angle = Math.cos(angle);
 		let x1_ = radius2 * ((-x + a_x) * angle + (-y + a_y) * c2),
@@ -3833,7 +3855,7 @@
 			tempB = -2 * x1_x1_ + 2 * x1_x2_ - 2 * y1_y1_ + 2 * y1_y2_,
 			tempC = -r * r + x1_x1_ + y1_y1_;
 		let D = tempB * tempB - 4 * tempA * tempC,
-			t, result = [];
+			t, result = _helper0(returnData, []);
 		if (D === 0) {
 			t = -tempB / (2 * tempA);
 			result[0] = (1 - t) * a_x + t * b_x;
@@ -3851,7 +3873,7 @@
 			noOfIntx++;
 		}
 		return result;
-	};
+	}
 
 	/**
 	 *	
@@ -3862,7 +3884,8 @@
 	 * @param {number} radius1 - radius of major axis of the ellipse
 	 * @param {number} radius2 - radius of minor axis of the ellipse
 	 * @param {number} angle - rotation of ellipse in radians of the ellipse
-	 *	@return {{xMin: number, yMin: number, xMax: number, yMax: number}}
+	 * @param {object=} returnData - Object to put data
+	 * @return {{xMin: number, yMin: number, xMax: number, yMax: number}}
 	 *
 	 * @example
 	 * Geometry.boundElli(0, 0, 2, 1, Math.PI / 4);
@@ -3871,20 +3894,20 @@
 	 * @function boundElli
 	 * @memberof Geometry
 	 **/
-	Geometry.boundElli = function(x, y, radius1, radius2, angle) {
+	function Geometry_boundElli(x, y, radius1, radius2, angle, returnData) {
 		let temp_x = Math.atan(-radius2 * Math.tan(angle) / radius1),
 			temp_y = Math.atan(radius2 * Math.cot(angle) / radius1),
 			angle_2 = Math.sin(angle);
 		angle = Math.cos(angle);
 		temp_x = Math.abs(radius1 * Math.cos(temp_x) * angle - radius2 * Math.sin(temp_x) * angle_2);
 		temp_y = Math.abs(radius2 * Math.sin(temp_y) * angle + radius1 * Math.cos(temp_y) * angle_2);
-		return {
-			xMin: -temp_x + x,
-			yMin: -temp_y + y,
-			xMax: temp_x + x,
-			yMax: temp_y + y
-		};
-	};
+		returnData = _helper0(returnData, {});
+		returnData.xMin = -temp_x + x;
+		returnData.yMin = -temp_y + y;
+		returnData.xMax = temp_x + x;
+		returnData.yMax = temp_y + y;
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -3896,6 +3919,7 @@
 	 * @param {number} radius2 - radius of minor axis of the ellipse
 	 * @param {number} angle - rotation of ellipse in radians of the ellipse
 	 * @param {boolean=} [uniform=false] - `true` if generate uniformly
+	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number}} returnData.x and returnData.y
 	 *
 	 * @example
@@ -3905,7 +3929,7 @@
 	 * @function randomElli
 	 * @memberof Geometry
 	 **/
-	Geometry.randomElli = function(x, y, radius1, radius2, angle, uniform) {
+	function Geometry_randomElli(x, y, radius1, radius2, angle, uniform, returnData) {
 		let a = oldRandom(),
 			b = oldRandom(),
 			c;
@@ -3914,8 +3938,8 @@
 			b = a;
 			a = c;
 		}
-		return Geometry.onElli(x, y, b * radius1, b * radius2, angle, Math.TAU * a / b);
-	};
+		return Geometry_onElli(x, y, b * radius1, b * radius2, angle, Math.TAU * a / b, returnData);
+	}
 
 	/**
 	 *	
@@ -3933,16 +3957,15 @@
 	 * @function distElliPnt
 	 * @memberof Geometry
 	 **/
-	Geometry.distElliPnt = function(radius1, radius2, angle) {
+	function Geometry_distElliPnt(radius1, radius2, angle) {
 		let temp = 1 / Math.sqrt(
-			Math.pow(Math.sin(angle) / radius2, 2) +
-			Math.pow(Math.cos(angle) / radius1, 2)
+			Math_pow(Math.sin(angle) / radius2, 2) +
+			Math_pow(Math.cos(angle) / radius1, 2)
 		);
 		return Number.isFinite(temp) ? temp : 0;
-	};
+	}
 
 	//Triangle
-
 	/**
 	 *	
 	 * Calculate centroid point of triangle
@@ -3953,6 +3976,7 @@
 	 * @param {number} y_2 - y position of the second vertex
 	 * @param {number} x_3 - x position of the third vertex
 	 * @param {number} y_3 - y position of the third vertex
+	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number}} returnData.x and returnData.y
 	 *
 	 * @example
@@ -3962,12 +3986,12 @@
 	 * @function centroidTri
 	 * @memberof Geometry
 	 **/
-	Geometry.centroidTri = function(x_1, y_1, x_2, y_2, x_3, y_3) {
-		return {
-			x: (x_1 + x_2 + x_3) / 3,
-			y: (y_1 + y_2 + y_3) / 3,
-		};
-	};
+	function Geometry_centroidTri(x_1, y_1, x_2, y_2, x_3, y_3, returnData) {
+		returnData = _helper0(returnData, {});
+		returnData.x = (x_1 + x_2 + x_3) / 3;
+		returnData.y = (y_1 + y_2 + y_3) / 3;
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -3976,7 +4000,8 @@
 	 * @param {number} x - x position of point
 	 * @param {number} y - y position of point
 	 * @param {number} len - height of the triangle
-	 * @return {Object}
+	 * @param {object=} returnData - Object to put data
+	 * @return {{x1: number, y1: number, x2: number, y2: number, x3: number, y3: number}}
 	 *
 	 * @example
 	 * Geometry.equilTri(0, 0, 2);
@@ -3985,18 +4010,18 @@
 	 * @function equilTri
 	 * @memberof Geometry
 	 **/
-	Geometry.equilTri = function(x, y, len) {
+	function Geometry_equilTri(x, y, len, returnData) {
 		let temp = y + len * _triEquil_1_,
 			temp2 = len / 2;
-		return {
-			x1: x,
-			y1: y,
-			x2: x + temp2,
-			y2: temp,
-			x3: x - temp2,
-			y3: temp,
-		};
-	};
+		returnData = _helper0(returnData, {});
+		returnData.x1 = x;
+		returnData.y1 = y;
+		returnData.x2 = x + temp2;
+		returnData.y2 = temp;
+		returnData.x3 = x - temp2;
+		returnData.y3 = temp;
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -4006,7 +4031,8 @@
 	 * @param {number} y - y position of point
 	 * @param {number} width - width of the triangle
 	 * @param {number} height - height of the triangle
-	 * @return {Object}
+	 * @param {object=} returnData - Object to put data
+	 * @return {{x1: number, y1: number, x2: number, y2: number, x3: number, y3: number}}
 	 *
 	 * @example
 	 * Geometry.rightTri(0, 0, 2, 2);
@@ -4015,16 +4041,15 @@
 	 * @function rightTri
 	 * @memberof Geometry
 	 **/
-	Geometry.rightTri = function(x, y, width, height) {
-		return {
-			x1: x,
-			y1: y,
-			x2: x,
-			y2: y - height,
-			x3: x + width,
-			y3: y,
-		};
-	};
+	function Geometry_rightTri(x, y, width, height, returnData) {
+		returnData.x1 = x;
+		returnData.y1 = y;
+		returnData.x2 = x;
+		returnData.y2 = y - height;
+		returnData.x3 = x + width;
+		returnData.y3 = y;
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -4036,6 +4061,7 @@
 	 * @param {number} y_2 - y position of the second vertex
 	 * @param {number} x_3 - x position of the third vertex
 	 * @param {number} y_3 - y position of the third vertex
+	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number}} returnData.x and returnData.y
 	 *
 	 * @example
@@ -4045,7 +4071,7 @@
 	 * @function crcmCntrTri
 	 * @memberof Geometry
 	 **/
-	Geometry.crcmCntrTri = function(x_1, y_1, x_2, y_2, x_3, y_3) {
+	function Geometry_crcmCntrTri(x_1, y_1, x_2, y_2, x_3, y_3, returnData) {
 		let p, q, r, s, dataOne, dataTwo, dataThree;
 		p = x_1 - x_3;
 		q = y_1 - y_3;
@@ -4053,12 +4079,11 @@
 		s = y_2 - y_3;
 		dataOne = p * p + q * q;
 		dataTwo = r * r + s * s;
-		dataThree = 2 * Math.crossVec(p, q, r, s);
-		return {
-			x: x_3 - Math.crossVec(q, dataOne, r, dataTwo) / dataThree,
-			y: y_3 + Math.crossVec(p, dataOne, r, dataTwo) / dataThree,
-		};
-	};
+		dataThree = 2 * Math_crossVec(p, q, r, s);
+		returnData.x = x_3 - Math_crossVec(q, dataOne, r, dataTwo) / dataThree;
+		returnData.y = y_3 + Math_crossVec(p, dataOne, r, dataTwo) / dataThree;
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -4070,7 +4095,8 @@
 	 * @param {number} y_2 - y position of the second vertex
 	 * @param {number} x_3 - x position of the third vertex
 	 * @param {number} y_3 - y position of the third vertex
-	 * @return {Object}
+	 * @param {object=} returnData - Object to put data
+	 * @return {{x: number, y: number, r: number}}
 	 *
 	 * @example
 	 * Geometry.crcmCircTri(0, 0, 2, 0, 1, 1);
@@ -4079,7 +4105,7 @@
 	 * @function crcmCircTri
 	 * @memberof Geometry
 	 **/
-	Geometry.crcmCircTri = function(x_1, y_1, x_2, y_2, x_3, y_3) {
+	function Geometry_crcmCircTri(x_1, y_1, x_2, y_2, x_3, y_3, returnData) {
 		let A = x_2 - x_1,
 			B = y_2 - y_1,
 			C = x_3 - x_1,
@@ -4087,14 +4113,15 @@
 		let E = A * (x_1 + x_2) + B * (y_1 + y_2),
 			F = C * (x_1 + x_3) + D * (y_1 + y_3),
 			G = 2 * (A * (y_3 - y_2) - B * (x_3 - x_2)),
-			dx, dy, returnData = {};
+			dx, dy;
+		returnData = _helper0(returnData, {});
 		returnData.x = (D * E - B * F) / G;
 		returnData.y = (A * F - C * E) / G;
 		dx = returnData.x - x_1;
 		dy = returnData.y - y_1;
 		returnData.r = Math.sqrt(dx * dx + dy * dy) * 2;
 		return returnData;
-	};
+	}
 
 	/**
 	 *	
@@ -4106,7 +4133,8 @@
 	 * @param {number} y_2 - y position of the second vertex
 	 * @param {number} x_3 - x position of the third vertex
 	 * @param {number} y_3 - y position of the third vertex
-	 * @return {Object}
+	 * @param {object=} returnData - Object to put data
+	 * @return {{x: number, y: number, r: number}}
 	 *
 	 * @example
 	 * Geometry.inCircTri(0, 0, 2, 0, 1, 1);
@@ -4115,18 +4143,18 @@
 	 * @function inCircTri
 	 * @memberof Geometry
 	 **/
-	Geometry.inCircTri = function(x_1, y_1, x_2, y_2, x_3, y_3) {
-		let d1 = Geometry.distPnt(x_3, y_3, x_2, y_2, true),
-			d2 = Geometry.distPnt(x_1, y_1, x_3, y_3, true),
-			d3 = Geometry.distPnt(x_2, y_2, x_1, y_1, true);
+	function Geometry_inCircTri(x_1, y_1, x_2, y_2, x_3, y_3, returnData) {
+		let d1 = Geometry_distPnt(x_3, y_3, x_2, y_2, true),
+			d2 = Geometry_distPnt(x_1, y_1, x_3, y_3, true),
+			d3 = Geometry_distPnt(x_2, y_2, x_1, y_1, true);
 		let p = d1 + d2 + d3,
 			temp = (d3 + d1 + d2) / 2;
-		return {
-			x: (x_1 * d1 + x_2 * d2 + x_3 * d3) / p,
-			y: (y_1 * d1 + y_2 * d2 + y_3 * d3) / p,
-			r: Math.sqrt(temp * (temp - d3) * (temp - d1) * (temp - d2)) / temp,
-		};
-	};
+		returnData = _helper0(returnData, {});
+		returnData.x = (x_1 * d1 + x_2 * d2 + x_3 * d3) / p;
+		returnData.y = (y_1 * d1 + y_2 * d2 + y_3 * d3) / p;
+		returnData.r = Math.sqrt(temp * (temp - d3) * (temp - d1) * (temp - d2)) / temp;
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -4149,7 +4177,7 @@
 	 * @function colliTriPnt
 	 * @memberof Geometry
 	 **/
-	Geometry.colliTriPnt = function(a_x, a_y, b_x, b_y, c_x, c_y, o_x, o_y) {
+	function Geometry_colliTriPnt(a_x, a_y, b_x, b_y, c_x, c_y, o_x, o_y) {
 		let s = a_y * c_x - a_x * c_y + (c_y - a_y) * o_x + (a_x - c_x) * o_y,
 			t = a_x * b_y - a_y * b_x + (a_y - b_y) * o_x + (b_x - a_x) * o_y;
 
@@ -4162,7 +4190,7 @@
 			area = -area;
 		}
 		return s > 0 && t > 0 && (s + t) <= area;
-	};
+	}
 
 	/**
 	 *	
@@ -4183,9 +4211,9 @@
 	 * @function areaTri
 	 * @memberof Geometry
 	 **/
-	Geometry.areaTri = function(x_1, y_1, x_2, y_2, x_3, y_3) {
+	function Geometry_areaTri(x_1, y_1, x_2, y_2, x_3, y_3) {
 		return Math.abs(((x_3 - x_1) * (y_2 - y_1) - (x_2 - x_1) * (y_3 - y_1)) / 2);
-	};
+	}
 
 	/**
 	 *	
@@ -4197,7 +4225,8 @@
 	 * @param {number} b_y - y position of the second vertex
 	 * @param {number} c_x - x position of the third vertex
 	 * @param {number} c_y - y position of the third vertex
-	 * @return {Object}
+	 * @param {object=} returnData - Object to put data
+	 * @return {{x: number, y: number}}
 	 *
 	 * @example
 	 * Geometry.randomTri(0, 0, 2, 0, 1, 1);
@@ -4206,17 +4235,16 @@
 	 * @function randomTri
 	 * @memberof Geometry
 	 **/
-	Geometry.randomTri = function(a_x, a_y, b_x, b_y, c_x, c_y) {
+	function Geometry_randomTri(a_x, a_y, b_x, b_y, c_x, c_y, returnData) {
 		let r1 = Math.sqrt(oldRandom()),
 			r2 = oldRandom(),
 			temp1 = 1 - r1,
 			temp2 = r1 * (1 - r2),
 			temp3 = r1 * r2;
-		return {
-			x: temp1 * a_x + temp2 * b_x + temp3 * c_x,
-			y: temp1 * a_y + temp2 * b_y + temp3 * c_y,
-		};
-	};
+		returnData.x = temp1 * a_x + temp2 * b_x + temp3 * c_x;
+		returnData.y = temp1 * a_y + temp2 * b_y + temp3 * c_y;
+		return returnData;
+	}
 
 	//Rectangle
 	/**
@@ -4238,12 +4266,12 @@
 	 * @function colliRectPnt
 	 * @memberof Geometry
 	 **/
-	Geometry.colliRectPnt = function(x_min, y_min, x_max, y_max, x, y) {
+	function Geometry_colliRectPnt(x_min, y_min, x_max, y_max, x, y) {
 		if (x_max - x_min <= 0 || y_max - y_min <= 0) {
 			return false;
 		}
 		return (x_min <= x && x_max >= x && y_min <= y && y_max >= y);
-	};
+	}
 
 	/**
 	 *	
@@ -4266,12 +4294,12 @@
 	 * @function colliRect
 	 * @memberof Geometry
 	 **/
-	Geometry.colliRect = function(x_min, y_min, x_max, y_max, x2_min, y2_min, x2_max, y2_max) {
+	function Geometry_colliRect(x_min, y_min, x_max, y_max, x2_min, y2_min, x2_max, y2_max) {
 		if (Math.abs(x_max - x_min) <= 0 || Math.abs(y_max - y_min) <= 0 || Math.abs(x2_max - x2_min) <= 0 || Math.abs(y2_max - y2_min) <= 0) {
 			return false;
 		}
 		return !(x_max < x2_min || y_max < y2_min || x_min > x2_max || y_min > y2_max);
-	};
+	}
 
 	/**
 	 *	
@@ -4285,6 +4313,7 @@
 	 * @param {number} y_min - y position of top-left corner of second rectangle
 	 * @param {number} x_max - x position of bottom-right corner of second rectangle
 	 * @param {number} y_max - y position of bottom-right corner of second rectangle
+	 * @param {object=} returnData - Object to put data
 	 * @return {{xMin: number, yMin: number, xMax: number, yMax: number}}
 	 *
 	 * @example
@@ -4294,17 +4323,17 @@
 	 * @function intrRect
 	 * @memberof Geometry
 	 **/
-	Geometry.intrRect = function(x_min, y_min, x_max, y_max, x2_min, y2_min, x2_max, y2_max) {
-		if (Geometry.colliRect(x_min, y_min, x_max, y_max, x2_min, y2_min, x2_max, y2_max)) {
-			return {
-				xMin: Math.max(x_min, x2_min),
-				yMin: Math.max(y_min, y2_min),
-				xMax: Math.min(x_max, x2_max),
-				yMax: Math.min(y_max, y2_max),
-			};
+	function Geometry_intrRect(x_min, y_min, x_max, y_max, x2_min, y2_min, x2_max, y2_max, returnData) {
+		if (Geometry_colliRect(x_min, y_min, x_max, y_max, x2_min, y2_min, x2_max, y2_max)) {
+			returnData = _helper0(returnData, {});
+			returnData.xMin = Math.max(x_min, x2_min);
+			returnData.yMin = Math.max(y_min, y2_min);
+			returnData.xMax = Math.min(x_max, x2_max);
+			returnData.yMax = Math.min(y_max, y2_max);
+			return returnData;
 		}
-		return null;
-	};
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -4314,6 +4343,7 @@
 	 * @param {number} y_min - y position of top-left corner
 	 * @param {number} x_max - x position of bottom-right corner
 	 * @param {number} y_max - y position of bottom-right corner
+	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number}}
 	 *
 	 * @example
@@ -4323,12 +4353,12 @@
 	 * @function randomRect
 	 * @memberof Geometry
 	 **/
-	Geometry.randomRect = function(x_min, y_min, x_max, y_max) {
-		return {
-			x: x_min + oldRandom() * Math.abs(x_max - x_min),
-			y: y_min + oldRandom() * Math.abs(y_max - y_min),
-		};
-	};
+	function Geometry_randomRect(x_min, y_min, x_max, y_max, returnData) {
+		returnData = _helper0(returnData, {});
+		returnData.x = x_min + oldRandom() * Math.abs(x_max - x_min);
+		returnData.y = y_min + oldRandom() * Math.abs(y_max - y_min);
+		return returnData;
+	}
 
 	//Polygon
 	/**
@@ -4347,7 +4377,7 @@
 	 * @function colliPolyPnt
 	 * @memberof Geometry
 	 **/
-	Geometry.colliPolyPnt = function(points, x, y) {
+	function Geometry_colliPolyPnt(points, x, y) {
 		let inside = false,
 			ix, iy, jx, jy;
 		for (let i = -2, j = points.length - 2;
@@ -4361,7 +4391,7 @@
 			}
 		}
 		return inside;
-	};
+	}
 
 	/**
 	 *	
@@ -4380,17 +4410,17 @@
 	 * @function colliPolyCirc
 	 * @memberof Geometry
 	 **/
-	Geometry.colliPolyCirc = function(points, o_x, o_y, o_r) {
-		if (Geometry.colliPolyPnt(points, o_x, o_y)) {
+	function Geometry_colliPolyCirc(points, o_x, o_y, o_r) {
+		if (Geometry_colliPolyPnt(points, o_x, o_y)) {
 			return true;
 		}
 		for (let i = 2; i < points.length; i += 2) {
-			if (Geometry.distLinePnt(false, points[i - 2], points[i - 1], points[i], points[i + 1], o_x, o_y, false) < o_r * o_r) {
+			if (Geometry_distLinePnt(false, points[i - 2], points[i - 1], points[i], points[i + 1], o_x, o_y, false) < o_r * o_r) {
 				return true;
 			}
 		}
-		return Geometry.distLinePnt(false, points[points.length - 2], points[points.length - 1], points[0], points[1], o_x, o_y, false) < o_r * o_r;
-	};
+		return Geometry_distLinePnt(false, points[points.length - 2], points[points.length - 1], points[0], points[1], o_x, o_y, false) < o_r * o_r;
+	}
 
 	/**
 	 *	
@@ -4407,23 +4437,23 @@
 	 * @function colliPoly
 	 * @memberof Geometry
 	 **/
-	Geometry.colliPoly = function(points1, points2) {
-		let t1 = Geometry.boundPoly(points1),
-			t2 = Geometry.boundPoly(points2),
+	function Geometry_colliPoly(points1, points2) {
+		let t1 = Geometry_boundPoly(points1),
+			t2 = Geometry_boundPoly(points2),
 			i;
-		if (Geometry.colliRect(t1.xMin, t1.yMin, t1.xMax, t1.yMax, t2.xMin, t2.yMin, t2.xMax, t2.yMax)) {
+		if (Geometry_colliRect(t1.xMin, t1.yMin, t1.xMax, t1.yMax, t2.xMin, t2.yMin, t2.xMax, t2.yMax)) {
 			let len = points1.length > points2.length ? points1.length : points2.length;
 			for (i = 0; i < len; i += 2) {
-				if (Geometry.colliPolyPnt(points2, points1[i], points1[i + 1]) && i <= points1.length) {
+				if (Geometry_colliPolyPnt(points2, points1[i], points1[i + 1]) && i <= points1.length) {
 					return true;
 				}
-				if (Geometry.colliPolyPnt(points1, points2[i], points2[i + 1]) && i <= points2.length) {
+				if (Geometry_colliPolyPnt(points1, points2[i], points2[i + 1]) && i <= points2.length) {
 					return true;
 				}
 			}
 		}
 		return false;
-	};
+	}
 
 	/**
 	 *	
@@ -4439,7 +4469,8 @@
 	 * @function isSimplePoly
 	 * @memberof Geometry
 	 **/
-	Geometry.isSimplePoly = function(points) {
+	function Geometry_isSimplePoly(points) {
+		_helper2();
 		let n = points.length >> 1;
 		if (n < 4) {
 			return true;
@@ -4447,8 +4478,7 @@
 		let a1_x, a1_y,
 			a2_x, a2_y,
 			b1_x, b1_y,
-			b2_x, b2_y,
-			temp;
+			b2_x, b2_y;
 
 		for (let i = 0; i < n; i++) {
 			a1_x = points[2 * i];
@@ -4475,14 +4505,14 @@
 					b2_x = points[2 * j + 2];
 					b2_y = points[2 * j + 3];
 				}
-				temp = Geometry.intrLine(a1_x, a1_y, a2_x, a2_y, b1_x, b1_y, b2_x, b2_y);
-				if (temp.onLine1 && temp.onLine2) {
+				Geometry_intrLine(a1_x, a1_y, a2_x, a2_y, b1_x, b1_y, b2_x, b2_y, _memory2_1_);
+				if (_memory2_1_.onLine1 && _memory2_1_.onLine2) {
 					return false;
 				}
 			}
 		}
 		return true;
-	};
+	}
 
 	/**
 	 *	
@@ -4498,22 +4528,22 @@
 	 * @function isConvexPoly
 	 * @memberof Geometry
 	 **/
-	Geometry.isConvexPoly = function(points) {
+	function Geometry_isConvexPoly(points) {
 		if (points.length <= 6) {
 			return false;
 		}
-		let check = Geometry.isClockWisePoly(points),
-			ccw = Geometry.sideLine(points[points.length - 3], points[points.length - 2], points[0], points[1], points[2], points[3]),
+		let check = Geometry_isClockWisePoly(points),
+			ccw = Geometry_sideLine(points[points.length - 3], points[points.length - 2], points[0], points[1], points[2], points[3]),
 			temp;
 		ccw = (ccw > 0 || Math.abs(ccw) < 0);
 		for (let i = 2; i < points.length - 2; i += 2) {
-			temp = Geometry.sideLine(points[i - 2], points[i - 1], points[i], points[i + 1], points[i + 2], points[i + 3]);
+			temp = Geometry_sideLine(points[i - 2], points[i - 1], points[i], points[i + 1], points[i + 2], points[i + 3]);
 			if ((check ? temp > 0 : temp < 0) !== ccw) {
 				return true;
 			}
 		}
 		return false;
-	};
+	}
 
 	/**
 	 *	
@@ -4529,7 +4559,7 @@
 	 * @function isClockWisePoly
 	 * @memberof Geometry
 	 **/
-	Geometry.isClockWisePoly = function(points) {
+	function Geometry_isClockWisePoly(points) {
 		let pdir = 0,
 			s = 0,
 			fdir, n, dir;
@@ -4540,19 +4570,20 @@
 				fdir = dir;
 			} else {
 				dir -= fdir;
-				s += Geometry.normRad(dir - pdir);
+				s += Geometry_normRad(dir - pdir);
 				pdir = dir;
 			}
 		}
-		s += Geometry.normRad(-pdir);
+		s += Geometry_normRad(-pdir);
 		return s >= 0;
-	};
+	}
 
 	/**
 	 *	
 	 * Find bounding box of a polygon (convex, concave, complex)
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
+	 * @param {object=} returnData - Object to put data
 	 * @return {{xMin: number, yMin: number, xMax: number, yMax: number}}
 	 *
 	 * @example
@@ -4562,33 +4593,30 @@
 	 * @function boundPoly
 	 * @memberof Geometry
 	 **/
-	Geometry.boundPoly = function(points) {
-		let minX = Number.MAX_SAFE_INTEGER,
-			minY = Number.MAX_SAFE_INTEGER,
-			maxX = Number.MIN_SAFE_INTEGER,
-			maxY = Number.MIN_SAFE_INTEGER,
-			px, py;
+	function Geometry_boundPoly(points, returnData) {
+		returnData = _helper0(returnData, {});
+		returnData.xMin = Number.MAX_SAFE_INTEGER;
+		returnData.yMin = Number.MAX_SAFE_INTEGER;
+		returnData.xMax = Number.MIN_SAFE_INTEGER;
+		returnData.yMax = Number.MIN_SAFE_INTEGER;
+		let px, py;
 		for (let i = 0; i < points.length; i += 2) {
 			px = points[i];
 			py = points[i + 1];
-			minX = Math.min(minX, px);
-			minY = Math.min(minY, py);
-			maxX = Math.max(maxX, px);
-			maxY = Math.max(maxY, py);
+			returnData.xMin = Math.min(returnData.xMin, px);
+			returnData.yMin = Math.min(returnData.yMin, py);
+			returnData.xMax = Math.max(returnData.xMax, px);
+			returnData.yMax = Math.max(returnData.yMax, py);
 		}
-		return {
-			xMin: minX,
-			yMin: minY,
-			xMax: maxX,
-			yMax: maxY,
-		};
-	};
+		return returnData;
+	}
 
 	/**
 	 *	
 	 * Triangulate a polygon (convex, concave, complex)
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
+	 * @param {array=} returnData - Array to put data
 	 * @return {number[]}
 	 *
 	 * return array of input points that is connected to make triangles
@@ -4602,24 +4630,24 @@
 	 * @function triPoly
 	 * @memberof Geometry
 	 **/
-	Geometry.triPoly = function(points) {
-		let n, tgs, avl, i, al, i0, i1, i2, ax, ay, bx, by, cx, cy, eF, vi;
+	function Geometry_triPoly(points, returnData) {
+		returnData = _helper0(returnData, []);
+		let n, i, al, i0, i1, i2, ax, ay, bx, by, cx, cy, eF, vi;
 		n = points.length >> 1;
 		if (n < 3) {
-			return [].concat(points);
+			return returnData.concat(points);
 		}
-		tgs = [];
-		avl = [];
+		_helper1();
 		for (i = 0; i < n; i++) {
-			avl.push(i);
+			_memory_2_.push(i);
 		}
 
 		i = 0;
 		al = n;
 		while (al > 3) {
-			i0 = avl[(i + 0) % al];
-			i1 = avl[(i + 1) % al];
-			i2 = avl[(i + 2) % al];
+			i0 = _memory_2_[(i + 0) % al];
+			i1 = _memory_2_[(i + 1) % al];
+			i2 = _memory_2_[(i + 2) % al];
 
 			ax = points[2 * i0];
 			ay = points[2 * i0 + 1];
@@ -4629,31 +4657,31 @@
 			cy = points[2 * i2 + 1];
 
 			eF = false;
-			if (Geometry.sideLine(ax, ay, bx, by, cx, cy) >= 0) {
+			if (Geometry_sideLine(ax, ay, bx, by, cx, cy) >= 0) {
 				eF = true;
 				for (let j = 0; j < al; j++) {
-					vi = avl[j];
+					vi = _memory_2_[j];
 					if (vi == i0 || vi == i1 || vi == i2) {
 						continue;
 					}
-					if (Geometry.colliTriPnt(ax, ay, bx, by, cx, cy, points[2 * vi], points[2 * vi + 1])) {
+					if (Geometry_colliTriPnt(ax, ay, bx, by, cx, cy, points[2 * vi], points[2 * vi + 1])) {
 						eF = false;
 						break;
 					}
 				}
 			}
 			if (eF) {
-				tgs.push(i0, i1, i2);
-				avl.splice((i + 1) % al, 1);
+				_memory_1_.push(i0, i1, i2);
+				_memory_2_.splice((i + 1) % al, 1);
 				al--;
 				i = 0;
 			} else if (i++ > 3 * al) {
 				break; // no convex angles :(
 			}
 		}
-		tgs.push(avl[0], avl[1], avl[2]);
-		return tgs;
-	};
+		_memory_1_.push(_memory_2_[0], _memory_2_[1], _memory_2_[2]);
+		return returnData.concat(_memory_1_);
+	}
 
 	/**
 	 *	
@@ -4677,7 +4705,7 @@
 	 * @function slicePoly
 	 * @memberof Geometry
 	 **/
-	Geometry.slicePoly = function(points, a_x, a_y, b_x, b_y, accuracy) {
+	/*function Geometry_slicePoly(points, a_x, a_y, b_x, b_y, accuracy) {
 		let a, b, isc, iscs, ps, i, fisc, lisc, i0, i1, ind0, ind1, solved, pgn, result, pg, npg, pgs, dir;
 		accuracy = _helper0(accuracy, 1e-10);
 		accuracy *= accuracy;
@@ -4749,9 +4777,11 @@
 			}
 			if (solved) {
 				dir--;
-				pgn = _helper15(ps, ind0, ind1);
+				_slicePoly_2_.length = 0;
+				_slicePoly_3_.length = 0;
+				pgn = _helper15(ps, ind0, ind1, _slicePoly_2_);
 				pgs.push(pgn);
-				ps = _helper15(ps, ind1, ind0);
+				ps = _helper15(ps, ind1, ind0, _slicePoly_3_);
 				i0.flag = i1.flag = false;
 				iscs.splice(0, 2);
 				if (iscs.length === 0) {
@@ -4775,7 +4805,7 @@
 			result.push(npg);
 		}
 		return result;
-	};
+	};*/
 
 	/**
 	 *	
@@ -4791,7 +4821,7 @@
 	 * @function areaPoly
 	 * @memberof Geometry
 	 **/
-	Geometry.areaPoly = function(points) {
+	function Geometry_areaPoly(points) {
 		let area = 0,
 			len = points.length,
 			nexti;
@@ -4807,13 +4837,14 @@
 			area += points[i] * points[nexti + 1] - points[i + 1] * points[nexti];
 		}
 		return Math.abs(area / 2);
-	};
+	}
 
 	/**
 	 *	
 	 * Find centroid of a polygon (convex, concave, complex)
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
+	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number}}
 	 *
 	 * @example
@@ -4823,10 +4854,11 @@
 	 * @function centroidPoly
 	 * @memberof Geometry
 	 **/
-	Geometry.centroidPoly = function(points) {
-		let cx = 0.0,
-			cy = 0.0,
-			x1, x2, y1, y2, f, area;
+	function Geometry_centroidPoly(points, returnData) {
+		returnData = _helper0(returnData, {});
+		returnData.x = 0.0;
+		returnData.y = 0.0;
+		let	x1, x2, y1, y2, f, area;
 		for (let i = 0; i < points.length - 2; i += 2) {
 			x1 = points[i];
 			y1 = points[i + 1];
@@ -4834,30 +4866,28 @@
 			y2 = points[i + 3];
 
 			f = x1 * y2 - x2 * y1;
-			cx += (x1 + x2) * f;
-			cy += (y1 + y2) * f;
+			returnData.x += (x1 + x2) * f;
+			returnData.y += (y1 + y2) * f;
 		}
 		x1 = points[points.length - 2];
 		y1 = points[points.length - 1];
 		x2 = points[0];
 		y2 = points[1];
 		f = x1 * y2 - x2 * y1;
-		cx += (x1 + x2) * f;
-		cy += (y1 + y2) * f;
-		area = Geometry.areaPoly(points);
-		cx /= 6.0 * area;
-		cy /= 6.0 * area;
-		return {
-			x: cx,
-			y: cy
-		};
-	};
+		returnData.x += (x1 + x2) * f;
+		returnData.y += (y1 + y2) * f;
+		area = Geometry_areaPoly(points);
+		returnData.x /= 6.0 * area;
+		returnData.y /= 6.0 * area;
+		return returnData;
+	}
 
 	/**
 	 *	
 	 * Find convex hull of a set of points
 	 *
 	 * @param {number[]} points - array of points [[x1, y1], [x2, y2], ...]
+	 * @param {array=} returnData - Array to put data
 	 * @return {number[]}
 	 *
 	 * @example
@@ -4867,30 +4897,29 @@
 	 * @function convexHullPoly
 	 * @memberof Geometry
 	 **/
-	Geometry.convexHullPoly = function(points) {
-		let lower = [],
-			upper = [],
-			i;
+	function Geometry_convexHullPoly(points, returnData) {
+		_helper1();
+		let i;
 
 		points.sort(function(a, b) {
 			return a[0] == b[0] ? a[1] - b[1] : a[0] - b[0];
 		});
 		for (i = 0; i < points.length; i++) {
-			while (lower.length >= 2 && Geometry.sideLine(lower[lower.length - 2][0], lower[lower.length - 2][1], lower[lower.length - 1][0], lower[lower.length - 1][1], points[i][0], points[i][1]) <= 0) {
-				lower.pop();
+			while (_memory_1_.length >= 2 && Geometry_sideLine(_memory_1_[_memory_1_.length - 2][0], _memory_1_[_memory_1_.length - 2][1], _memory_1_[_memory_1_.length - 1][0], _memory_1_[_memory_1_.length - 1][1], points[i][0], points[i][1]) <= 0) {
+				_memory_1_.pop();
 			}
-			lower.push(points[i]);
+			_memory_1_.push(points[i]);
 		}
 		for (i = points.length - 1; i >= 0; i--) {
-			while (upper.length >= 2 && Geometry.sideLine(upper[upper.length - 2][0], upper[upper.length - 2][1], upper[upper.length - 1][0], upper[upper.length - 1][1], points[i][0], points[i][1]) <= 0) {
-				upper.pop();
+			while (_memory_2_.length >= 2 && Geometry_sideLine(_memory_2_[_memory_2_.length - 2][0], _memory_2_[_memory_2_.length - 2][1], _memory_2_[_memory_2_.length - 1][0], _memory_2_[_memory_2_.length - 1][1], points[i][0], points[i][1]) <= 0) {
+				_memory_2_.pop();
 			}
-			upper.push(points[i]);
+			_memory_2_.push(points[i]);
 		}
-		upper.pop();
-		lower.pop();
-		return lower.concat(upper);
-	};
+		_memory_2_.pop();
+		_memory_1_.pop();
+		return returnData.concat(_memory_1_, _memory_2_);
+	}
 
 	/**
 	 *	
@@ -4901,6 +4930,7 @@
 	 * @param {number} a_y - y position of vertex point of the ray
 	 * @param {number} b_x - x position of direction point of the ray
 	 * @param {number} b_y - y position of direction point of the ray
+	 * @param {object=} returnData - Object to put data
 	 * @return {{dist: number, edge: number, norm_x: number, norm_y: number, refl_x: number, refl_y: number}}
 	 *
 	 * "dist" is the distance of the polygon point, "edge" is the number of the edge, on which intersection occurs, "norm" is the normal in that place, "refl" is reflected direction
@@ -4912,7 +4942,7 @@
 	 * @function distPolyRay
 	 * @memberof Geometry
 	 **/
-	Geometry.distPolyRay = function(points, a_x, a_y, b_x, b_y) {
+	function Geometry_distPolyRay(points, a_x, a_y, b_x, b_y, returnData) {
 		let len = points.length - 2,
 			a1 = _poly_stack_[0],
 			a2 = _poly_stack_[1],
@@ -4925,14 +4955,13 @@
 		a2.x = a_x + b_x;
 		a2.y = a_y + b_y;
 
-		let isc = {
-			dist: Infinity,
-			edge: 0,
-			norm_x: 0,
-			norm_y: 0,
-			refl_x: 0,
-			refl_y: 0
-		};
+		returnData = _helper0(returnData, {});
+		returnData.dist = Infinity;
+		returnData.edge = 0;
+		returnData.norm_x = 0;
+		returnData.norm_y = 0;
+		returnData.refl_x = 0;
+		returnData.refl_y = 0;
 
 		for (let i = 0; i < len; i += 2) {
 			b1.x = points[i];
@@ -4940,17 +4969,17 @@
 			b2.x = points[i + 2];
 			b2.y = points[i + 3];
 			nisc = _helper22(a1, a2, b1, b2, c);
-			if (nisc) _helper17(b_x, b_y, a1, b1, b2, c, i / 2, isc);
+			if (nisc) _helper17(b_x, b_y, a1, b1, b2, c, i / 2, returnData);
 		}
 		b1.x = b2.x;
 		b1.y = b2.y;
 		b2.x = points[0];
 		b2.y = points[1];
 		nisc = _helper22(a1, a2, b1, b2, c);
-		if (nisc) _helper17(b_x, b_y, a1, b1, b2, c, (points.length / 2) - 1, isc);
+		if (nisc) _helper17(b_x, b_y, a1, b1, b2, c, (points.length / 2) - 1, returnData);
 
-		return isc;
-	};
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -4959,6 +4988,7 @@
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
 	 * @param {number} x - x position of the point
 	 * @param {number} y - y position of the point
+	 * @param {object=} returnData - Object to put data
 	 * @return {{dist: number, edge: number, norm_x: number, norm_y: number, point_x: number, point_y: number}}
 	 *
 	 * "dist" is the distance of the polygon point, "edge" is the number of the closest edge, "point" is the closest point on that edge, "norm" is the normal from "point" to the point
@@ -4970,16 +5000,16 @@
 	 * @function intrPolyPnt
 	 * @memberof Geometry
 	 **/
-	Geometry.intrPolyPnt = function(points, x, y) {
-		let len = points.length - 2,
-			idst, returnData = {
-				dist: Infinity,
-				edge: 0,
-				point_x: 0,
-				point_y: 0,
-				norm_x: 0,
-				norm_y: 0
-			};
+	function Geometry_intrPolyPnt(points, x, y, returnData) {
+		let len = points.length - 2, idst;
+		returnData = _helper0(returnData, {});
+		returnData.dist = Infinity;
+		returnData.edge = 0;
+		returnData.point_x = 0;
+		returnData.point_y = 0;
+		returnData.norm_x = 0;
+		returnData.norm_y = 0;
+
 		_poly_stack_[0].x = x;
 		_poly_stack_[0].y = y;
 		for (let i = 0; i < len; i += 2) {
@@ -4998,13 +5028,14 @@
 		returnData.norm_x = (x - returnData.point_x) * idst;
 		returnData.norm_y = (y - returnData.point_y) * idst;
 		return returnData;
-	};
+	}
 
 	/**
 	 *	
 	 * Reverse point sequence of a polygon
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
+	 * @param {array=} returnData - Array to put data
 	 * @return {number[]}
 	 *
 	 * @example
@@ -5014,13 +5045,13 @@
 	 * @function reversePoly
 	 * @memberof Geometry
 	 **/
-	Geometry.reversePoly = function(points) {
-		let np = [];
+	function Geometry_reversePoly(points, returnData) {
+		returnData = _helper0(returnData, []);
 		for (let j = points.length - 2; j >= 0; j -= 2) {
-			np.push(points[j], points[j + 1]);
+			returnData.push(points[j], points[j + 1]);
 		}
-		return np;
-	};
+		return returnData;
+	}
 
 	//Accel
 	/**
@@ -5039,9 +5070,9 @@
 	 * @function timeAccel
 	 * @memberof Geometry
 	 **/
-	Geometry.timeAccel = function(u, v, a) {
+	function Geometry_timeAccel(u, v, a) {
 		return (v - u) / a;
-	};
+	}
 
 	/**
 	 *	
@@ -5059,9 +5090,9 @@
 	 * @function accelAccel
 	 * @memberof Geometry
 	 **/
-	Geometry.accelAccel = function(u, v, t) {
+	function Geometry_accelAccel(u, v, t) {
 		return (v - u) / t;
-	};
+	}
 
 	/**
 	 *	
@@ -5079,9 +5110,9 @@
 	 * @function distAccel
 	 * @memberof Geometry
 	 **/
-	Geometry.distAccel = function(u, v, s) {
+	function Geometry_distAccel(u, v, s) {
 		return (v * v - u * u) / (2 * s);
-	};
+	}
 
 	/**
 	 *	
@@ -5099,22 +5130,30 @@
 	 * @function timeDistAccel
 	 * @memberof Geometry
 	 **/
-	Geometry.timeDistAccel = function(u, s, a) {
+	function Geometry_timeDistAccel(u, s, a) {
 		let discr = u * u - 4 * a * -s * 0.5;
 		if (discr < 0) {
 			return -1;
 		}
 		let temp = Math.sqrt(discr);
 		return Math.abs(Math.max((-u + temp) / a, (-u - temp) / a));
-	};
+	}
 
-	//Vector
+	/**
+	 *
+	 *	All of functions that related to Vector
+	 *
+	 * @namespace Vector
+	 *
+	 **/
+
 	/**
 	 *	
 	 * Convert cartesian to polar coordinates
 	 *
 	 * @param {number} x - x position
 	 * @param {number} y - y position
+	 * @param {object=} returnData - Object to put data
 	 * @return {{angle: number, radial: number}}
 	 *
 	 * @example
@@ -5124,12 +5163,12 @@
 	 * @function pol
 	 * @memberof Vector
 	 **/
-	Math.pol = function(x, y) {
-		return {
-			angle: Geometry.getAngle(0, 0, x, y),
-			radial: Geometry.distPnt(0, 0, x, y, true),
-		};
-	};
+	function Math_pol(x, y, returnData) {
+		returnData = _helper0(returnData, {});
+		returnData.angle = Geometry_getAngle(0, 0, x, y);
+		returnData.radial = Geometry_distPnt(0, 0, x, y, true);
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -5139,6 +5178,7 @@
 	 * @param {number} y - y position
 	 * @param {number} radial - r
 	 * @param {number} angle - angle
+	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number}}
 	 *
 	 * @example
@@ -5148,12 +5188,12 @@
 	 * @function rec
 	 * @memberof Vector
 	 **/
-	Math.rec = function(x, y, radial, angle) {
-		return {
-			x: Math.cos(angle) * radial + x,
-			y: Math.sin(angle) * radial + y,
-		};
-	};
+	function Math_rec(x, y, radial, angle, returnData) {
+		returnData = _helper0(returnData, {});
+		returnData.x = Math.cos(angle) * radial + x;
+		returnData.y = Math.sin(angle) * radial + y;
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -5161,6 +5201,7 @@
 	 *
 	 * @param {number} x - x position
 	 * @param {number} y - y position
+	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number}}
 	 *
 	 * @example
@@ -5170,13 +5211,13 @@
 	 * @function normVec
 	 * @memberof Vector
 	 **/
-	Math.normVec = function(x, y) {
-		let length = Math.magVec(x, y, true);
-		return {
-			x: x / length,
-			y: y / length,
-		};
-	};
+	function Math_normVec(x, y, returnData) {
+		returnData = _helper0(returnData, {});
+		let length = Math_magVec(x, y, true);
+		returnData.x = x / length;
+		returnData.y = y / length;
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -5185,6 +5226,7 @@
 	 * @param {number} x - x position
 	 * @param {number} y - y position
 	 * @param {number} scale - scale position
+	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number}}
 	 *
 	 * @example
@@ -5194,12 +5236,12 @@
 	 * @function scaleVec
 	 * @memberof Vector
 	 **/
-	Math.scaleVec = function(x, y, scale) {
-		return {
-			x: x * scale,
-			y: y * scale,
-		};
-	};
+	function Math_scaleVec(x, y, scale, returnData) {
+		returnData = _helper0(returnData, {});
+		returnData.x = x * scale;
+		returnData.y = y * scale;
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -5208,6 +5250,7 @@
 	 * @param {number} x - x position
 	 * @param {number} y - y position
 	 * @param {number} num - truncate ratio
+	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number}}
 	 *
 	 * @example
@@ -5217,11 +5260,11 @@
 	 * @function truncVec
 	 * @memberof Vector
 	 **/
-	Math.truncVec = function(x, y, num) {
-		let scale = num / Math.magVec(x, y);
+	function Math_truncVec(x, y, num, returnData) {
+		let scale = num / Math_magVec(x, y);
 		scale = scale < 1.0 ? scale : 1.0;
-		return Math.scaleVec(x, y, scale);
-	};
+		return Math_scaleVec(x, y, scale, returnData);
+	}
 
 	/**
 	 *	
@@ -5239,14 +5282,14 @@
 	 * @function magVec
 	 * @memberof Vector
 	 **/
-	Math.magVec = function(x, y, square) {
-		let tempUnSq = Math.dotVec(x, y, x, y);
+	function Math_magVec(x, y, square) {
+		let tempUnSq = Math_dotVec(x, y, x, y);
 		if (square) {
 			return Math.sqrt(tempUnSq);
 		} else {
 			return tempUnSq;
 		}
-	};
+	}
 
 	/**
 	 *	
@@ -5265,10 +5308,10 @@
 	 * @function dotVec
 	 * @memberof Vector
 	 **/
-	Math.dotVec = function(a_x, a_y, b_x, b_y) {
+	function Math_dotVec(a_x, a_y, b_x, b_y) {
 		//Heavily related to cosine
 		return a_x * b_x + a_y * b_y;
-	};
+	}
 
 	/**
 	 *	
@@ -5287,11 +5330,11 @@
 	 * @function crossVec
 	 * @memberof Vector
 	 **/
-	Math.crossVec = function(a_x, a_y, b_x, b_y) {
+	function Math_crossVec(a_x, a_y, b_x, b_y) {
 		//Heavily related to sine
 		//Also called wedge ? And determinant ?
 		return a_x * b_y - a_y * b_x;
-	};
+	}
 
 	/**
 	 *	
@@ -5301,6 +5344,7 @@
 	 * @param {number} a_y - y position of first vector
 	 * @param {number} b_x - x position of second vector
 	 * @param {number} b_y - y position of second vector
+	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number}}
 	 *
 	 * @example
@@ -5310,9 +5354,9 @@
 	 * @function projVec
 	 * @memberof Vector
 	 **/
-	Math.projVec = function(a_x, a_y, b_x, b_y) {
-		return Math.scaleVec(b_x, b_y, Math.dotVec(a_x, a_y, b_x, b_y) / Math.magVec(b_x, b_y, false));
-	};
+	function Math_projVec(a_x, a_y, b_x, b_y, returnData) {
+		return Math_scaleVec(b_x, b_y, Math_dotVec(a_x, a_y, b_x, b_y) / Math_magVec(b_x, b_y, false), returnData);
+	}
 
 	/**
 	 *	
@@ -5322,6 +5366,7 @@
 	 * @param {number} a_y - y position of first vector
 	 * @param {number} b_x - x position of second vector
 	 * @param {number} b_y - y position of second vector
+	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number}}
 	 *
 	 * @example
@@ -5331,13 +5376,12 @@
 	 * @function rejVec
 	 * @memberof Vector
 	 **/
-	Math.rejVec = function(a_x, a_y, b_x, b_y) {
-		let temp = Math.projVec(a_x, a_y, b_x, b_y);
-		return {
-			x: a_x - temp.x,
-			y: a_y - temp.y,
-		};
-	};
+	function Math_rejVec(a_x, a_y, b_x, b_y, returnData) {
+		Math.projVec(a_x, a_y, b_x, b_y, returnData);
+		returnData.x = a_x - returnData.x;
+		returnData.y = a_y - returnData.y;
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -5345,6 +5389,7 @@
 	 *
 	 * @param {number} x - x position
 	 * @param {number} y - y position
+	 * @param {object=} returnData - Object to put data
 	 * @return {{x1: number, y1: number, x2: number, y2: number}}
 	 *
 	 * @example
@@ -5354,14 +5399,14 @@
 	 * @function perVec
 	 * @memberof Vector
 	 **/
-	Math.perVec = function(x, y) {
-		return {
-			x1: -y,
-			y1: x,
-			x2: y,
-			y2: -x,
-		};
-	};
+	function Math_perVec(x, y, returnData) {
+		returnData = _helper0(returnData, {});
+		returnData.x1 = -y;
+		returnData.y1 = x;
+		returnData.x2 = y;
+		returnData.y2 = -x;
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -5372,6 +5417,7 @@
 	 * @param {number} b_x - x position of second vector
 	 * @param {number} b_y - y position of second vector
 	 * @param {number} scale
+	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number}}
 	 *
 	 * @example
@@ -5381,12 +5427,12 @@
 	 * @function lerpVec
 	 * @memberof Vector
 	 **/
-	Math.lerpVec = function(a_x, a_y, b_x, b_y, scale) {
-		return {
-			x: (b_x - a_x) * scale + a_x,
-			y: (b_y - a_y) * scale + a_y,
-		};
-	};
+	function Math_lerpVec(a_x, a_y, b_x, b_y, scale, returnData) {
+		returnData = _helper0(returnData, {});
+		returnData.x = (b_x - a_x) * scale + a_x;
+		returnData.y = (b_y - a_y) * scale + a_y;
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -5405,9 +5451,9 @@
 	 * @function headVec
 	 * @memberof Vector
 	 **/
-	Math.headVec = function(x, y) {
+	function Math_headVec(x, y) {
 		return -Math.atan2(-y, x);
-	};
+	}
 
 	/**
 	 *	
@@ -5424,12 +5470,12 @@
 	 * @function revVec
 	 * @memberof Vector
 	 **/
-	Math.revVec = function(x, y) {
-		return {
-			x: -x,
-			y: -y,
-		};
-	};
+	function Math_revVec(x, y, returnData) {
+		returnData = _helper0(returnData, {});
+		returnData.x *= -1;
+		returnData.y *= -1;
+		return returnData;
+	}
 
 	/**
 	 *	
@@ -5448,11 +5494,18 @@
 	 * @function clockWiseVec
 	 * @memberof Vector
 	 **/
-	Math.clockWiseVec = function(a_x, a_y, b_x, b_y) {
+	function Math_clockWiseVec(a_x, a_y, b_x, b_y) {
 		return -a_x * b_y + a_y * b_x > 0;
-	};
+	}
 
-	//Trigonometry
+	/**
+	 *
+	 * All of functions that related to Trigonometry
+	 *
+	 * @namespace Trigonometry
+	 *
+	 **/
+
 	/**
 	 *	
 	 * [Sinc function]{@link https://en.wikipedia.org/wiki/Sinc_function}
@@ -5467,7 +5520,7 @@
 	 * @function sinc
 	 * @memberof Trigonometry
 	 **/
-	Math.sinc = function(num) {
+	function Math_sinc(num) {
 		if (Number.isNaN(num)) {
 			return NaN;
 		}
@@ -5478,7 +5531,7 @@
 			return 1.0;
 		}
 		return Math.sin(num * Math.PI) / (num * Math.PI);
-	};
+	}
 
 	/**
 	 *	
@@ -5494,9 +5547,9 @@
 	 * @function crd
 	 * @memberof Trigonometry
 	 **/
-	Math.crd = function(num) {
+	function Math_crd(num) {
 		return 2 * Math.sin(num / 2);
-	};
+	}
 
 	/**
 	 *	
@@ -5512,9 +5565,9 @@
 	 * @function exsec
 	 * @memberof Trigonometry
 	 **/
-	Math.exsec = function(num) {
-		return Math.sec(num) - 1;
-	};
+	function Math_exsec(num) {
+		return Math_sec(num) - 1;
+	}
 
 	/**
 	 *	
@@ -5530,9 +5583,9 @@
 	 * @function excsc
 	 * @memberof Trigonometry
 	 **/
-	Math.excsc = function(num) {
-		return Math.csc(num) - 1;
-	};
+	function Math_excsc(num) {
+		return Math_csc(num) - 1;
+	}
 
 	/**
 	 *	
@@ -5548,9 +5601,9 @@
 	 * @function aexsec
 	 * @memberof Trigonometry
 	 **/
-	Math.aexsec = function(num) {
-		return Math.asec(num + 1);
-	};
+	function Math_aexsec(num) {
+		return Math_asec(num + 1);
+	}
 
 	/**
 	 *	
@@ -5566,9 +5619,9 @@
 	 * @function aexcsc
 	 * @memberof Trigonometry
 	 **/
-	Math.aexcsc = function(num) {
-		return Math.acsc(num + 1);
-	};
+	function Math_aexcsc(num) {
+		return Math_acsc(num + 1);
+	}
 
 	/**
 	 *	
@@ -5584,9 +5637,9 @@
 	 * @function vsin
 	 * @memberof Trigonometry
 	 **/
-	Math.vsin = function(num) {
+	function Math_vsin(num) {
 		return 1 - Math.cos(num);
-	};
+	}
 
 	/**
 	 *	
@@ -5602,9 +5655,9 @@
 	 * @function vcos
 	 * @memberof Trigonometry
 	 **/
-	Math.vcos = function(num) {
+	function Math_vcos(num) {
 		return 1 + Math.cos(num);
-	};
+	}
 
 	/**
 	 *	
@@ -5620,9 +5673,9 @@
 	 * @function cvsin
 	 * @memberof Trigonometry
 	 **/
-	Math.cvsin = function(num) {
+	function Math_cvsin(num) {
 		return 1 - Math.sin(num);
-	};
+	}
 
 	/**
 	 *	
@@ -5638,9 +5691,9 @@
 	 * @function cvcos
 	 * @memberof Trigonometry
 	 **/
-	Math.cvcos = function(num) {
+	function Math_cvcos(num) {
 		return 1 + Math.sin(num);
-	};
+	}
 
 	/**
 	 *	
@@ -5656,9 +5709,9 @@
 	 * @function hvsin
 	 * @memberof Trigonometry
 	 **/
-	Math.hvsin = function(num) {
-		return Math.vsin(num) / 2;
-	};
+	function Math_hvsin(num) {
+		return Math_vsin(num) / 2;
+	}
 
 	/**
 	 *	
@@ -5674,9 +5727,9 @@
 	 * @function hvcos
 	 * @memberof Trigonometry
 	 **/
-	Math.hvcos = function(num) {
-		return Math.vcos(num) / 2;
-	};
+	function Math_hvcos(num) {
+		return Math_vcos(num) / 2;
+	}
 
 	/**
 	 *	
@@ -5692,9 +5745,9 @@
 	 * @function hcvsin
 	 * @memberof Trigonometry
 	 **/
-	Math.hcvsin = function(num) {
-		return Math.cvsin(num) / 2;
-	};
+	function Math_hcvsin(num) {
+		return Math_cvsin(num) / 2;
+	}
 
 	/**
 	 *	
@@ -5710,9 +5763,9 @@
 	 * @function hcvcos
 	 * @memberof Trigonometry
 	 **/
-	Math.hcvcos = function(num) {
-		return Math.cvcos(num) / 2;
-	};
+	function Math_hcvcos(num) {
+		return Math_cvcos(num) / 2;
+	}
 
 	/**
 	 *	
@@ -5728,9 +5781,9 @@
 	 * @function avsin
 	 * @memberof Trigonometry
 	 **/
-	Math.avsin = function(num) {
+	function Math_avsin(num) {
 		return Math.acos(1 - num);
-	};
+	}
 
 	/**
 	 *	
@@ -5746,9 +5799,9 @@
 	 * @function avcos
 	 * @memberof Trigonometry
 	 **/
-	Math.avcos = function(num) {
+	function Math_avcos(num) {
 		return Math.acos(1 + num);
-	};
+	}
 
 	/**
 	 *	
@@ -5764,9 +5817,9 @@
 	 * @function acvsin
 	 * @memberof Trigonometry
 	 **/
-	Math.acvsin = function(num) {
+	function Math_acvsin(num) {
 		return Math.asin(1 - num);
-	};
+	}
 
 	/**
 	 *	
@@ -5782,9 +5835,9 @@
 	 * @function acvcos
 	 * @memberof Trigonometry
 	 **/
-	Math.acvcos = function(num) {
+	function Math_acvcos(num) {
 		return Math.asin(1 + num);
-	};
+	}
 
 	/**
 	 *	
@@ -5800,9 +5853,9 @@
 	 * @function ahvsin
 	 * @memberof Trigonometry
 	 **/
-	Math.ahvsin = function(num) {
+	function Math_ahvsin(num) {
 		return 2 * Math.asin(Math.sqrt(num));
-	};
+	}
 
 	/**
 	 *	
@@ -5818,9 +5871,9 @@
 	 * @function ahvcos
 	 * @memberof Trigonometry
 	 **/
-	Math.ahvcos = function(num) {
+	function Math_ahvcos(num) {
 		return 2 * Math.acos(Math.sqrt(num));
-	};
+	}
 
 	/**
 	 *	
@@ -5836,9 +5889,9 @@
 	 * @function csc
 	 * @memberof Trigonometry
 	 **/
-	Math.csc = function(num) {
+	function Math_csc(num) {
 		return 1 / Math.sin(num);
-	};
+	}
 
 	/**
 	 *	
@@ -5854,9 +5907,9 @@
 	 * @function csch
 	 * @memberof Trigonometry
 	 **/
-	Math.csch = function(num) {
+	function Math_csch(num) {
 		return 1 / Math.sinh(num);
-	};
+	}
 
 	/**
 	 *	
@@ -5872,9 +5925,9 @@
 	 * @function sec
 	 * @memberof Trigonometry
 	 **/
-	Math.sec = function(num) {
+	function Math_sec(num) {
 		return 1 / Math.cos(num);
-	};
+	}
 
 	/**
 	 *	
@@ -5890,9 +5943,9 @@
 	 * @function sech
 	 * @memberof Trigonometry
 	 **/
-	Math.sech = function(num) {
+	function Math_sech(num) {
 		return 1 / Math.cosh(num);
-	};
+	}
 
 	/**
 	 *	
@@ -5908,9 +5961,9 @@
 	 * @function cot
 	 * @memberof Trigonometry
 	 **/
-	Math.cot = function(num) {
+	function Math_cot(num) {
 		return 1 / Math.tan(num);
-	};
+	}
 
 	/**
 	 *	
@@ -5926,9 +5979,9 @@
 	 * @function coth
 	 * @memberof Trigonometry
 	 **/
-	Math.coth = function(num) {
+	function Math_coth(num) {
 		return 1 / Math.tanh(num);
-	};
+	}
 
 	/**
 	 *	
@@ -5944,9 +5997,9 @@
 	 * @function acsc
 	 * @memberof Trigonometry
 	 **/
-	Math.acsc = function(num) {
+	function Math_acsc(num) {
 		return 1 / Math.asin(num);
-	};
+	}
 
 	/**
 	 *	
@@ -5962,9 +6015,9 @@
 	 * @function acsch
 	 * @memberof Trigonometry
 	 **/
-	Math.acsch = function(num) {
+	function Math_acsch(num) {
 		return 1 / Math.asinh(num);
-	};
+	}
 
 	/**
 	 *	
@@ -5980,9 +6033,9 @@
 	 * @function asec
 	 * @memberof Trigonometry
 	 **/
-	Math.asec = function(num) {
+	function Math_asec(num) {
 		return 1 / Math.acos(num);
-	};
+	}
 
 	/**
 	 *	
@@ -5998,9 +6051,9 @@
 	 * @function asech
 	 * @memberof Trigonometry
 	 **/
-	Math.asech = function(num) {
+	function Math_asech(num) {
 		return 1 / Math.acosh(num);
-	};
+	}
 
 	/**
 	 *	
@@ -6016,9 +6069,9 @@
 	 * @function acot
 	 * @memberof Trigonometry
 	 **/
-	Math.acot = function(num) {
+	function Math_acot(num) {
 		return 1 / Math.atan(num);
-	};
+	}
 
 	/**
 	 *	
@@ -6034,15 +6087,16 @@
 	 * @function acoth
 	 * @memberof Trigonometry
 	 **/
-	Math.acoth = function(num) {
+	function Math_acoth(num) {
 		return 1 / Math.atanh(num);
-	};
+	}
 
 	/**
 	 *	
 	 * Calculate sine and cosine at a same time
 	 *
 	 * @param {number} num
+	 * @param {array=} returnData - Array to put data
 	 * @return {number[]}
 	 * 
 	 * Cosine on the left, sine on the right
@@ -6054,12 +6108,22 @@
 	 * @function sincos
 	 * @memberof Trigonometry
 	 **/
-	Math.sincos = function(num) {
+	function Math_sincos(num, returnData) {
 		let temp = Math.sin(num);
-		return [Math.sqrt(1 - temp * temp), temp];
-	};
+		returnData = _helper0(returnData, []);
+		returnData[0] = Math.sqrt(1 - temp * temp);
+		returnData[1] = temp;
+		return returnData;
+	}
 
-	//Number
+	/**
+	 *
+	 * All of functions that dealing with checking a number
+	 *
+	 * @namespace Number
+	 *
+	 **/
+
 	/**
 	 *	
 	 * Check if a number is prime
@@ -6074,13 +6138,12 @@
 	 * @function isPrime
 	 * @memberof Number
 	 **/
-	Number.isPrime = function(num) {
+	function Number_isPrime(num) {
 		if (Number.isNaN(num) || !Number.isFinite(num) || num < 2) return false;
-		if (num == _helper8(num)) return true;
+		if (num == _helper9(num)) return true;
 		return false;
-	};
+	}
 
-	//Number
 	/**
 	 *	
 	 * Check if negative zero
@@ -6095,11 +6158,10 @@
 	 * @function isMinusZero
 	 * @memberof Number
 	 **/
-	Number.isMinusZero = function(num) {
+	function Number_isMinusZero(num) {
 		return 1 / num === -Infinity;
-	};
+	}
 
-	//Number
 	/**
 	 *	
 	 * Check if `num2 ** n === num1`
@@ -6115,16 +6177,16 @@
 	 * @function isPower
 	 * @memberof Number
 	 **/
-	Number.isPower = function(num1, num2, epsilon) {
-		epsilon = _helper0(epsilon, Math.precision(num2));
-		let d = Math.ln(Math.abs(num1)) / Math.ln(Math.abs(num2));
+	function Number_isPower(num1, num2, epsilon) {
+		epsilon = _helper0(epsilon, Math_precision(num2));
+		let d = Math_ln(Math.abs(num1)) / Math_ln(Math.abs(num2));
 		if ((num1 < 0 && num2 < 0) || (num1 > 0 && num2 > 0)) {
-			return Math.trunc(d, epsilon) === d;
+			return Math_trunc(d, epsilon) === d;
 		} else if (num1 > 0 && num2 < 0) {
-			return Math.trunc(d, epsilon) % 2 === 0;
+			return Math_trunc(d, epsilon) % 2 === 0;
 		}
 		return false;
-	};
+	}
 
 	/**
 	 *	
@@ -6140,9 +6202,9 @@
 	 * @function isEven
 	 * @memberof Number
 	 **/
-	Number.isEven = function(num) {
+	function Number_isEven(num) {
 		return Number.isInteger(num) && (num & 1) === 0; //!(num % 2);
-	};
+	}
 
 	/**
 	 *	
@@ -6158,9 +6220,9 @@
 	 * @function isNumeric
 	 * @memberof Number
 	 **/
-	Number.isNumeric = function(num) {
+	function Number_isNumeric(num) {
 		return !(Object.prototype.toString.call(num) === "[object Array]") && (num - parseFloat(num) + 1) >= 0;
-	};
+	}
 
 	/**
 	 *	
@@ -6175,14 +6237,21 @@
 	 * @function epsilon
 	 * @memberof Number
 	 **/
-	Number.epsilon = function() {
+	function Number_epsilon() {
 		if (Number.EPSILON) {
 			return Number.EPSILON;
 		}
 		return Math.abs(1 - _epsilon_1_ * 3);
-	};
+	}
 
-	//Tween
+	/**
+	 *
+	 * All of functions that related to Tween (see [here]{@link http://easings.net/} for more infos)
+	 *
+	 * @namespace Tween
+	 *
+	 **/
+
 	/**
 	 *	
 	 * In Quad
@@ -6197,11 +6266,10 @@
 	 * @function inQuad
 	 * @memberof Tween
 	 **/
-	Tween.inQuad = function(time) {
+	function Tween_inQuad(time) {
 		return time * time;
-	};
+	}
 
-	//Tween
 	/**
 	 *	
 	 * Out Quad
@@ -6216,11 +6284,10 @@
 	 * @function outQuad
 	 * @memberof Tween
 	 **/
-	Tween.outQuad = function(time) {
+	function Tween_outQuad(time) {
 		return time * (2 - time);
-	};
+	}
 
-	//Tween
 	/**
 	 *	
 	 * In Out Quad
@@ -6235,9 +6302,9 @@
 	 * @function inOutQuad
 	 * @memberof Tween
 	 **/
-	Tween.inOutQuad = function(time) {
+	function Tween_inOutQuad(time) {
 		return time < 0.5 ? 2 * time * time : -1 + (4 - 2 * time) * time;
-	};
+	}
 
 	/**
 	 *	
@@ -6253,9 +6320,9 @@
 	 * @function inCubic
 	 * @memberof Tween
 	 **/
-	Tween.inCubic = function(time) {
-		return Math.pow(time, 3);
-	};
+	function Tween_inCubic(time) {
+		return Math_pow(time, 3);
+	}
 
 	/**
 	 *	
@@ -6271,9 +6338,9 @@
 	 * @function outCubic
 	 * @memberof Tween
 	 **/
-	Tween.outCubic = function(time) {
+	function Tween_outCubic(time) {
 		return (time -= 1) * time * time + 1;
-	};
+	}
 
 	/**
 	 *	
@@ -6289,9 +6356,9 @@
 	 * @function inOutCubic
 	 * @memberof Tween
 	 **/
-	Tween.inOutCubic = function(time) {
-		return time < 0.5 ? 4 * Math.pow(time, 3) : (time - 1) * Math.pow(2 * time - 2, 2) + 1;
-	};
+	function Tween_inOutCubic(time) {
+		return time < 0.5 ? 4 * Math_pow(time, 3) : (time - 1) * Math_pow(2 * time - 2, 2) + 1;
+	}
 
 	/**
 	 *	
@@ -6307,9 +6374,9 @@
 	 * @function inQuart
 	 * @memberof Tween
 	 **/
-	Tween.inQuart = function(time) {
-		return Math.pow(time, 4);
-	};
+	function Tween_inQuart(time) {
+		return Math_pow(time, 4);
+	}
 
 	/**
 	 *	
@@ -6325,9 +6392,9 @@
 	 * @function outQuart
 	 * @memberof Tween
 	 **/
-	Tween.outQuart = function(time) {
-		return 1 - (time -= 1) * Math.pow(time, 3);
-	};
+	function Tween_outQuart(time) {
+		return 1 - (time -= 1) * Math_pow(time, 3);
+	}
 
 	/**
 	 *	
@@ -6343,9 +6410,9 @@
 	 * @function inOutQuart
 	 * @memberof Tween
 	 **/
-	Tween.inOutQuart = function(time) {
-		return time < 0.5 ? 8 * Math.pow(time, 4) : 1 - 8 * (time -= 1) * Math.pow(time, 3);
-	};
+	function Tween_inOutQuart(time) {
+		return time < 0.5 ? 8 * Math_pow(time, 4) : 1 - 8 * (time -= 1) * Math_pow(time, 3);
+	}
 
 	/**
 	 *	
@@ -6361,9 +6428,9 @@
 	 * @function inQuint
 	 * @memberof Tween
 	 **/
-	Tween.inQuint = function(time) {
-		return Math.pow(time, 5);
-	};
+	function Tween_inQuint(time) {
+		return Math_pow(time, 5);
+	}
 
 	/**
 	 *	
@@ -6379,9 +6446,9 @@
 	 * @function outQuint
 	 * @memberof Tween
 	 **/
-	Tween.outQuint = function(time) {
-		return 1 + (time -= 1) * Math.pow(time, 4);
-	};
+	function Tween_outQuint(time) {
+		return 1 + (time -= 1) * Math_pow(time, 4);
+	}
 
 	/**
 	 *	
@@ -6397,9 +6464,9 @@
 	 * @function inOutQuint
 	 * @memberof Tween
 	 **/
-	Tween.inOutQuint = function(time) {
-		return time < 0.5 ? 16 * Math.pow(time, 5) : 1 + 16 * (time -= 1) * Math.pow(time, 4);
-	};
+	function Tween_inOutQuint(time) {
+		return time < 0.5 ? 16 * Math_pow(time, 5) : 1 + 16 * (time -= 1) * Math_pow(time, 4);
+	}
 
 	/**
 	 *	
@@ -6416,9 +6483,9 @@
 	 * @function inPow
 	 * @memberof Tween
 	 **/
-	Tween.inPow = function(time, pow) {
-		return Math.pow(time, pow);
-	};
+	function Tween_inPow(time, pow) {
+		return Math_pow(time, pow);
+	}
 
 	/**
 	 *	
@@ -6435,10 +6502,10 @@
 	 * @function outPow
 	 * @memberof Tween
 	 **/
-	Tween.outPow = function(time, pow) {
-		let check = Number.isEven(pow - 1) ? 1 : -1;
-		return 1 + (time -= 1) * Math.pow(time, pow - 1) * check;
-	};
+	function Tween_outPow(time, pow) {
+		let check = Number_isEven(pow - 1) ? 1 : -1;
+		return 1 + (time -= 1) * Math_pow(time, pow - 1) * check;
+	}
 
 	/**
 	 *	
@@ -6455,11 +6522,11 @@
 	 * @function inOutPow
 	 * @memberof Tween
 	 **/
-	Tween.inOutPow = function(time, pow) {
-		let temp = Math.pow(2, pow - 1),
-			check = Number.isEven(pow - 1) ? 1 : -1;
-		return time < 0.5 ? temp * Math.pow(time, pow) : 1 + temp * (time -= 1) * Math.pow(time, pow - 1) * check;
-	};
+	function Tween_inOutPow(time, pow) {
+		let temp = Math_pow(2, pow - 1),
+			check = Number_isEven(pow - 1) ? 1 : -1;
+		return time < 0.5 ? temp * Math_pow(time, pow) : 1 + temp * (time -= 1) * Math_pow(time, pow - 1) * check;
+	}
 
 	/**
 	 *	
@@ -6476,9 +6543,9 @@
 	 * @function inSine
 	 * @memberof Tween
 	 **/
-	Tween.inSine = function(time, pow) {
-		return -Math.pow(Math.cos(time * Math.HALFPI), pow) + 1;
-	};
+	function Tween_inSine(time, pow) {
+		return -Math_pow(Math.cos(time * Math.HALFPI), pow) + 1;
+	}
 
 	/**
 	 *	
@@ -6495,9 +6562,9 @@
 	 * @function outSine
 	 * @memberof Tween
 	 **/
-	Tween.outSine = function(time, pow) {
-		return Math.pow(Math.sin(time * Math.HALFPI), pow);
-	};
+	function Tween_outSine(time, pow) {
+		return Math_pow(Math.sin(time * Math.HALFPI), pow);
+	}
 
 	/**
 	 *	
@@ -6514,12 +6581,12 @@
 	 * @function inOutSine
 	 * @memberof Tween
 	 **/
-	Tween.inOutSine = function(time, pow) {
+	function Tween_inOutSine(time, pow) {
 		if ((time *= 2) < 1) {
-			return -0.5 * Math.pow(Math.cos(Math.PI * time), pow) + 0.5;
+			return -0.5 * Math_pow(Math.cos(Math.PI * time), pow) + 0.5;
 		}
-		return 0.5 * Math.pow(Math.cos(Math.PI * (time - 1)), pow) + 0.5;
-	};
+		return 0.5 * Math_pow(Math.cos(Math.PI * (time - 1)), pow) + 0.5;
+	}
 
 	/**
 	 *	
@@ -6535,9 +6602,9 @@
 	 * @function inExpo
 	 * @memberof Tween
 	 **/
-	Tween.inExpo = function(time) {
-		return (time === 0) ? 0 : Math.pow(2, 10 * (time - 1));
-	};
+	function Tween_inExpo(time) {
+		return (time === 0) ? 0 : Math_pow(2, 10 * (time - 1));
+	}
 
 	/**
 	 *	
@@ -6553,9 +6620,9 @@
 	 * @function outExpo
 	 * @memberof Tween
 	 **/
-	Tween.outExpo = function(time) {
-		return (time === 1) ? 1 : (-Math.pow(2, -10 * time) + 1);
-	};
+	function Tween_outExpo(time) {
+		return (time === 1) ? 1 : (-Math_pow(2, -10 * time) + 1);
+	}
 
 	/**
 	 *	
@@ -6571,7 +6638,7 @@
 	 * @function inOutExpo
 	 * @memberof Tween
 	 **/
-	Tween.inOutExpo = function(time) {
+	function Tween_inOutExpo(time) {
 		if (time === 0) {
 			return 0;
 		}
@@ -6579,10 +6646,10 @@
 			return 1;
 		}
 		if ((time *= 2) < 1) {
-			return 0.5 * Math.pow(2, 10 * (time - 1));
+			return 0.5 * Math_pow(2, 10 * (time - 1));
 		}
-		return 0.5 * (-Math.pow(2, -10 * (time -= 1)) + 2);
-	};
+		return 0.5 * (-Math_pow(2, -10 * (time -= 1)) + 2);
+	}
 
 	/**
 	 *	
@@ -6598,9 +6665,9 @@
 	 * @function inCirc
 	 * @memberof Tween
 	 **/
-	Tween.inCirc = function(time) {
+	function Tween_inCirc(time) {
 		return -(Math.sqrt(1 - time * time) - 1);
-	};
+	}
 
 	/**
 	 *	
@@ -6616,9 +6683,9 @@
 	 * @function outCirc
 	 * @memberof Tween
 	 **/
-	Tween.outCirc = function(time) {
+	function Tween_outCirc(time) {
 		return Math.sqrt(1 - (time -= 1) * time);
-	};
+	}
 
 	/**
 	 *	
@@ -6634,12 +6701,12 @@
 	 * @function inOutCirc
 	 * @memberof Tween
 	 **/
-	Tween.inOutCirc = function(time) {
+	function Tween_inOutCirc(time) {
 		if ((time *= 2) < 1) {
 			return -0.5 * (Math.sqrt(1 - time * time) - 1);
 		}
 		return 0.5 * (Math.sqrt(1 - (time -= 2) * time) + 1);
-	};
+	}
 
 	/**
 	 *	
@@ -6657,7 +6724,7 @@
 	 * @function inElastic
 	 * @memberof Tween
 	 **/
-	Tween.inElastic = function(time, amplitude, period) {
+	function Tween_inElastic(time, amplitude, period) {
 		let s;
 		amplitude = _helper0(amplitude, 0.1);
 		period = _helper0(period, 0.1);
@@ -6673,8 +6740,8 @@
 		} else {
 			s = period * Math.asin(1 / amplitude) / Math.TAU;
 		}
-		return -(amplitude * Math.pow(2, 10 * (time -= 1)) * Math.sin((time - s) * Math.TAU / period));
-	};
+		return -(amplitude * Math_pow(2, 10 * (time -= 1)) * Math.sin((time - s) * Math.TAU / period));
+	}
 
 	/**
 	 *	
@@ -6692,7 +6759,7 @@
 	 * @function outElastic
 	 * @memberof Tween
 	 **/
-	Tween.outElastic = function(time, amplitude, period) {
+	function Tween_outElastic(time, amplitude, period) {
 		let s;
 		amplitude = _helper0(amplitude, 0.1);
 		period = _helper0(period, 0.1);
@@ -6708,8 +6775,8 @@
 		} else {
 			s = period * Math.asin(1 / amplitude) / Math.TAU;
 		}
-		return (amplitude * Math.pow(2, -10 * time) * Math.sin((time - s) * Math.TAU / period) + 1);
-	};
+		return (amplitude * Math_pow(2, -10 * time) * Math.sin((time - s) * Math.TAU / period) + 1);
+	}
 
 	/**
 	 *	
@@ -6727,7 +6794,7 @@
 	 * @function inOutElastic
 	 * @memberof Tween
 	 **/
-	Tween.inOutElastic = function(time, amplitude, period) {
+	function Tween_inOutElastic(time, amplitude, period) {
 		let s;
 		amplitude = _helper0(amplitude, 0.1);
 		period = _helper0(period, 0.1);
@@ -6744,10 +6811,10 @@
 			s = period * Math.asin(1 / amplitude) / Math.TAU;
 		}
 		if ((time *= 2) < 1) {
-			return -0.5 * (amplitude * Math.pow(2, 10 * (time -= 1)) * Math.sin((time - s) * Math.TAU / period));
+			return -0.5 * (amplitude * Math_pow(2, 10 * (time -= 1)) * Math.sin((time - s) * Math.TAU / period));
 		}
-		return amplitude * Math.pow(2, -10 * (time -= 1)) * Math.sin((time - s) * Math.TAU / period) * 0.5 + 1;
-	};
+		return amplitude * Math_pow(2, -10 * (time -= 1)) * Math.sin((time - s) * Math.TAU / period) * 0.5 + 1;
+	}
 
 	/**
 	 *	
@@ -6764,14 +6831,14 @@
 	 * @function inBack
 	 * @memberof Tween
 	 **/
-	Tween.inBack = function(time, overShoot) {
+	function Tween_inBack(time, overShoot) {
 		if (overShoot == undefined) {
 			overShoot = 1.70158;
 		} else {
-			overShoot = _helper9(overShoot);
+			overShoot = _helper10(overShoot);
 		}
 		return 1 * time * time * ((overShoot + 1) * time - overShoot);
-	};
+	}
 
 	/**
 	 *	
@@ -6788,14 +6855,14 @@
 	 * @function outBack
 	 * @memberof Tween
 	 **/
-	Tween.outBack = function(time, overShoot) {
+	function Tween_outBack(time, overShoot) {
 		if (overShoot == undefined) {
 			overShoot = 1.70158;
 		} else {
-			overShoot = _helper9(overShoot);
+			overShoot = _helper10(overShoot);
 		}
 		return 1 * ((time -= 1) * time * ((overShoot + 1) * time + overShoot) + 1);
-	};
+	}
 
 	/**
 	 *	
@@ -6812,17 +6879,17 @@
 	 * @function inOutBack
 	 * @memberof Tween
 	 **/
-	Tween.inOutBack = function(time, overShoot) {
+	function Tween_inOutBack(time, overShoot) {
 		if (overShoot == undefined) {
 			overShoot = 1.70158;
 		} else {
-			overShoot = _helper9(overShoot);
+			overShoot = _helper10(overShoot);
 		}
 		if ((time *= 2) < 1) {
 			return 0.5 * (time * time * (((overShoot *= (1.525)) + 1) * time - overShoot));
 		}
 		return 0.5 * ((time -= 2) * time * (((overShoot *= (1.525)) + 1) * time + overShoot) + 2);
-	};
+	}
 
 	/**
 	 *	
@@ -6838,9 +6905,9 @@
 	 * @function inBounce
 	 * @memberof Tween
 	 **/
-	Tween.inBounce = function(time) {
-		return 1 - this.outBounce(1 - time);
-	};
+	function Tween_inBounce(time) {
+		return 1 - Tween_outBounce(1 - time);
+	}
 
 	/**
 	 *	
@@ -6856,7 +6923,7 @@
 	 * @function outBounce
 	 * @memberof Tween
 	 **/
-	Tween.outBounce = function(time) {
+	function Tween_outBounce(time) {
 		if (time < _outBounce_1_[0]) {
 			return (7.5625 * time * time);
 		} else if (time < _outBounce_1_[1]) {
@@ -6866,7 +6933,7 @@
 		} else {
 			return (7.5625 * (time -= _outBounce_1_[5]) * time + 0.984375);
 		}
-	};
+	}
 
 	/**
 	 *	
@@ -6882,12 +6949,12 @@
 	 * @function inOutBounce
 	 * @memberof Tween
 	 **/
-	Tween.inOutBounce = function(time) {
+	function Tween_inOutBounce(time) {
 		if (time < 0.5) {
-			return this.inBounce(time * 2) * 0.5;
+			return Tween_inBounce(time * 2) * 0.5;
 		}
-		return this.outBounce(time * 2 - 1) * 0.5 + 0.5;
-	};
+		return Tween_outBounce(time * 2 - 1) * 0.5 + 0.5;
+	}
 
 	/**
 	 *	
@@ -6904,7 +6971,7 @@
 	 * @function smoothStep
 	 * @memberof Tween
 	 **/
-	Tween.smoothStep = function(time, order) {
+	function Tween_smoothStep(time, order) {
 		if (order < 0) {
 			return 0;
 		}
@@ -6943,12 +7010,12 @@
 				{
 					let result = 0;
 					for (let n = 0; n <= order; n++) {
-						result += (Math.nCr(-order - 1, n) * Math.nCr(2 * order + 1, order - n) * Math.pow(time, order + n + 1));
+						result += (Math_nCr(-order - 1, n) * Math_nCr(2 * order + 1, order - n) * Math_pow(time, order + n + 1));
 					}
 					return result;
 				}
 		}
-	};
+	}
 
 	//https://github.com/foam-lib/foam-math/blob/master/Ease.js
 	/*
@@ -6970,10 +7037,10 @@
 	 * @function overShoot
 	 * @memberof Tween
 	 **/
-	Tween.overShoot = function(time, mag) {
-		time = Tween.outQuad(time);
+	function Tween_overShoot(time, mag) {
+		time = Tween_outQuad(time);
 		return time * (1 + Math.sin(time * Math.PI) * mag); //180 in sin?
-	};
+	}
 
 	/**
 	 *	
@@ -6991,7 +7058,7 @@
 	 * @function poly
 	 * @memberof Tween
 	 **/
-	Tween.poly = function(time, points, weight) {
+	function Tween_poly(time, points, weight) {
 		let temp1 = 0,
 			temp2;
 		for (let i = 0; i < points.length; i += 2) {
@@ -7002,10 +7069,10 @@
 				}
 				temp2 *= (time - points[j]) / (points[i] - points[j]);
 			}
-			temp1 += points[i + 1] * Math.pow(temp2, weight[i / 2]);
+			temp1 += points[i + 1] * Math_pow(temp2, weight[i / 2]);
 		}
 		return temp1;
-	};
+	}
 
 	/**
 	 *	
@@ -7023,20 +7090,20 @@
 	 * @function bezier
 	 * @memberof Tween
 	 **/
-	Tween.bezier = function(time, points, weight) {
+	function Tween_bezier(time, points, weight) {
 		let temp1 = 0,
 			temp2 = 0,
 			temp3 = 0,
 			temp4 = 0,
 			tempL = points.length;
 		for (let i = 0; i < tempL; i ++) {
-			temp2 = _helper11(time, i, tempL - 1) * weight[i];
+			temp2 = Math_bernstein(time, i, tempL - 1) * weight[i];
 			temp1 = temp2 * points[i];
 			temp3 += temp1;
 			temp4 += temp2;
 		}
 		return temp3 / temp4;
-	};
+	}
 
 	/**
 	 *	
@@ -7048,6 +7115,7 @@
 	 * @param {number} density - like time
 	 * @param {number[]} points - control points [x1, y1, x2, y2, ...]
 	 * @param {boolean=} loop - `true` is looped
+	 * @param {array=} returnData - Array to put data
 	 * @return {number[]}
 	 *
 	 * Return array of points [x1, y1, x2, y2, ...]
@@ -7059,7 +7127,7 @@
 	 * @function spline
 	 * @memberof Tween
 	 **/
-	Tween.spline = function(continuty, bias, tension, density, points, loop) {
+	function Tween_spline(continuty, bias, tension, density, points, loop, returnData) {
 		let tangent = [],
 			tempA, tempB, tempC, tempD, tempX, tempY, tempX2, tempY2, count, iteration, lines;
 		//Control points
@@ -7082,7 +7150,7 @@
 			count += 2;
 		}
 		count = 2;
-		lines = [];
+		lines = _helper0(returnData, []);
 		while (count < points.length - 4) {
 			lines.push(points[count], points[count + 1]);
 			iteration = density;
@@ -7104,7 +7172,7 @@
 			count += 2;
 		}
 		return lines;
-	};
+	}
 
 	/**
 	 *	
@@ -7126,7 +7194,7 @@
 	 * @function count
 	 * @memberof Tween
 	 **/
-	Tween.count = (function() {
+	let Tween_count = (function() {
 		let temp;
 		return function(min, max, change, current, mode) {
 			if (!current) {
@@ -7293,7 +7361,14 @@
 		};
 	})();
 
-	//Boolean
+	/**
+	 *
+	 * All of functions that related to Boolean
+	 *
+	 * @namespace Boolean
+	 *
+	 **/
+
 	/**
 	 *	
 	 * AndNot boolean function, see [here]{@link http://mathworld.wolfram.com/BooleanFunction.html}
@@ -7309,9 +7384,9 @@
 	 * @function andNot
 	 * @memberof Boolean
 	 **/
-	Boolean.andNot = function(a, b) {
+	function Boolean_andNot(a, b) {
 		return !a && b;
-	};
+	}
 
 	/**
 	 *	
@@ -7328,9 +7403,9 @@
 	 * @function notAnd
 	 * @memberof Boolean
 	 **/
-	Boolean.notAnd = function(a, b) {
+	function Boolean_notAnd(a, b) {
 		return a && !b;
-	};
+	}
 
 	/**
 	 *	
@@ -7347,9 +7422,9 @@
 	 * @function nand
 	 * @memberof Boolean
 	 **/
-	Boolean.nand = function(a, b) {
+	function Boolean_nand(a, b) {
 		return !(a && b);
-	};
+	}
 
 	/**
 	 *	
@@ -7366,9 +7441,9 @@
 	 * @function orNot
 	 * @memberof Boolean
 	 **/
-	Boolean.orNot = function(a, b) {
+	function Boolean_orNot(a, b) {
 		return a || !b;
-	};
+	}
 
 	/**
 	 *	
@@ -7385,9 +7460,9 @@
 	 * @function notOr
 	 * @memberof Boolean
 	 **/
-	Boolean.notOr = function(a, b) {
+	function Boolean_notOr(a, b) {
 		return !a || b;
-	};
+	}
 
 	/**
 	 *	
@@ -7404,9 +7479,9 @@
 	 * @function nor
 	 * @memberof Boolean
 	 **/
-	Boolean.nor = function(a, b) {
+	function Boolean_nor(a, b) {
 		return !(a || b);
-	};
+	}
 
 	/**
 	 *	
@@ -7423,9 +7498,9 @@
 	 * @function xor
 	 * @memberof Boolean
 	 **/
-	Boolean.xor = function(a, b) {
+	function Boolean_xor(a, b) {
 		return a ? !b : b;
-	};
+	}
 
 	/**
 	 *	
@@ -7442,9 +7517,9 @@
 	 * @function xnor
 	 * @memberof Boolean
 	 **/
-	Boolean.xnor = function(a, b) {
-		return !Boolean.xor(a, b);
-	};
+	function Boolean_xnor(a, b) {
+		return !Boolean_xor(a, b);
+	}
 
 	/**
 	 *	
@@ -7460,7 +7535,7 @@
 	 * @function all
 	 * @memberof Boolean
 	 **/
-	Boolean.all = function(x) {
+	function Boolean_all(x) {
 		for (let loopCount = 0; loopCount < x.length; loopCount++) {
 			if (x[loopCount] != true) {
 				return false;
@@ -7468,7 +7543,7 @@
 				return true;
 			}
 		}
-	};
+	}
 
 	/**
 	 *	
@@ -7484,35 +7559,329 @@
 	 * @function nall
 	 * @memberof Boolean
 	 **/
-	Boolean.nall = function(x) {
+	function Boolean_nall(x) {
 		for (let loopCount = 0; loopCount < x.length; loopCount++) {
 			if (x[loopCount] == true) {
 				return true;
 			}
 		}
 		return false;
-	};
-
-	let root = {
-		Math: Math,
-		Geometry: Geometry,
-		Tween: Tween,
-		Boolean: Boolean,
-		Number: Number
-	};
-
-	if (typeof define === "function" && define.amd) {
-		define([], function () {
-			return root;
-		});
-	} else {
-		if (typeof module === "object" && module.exports) {
-			module.exports = root;
-		}
 	}
-	global.Geometry = Geometry;
-	global.Tween = Tween;
+
+	//Export
+	module([
+		["M", "HALFPI", Math.HALFPI],
+		["M", "TAU", Math.TAU],
+		["M", "SQRTPI", Math.SQRTPI],
+		["M", "SQRTTAU", Math.SQRTTAU],
+		["M", "PHI", Math.PHI],
+		["M", "SILVER", Math.SLIVER],
+		["M", "UPC", Math.UPC],
+
+		["M", "ln", Math_ln],
+		["M", "log", Math_log],
+		["M", "mod", Math_mod],
+		["M", "rem", Math_rem],
+		["M", "cycle", Math_cycle],
+		["M", "gamma", Math_gamma],
+		["M", "lnGamma", Math_lnGamma],
+		["M", "factorial", Math_factorial],
+		["M", "nCr", Math_nCr],
+		["M", "nPr", Math_nPr],
+		["M", "pow", Math_pow],
+		["M", "sigmoid", Math_sigmoid],
+		["M", "pair", Math_pair],
+		["M", "integral", Math_integral],
+		["M", "derivative", Math_derivative],
+		["M", "limit", Math_limit],
+		["M", "solve", Math_solve],
+		["M", "rational", Math_rational],
+		["M", "pdf", Math_pdf],
+		["M", "cdf", Math_cdf],
+		["M", "ppf", Math_ppf],
+		["M", "erf", Math_erf],
+		["M", "erfc", Math_erfc],
+		["M", "ierf", Math_ierf],
+		["M", "ierfc", Math_ierfc],
+		["M", "erfcx", Math_erfcx],
+		["M", "iNorm", Math_iNorm],
+		["M", "kelly", Math_kelly],
+		["M", "bernstein", Math_bernstein],
+		["M", "adjust", Math_adjust],
+		["M", "adjust2", Math_adjust2],
+		["M", "round", Math_round],
+		["M", "floor", Math_floor],
+		["M", "ceil", Math_ceil],
+		["M", "trunc", Math_trunc],
+		["M", "away", Math_away],
+		["M", "round2", Math_round2],
+		["M", "floor2", Math_floor2],
+		["M", "ceil2", Math_ceil2],
+		["M", "trunc2", Math_trunc2],
+		["M", "away2", Math_away2],
+		["M", "correct", Math_correct],
+		["M", "snap", Math_snap],
+		["M", "snap2", Math_snap2],
+		["M", "shear", Math_shear],
+		["M", "precision", Math_precision],
+		["M", "order", Math_order],
+		["M", "ramp", Math_ramp],
+		["M", "heaviside", Math_heaviside],
+		["M", "haar", Math_haar],
+		["M", "rect", Math_rect],
+		["M", "tri", Math_tri],
+		["M", "fold", Math_fold],
+		["M", "one", Math_one],
+		["M", "range", Math_range],
+		["M", "compare", Math_compare],
+		["M", "clamp", Math_clamp],
+		["M", "wrap", Math_wrap],
+		["M", "bounce", Math_bounce],
+		["M", "map", Math_map],
+		["M", "norm", Math_norm],
+		["M", "lerp", Math_lerp],
+		["M", "gcd", Math_gcd],
+		["M", "lcm", Math_lcm],
+		["M", "factor", Math_factor],
+		["M", "divisor", Math_divisor],
+		["M", "random", Math_random],
+		["M", "randomTri", Math_randomTri],
+		["M", "randomCirc", Math_randomCirc],
+		["M", "noise", Math_noise],
+
+		["G", "normRad", Geometry_normRad],
+		["G", "toRad", Geometry_toRad],
+		["G", "fullRad", Geometry_fullRad],
+		["G", "normDeg", Geometry_normDeg],
+		["G", "toDeg", Geometry_toDeg],
+		["G", "fullDeg", Geometry_fullDeg],
+		["G", "getAngle", Geometry_getAngle],
+		["G", "relfAngle", Geometry_relfAngle],
+		["G", "diffAngle", Geometry_diffAngle],
+		["G", "isBetwAngle", Geometry_isBetwAngle],
+		["G", "colliAnglePnt", Geometry_colliAnglePnt],
+		["G", "distPnt", Geometry_distPnt],
+		["G", "polarDistPnt", Geometry_polarDistPnt],
+		["G", "manDistPnt", Geometry_manDistPnt],
+		["G", "chevDistPnt", Geometry_chevDistPnt],
+		["G", "rotPnt", Geometry_rotPnt],
+		["G", "anglePnt", Geometry_anglePnt],
+		["G", "cntrPnt", Geometry_cntrPnt],
+		["G", "cmpPnt", Geometry_cmpPnt],
+		["G", "slopeLine", Geometry_slopeLine],
+		["G", "stdLine", Geometry_stdLine],
+		["G", "distLinePnt", Geometry_distLinePnt],
+		["G", "distLine", Geometry_distLine],
+		["G", "intrLine", Geometry_intrLine],
+		["G", "intrLineCirc", Geometry_intrLineCirc],
+		["G", "sideLine", Geometry_sideLine],
+		["G", "onLine", Geometry_onLine],
+		["G", "colliLinePnt", Geometry_colliLinePnt],
+		["G", "getXLine", Geometry_getXLine],
+		["G", "getYLine", Geometry_getYLine],
+		["G", "colliRayRect", Geometry_colliRayRect],
+		["G", "colliArcCircPnt", Geometry_colliArcCircPnt],
+		["G", "colliCircPnt", Geometry_colliCircPnt],
+		["G", "colliCirc", Geometry_colliCirc],
+		["G", "colliCircRect", Geometry_colliCircRect],
+		["G", "intrCirc", Geometry_intrCirc],
+		["G", "randomCirc", Geometry_randomCirc],
+		["G", "onElli", Geometry_onElli],
+		["G", "colliElliPnt", Geometry_colliElliPnt],
+		["G", "intrElli", Geometry_intrElli],
+		["G", "intrElliLine", Geometry_intrElliLine],
+		["G", "boundElli", Geometry_boundElli],
+		["G", "randomElli", Geometry_randomElli],
+		["G", "distElliPnt", Geometry_distElliPnt],
+		["G", "centroidTri", Geometry_centroidTri],
+		["G", "equilTri", Geometry_equilTri],
+		["G", "rightTri", Geometry_rightTri],
+		["G", "crcmCntrTri", Geometry_crcmCntrTri],
+		["G", "crcmCircTri", Geometry_crcmCircTri],
+		["G", "inCircTri", Geometry_inCircTri],
+		["G", "colliTriPnt", Geometry_colliTriPnt],
+		["G", "areaTri", Geometry_areaTri],
+		["G", "randomTri", Geometry_randomTri],
+		["G", "colliRectPnt", Geometry_colliRectPnt],
+		["G", "colliRect", Geometry_colliRect],
+		["G", "intrRect", Geometry_intrRect],
+		["G", "randomRect", Geometry_randomRect],
+		["G", "colliPolyPnt", Geometry_colliPolyPnt],
+		["G", "colliPolyCirc", Geometry_colliPolyCirc],
+		["G", "colliPoly", Geometry_colliPoly],
+		["G", "isSimplePoly", Geometry_isSimplePoly],
+		["G", "isConvexPoly", Geometry_isConvexPoly],
+		["G", "isClockWisePoly", Geometry_isClockWisePoly],
+		["G", "boundPoly", Geometry_boundPoly],
+		["G", "triPoly", Geometry_triPoly],
+		//["G", "slicePoly", Geometry_slicePoly],
+		["G", "areaPoly", Geometry_areaPoly],
+		["G", "centroidPoly", Geometry_centroidPoly],
+		["G", "convexHullPoly", Geometry_convexHullPoly],
+		["G", "distPolyRay", Geometry_distPolyRay],
+		["G", "intrPolyPnt", Geometry_intrPolyPnt],
+		["G", "reversePoly", Geometry_reversePoly],
+		["G", "timeAccel", Geometry_timeAccel],
+		["G", "accelAccel", Geometry_accelAccel],
+		["G", "distAccel", Geometry_distAccel],
+		["G", "timeDistAccel", Geometry_timeDistAccel],
+
+		["M", "pol", Math_pol],
+		["M", "rec", Math_rec],
+		["M", "normVec", Math_normVec],
+		["M", "scaleVec", Math_scaleVec],
+		["M", "truncVec", Math_truncVec],
+		["M", "magVec", Math_magVec],
+		["M", "dotVec", Math_dotVec],
+		["M", "crossVec", Math_crossVec],
+		["M", "projVec", Math_projVec],
+		["M", "rejVec", Math_rejVec],
+		["M", "perVec", Math_perVec],
+		["M", "lerpVec", Math_lerpVec],
+		["M", "headVec", Math_headVec],
+		["M", "revVec", Math_revVec],
+		["M", "clockWiseVec", Math_clockWiseVec],
+
+		["M", "sinc", Math_sinc],
+		["M", "crd", Math_crd],
+		["M", "exsec", Math_exsec],
+		["M", "excsc", Math_excsc],
+		["M", "aexsec", Math_aexsec],
+		["M", "aexcsc", Math_aexcsc],
+		["M", "vsin", Math_vsin],
+		["M", "vcos", Math_vcos],
+		["M", "cvsin", Math_cvsin],
+		["M", "cvcos", Math_cvcos],
+		["M", "hvsin", Math_hvsin],
+		["M", "hvcos", Math_hvcos],
+		["M", "hcvsin", Math_hcvsin],
+		["M", "hcvcos", Math_hcvcos],
+		["M", "avsin", Math_avsin],
+		["M", "avcos", Math_avcos],
+		["M", "acvsin", Math_acvsin],
+		["M", "acvcos", Math_acvcos],
+		["M", "ahvsin", Math_ahvsin],
+		["M", "ahvcos", Math_ahvcos],
+		["M", "csc", Math_csc],
+		["M", "csch", Math_csch],
+		["M", "sec", Math_sec],
+		["M", "sech", Math_sech],
+		["M", "cot", Math_cot],
+		["M", "coth", Math_coth],
+		["M", "acsc", Math_acsc],
+		["M", "acsch", Math_acsch],
+		["M", "asec", Math_asec],
+		["M", "asech", Math_asech],
+		["M", "acot", Math_acot],
+		["M", "acoth", Math_acoth],
+		["M", "sincos", Math_sincos],
+
+		["N", "isPrime", Number_isPrime],
+		["N", "isMinusZero", Number_isMinusZero],
+		["N", "isPower", Number_isPower],
+		["N", "isEven", Number_isEven],
+		["N", "isNumeric", Number_isNumeric],
+		["N", "epsilon", Number_epsilon],
+
+		["T", "inQuad", Tween_inQuad],
+		["T", "outQuad", Tween_outQuad],
+		["T", "inOutQuad", Tween_inOutQuad],
+		["T", "inCubic", Tween_inCubic],
+		["T", "outCubic", Tween_outCubic],
+		["T", "inOutCubic", Tween_inOutCubic],
+		["T", "inQuart", Tween_inQuart],
+		["T", "outQuart", Tween_outQuart],
+		["T", "inOutQuart", Tween_inOutQuart],
+		["T", "inQuint", Tween_inQuint],
+		["T", "outQuint", Tween_outQuint],
+		["T", "inOutQuint", Tween_inOutQuint],
+		["T", "inPow", Tween_inPow],
+		["T", "outPow", Tween_outPow],
+		["T", "inOutPow", Tween_inOutPow],
+		["T", "inSine", Tween_inSine],
+		["T", "outSine", Tween_outSine],
+		["T", "inOutSine", Tween_inOutSine],
+		["T", "inExpo", Tween_inExpo],
+		["T", "outExpo", Tween_outExpo],
+		["T", "inOutExpo", Tween_inOutExpo],
+		["T", "inCirc", Tween_inCirc],
+		["T", "outCirc", Tween_outCirc],
+		["T", "inOutCirc", Tween_inOutCirc],
+		["T", "inElastic", Tween_inElastic],
+		["T", "outElastic", Tween_outElastic],
+		["T", "inOutElastic", Tween_inOutElastic],
+		["T", "inBack", Tween_inBack],
+		["T", "outBack", Tween_outBack],
+		["T", "inOutBack", Tween_inOutBack],
+		["T", "inBounce", Tween_inBounce],
+		["T", "outBounce", Tween_outBounce],
+		["T", "inOutBounce", Tween_inOutBounce],
+		["T", "smoothStep", Tween_smoothStep],
+		["T", "overShoot", Tween_overShoot],
+		["T", "poly", Tween_poly],
+		["T", "bezier", Tween_bezier],
+		["T", "spline", Tween_spline],
+		["T", "count", Tween_count],
+
+		["B", "andNot", Boolean_andNot],
+		["B", "notAnd", Boolean_notAnd],
+		["B", "nand", Boolean_nand],
+		["B", "orNot", Boolean_orNot],
+		["B", "notOr", Boolean_notOr],
+		["B", "nor", Boolean_nor],
+		["B", "xor", Boolean_xor],
+		["B", "xnor", Boolean_xnor],
+		["B", "all", Boolean_all],
+		["B", "nall", Boolean_nall],
+	], global);
 })(
+	function(module, global) {
+		//You can change this function to anything you like
+		let Geometry = {},
+			Tween = {};
+
+		for (let i = 0; i < module.length; i++) {
+			let temp;
+			switch (module[i][0]) {
+				case "M":
+					temp = global.Math;
+					break;
+				case "G":
+					temp = Geometry;
+					break;
+				case "N":
+					temp = global.Number;
+					break;
+				case "T":
+					temp = Tween;
+					break;
+				case "B":
+					temp = global.Boolean;
+					break;
+			}
+			temp[module[i][1]] = module[i][2];
+		}
+
+		let root = {
+			Math: global.Math,
+			Geometry: Geometry,
+			Tween: Tween,
+			Boolean: global.Boolean,
+			Number: global.Number
+		};
+
+		if (typeof define === "function" && define.amd) {
+			define([], function() {
+				return root;
+			});
+		} else {
+			if (typeof module === "object" && module.exports) {
+				module.exports = root;
+			}
+		}
+		global.Geometry = Geometry;
+		global.Tween = Tween;
+	},
 	typeof self !== "undefined" ? self :
 	typeof window !== "undefined" ? window :
 	typeof global !== "undefined" ? global : this
