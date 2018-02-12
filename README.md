@@ -4,22 +4,24 @@
 
 An all-in-one library that dedicated to improve Javascript default functions and provide more functions mostly focus on game development.
 
-Version 0.6a (Alpha version)
+Version 0.7a (Alpha version)
 
-[Download](https://cdn.rawgit.com/Trung0246/Funch/6ac5420e/src/funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/6ac5420e/src/funch.min.js))
+[Download](https://cdn.rawgit.com/Trung0246/Funch/0d89f1ed/src/funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/0d89f1ed/src/funch.min.js))
 
-[Documentation](https://cdn.rawgit.com/Trung0246/Funch/6ac5420e/docs/index.html)
+[Documentation](https://cdn.rawgit.com/Trung0246/Funch/6ac5420e/docs/index.html) (old, may not update to lastest version)
+
+You can generate document yourself by using [JSDoc](http://usejsdoc.org/).
 
 ---
 
 ### Features
 - Over 130 functions that you can use right now
 
-- Simple to add by copy `<script type="text/javascript" src="funch.js"></script>` or `require("funch.js");`
+- Simple to add by copy `<script type="text/javascript" src="funch.js"></script>` or `require("./funch.js");`
 
-- Medium-sized ? (**32.3 KB** compressed using [Babel](https://babeljs.io) -> [Closure Complier](https://closure-compiler.appspot.com/home) -> [UglifyJS2](https://github.com/mishoo/UglifyJS2))
+- Medium-sized ? (**35.8 KB** compressed using [Babel](https://babeljs.io) -> [Closure Complier](https://closure-compiler.appspot.com/home) -> [UglifyJS2](https://github.com/mishoo/UglifyJS2))
 
-- Easy to copy and paste any function you liked to use without include whole library *(I'm sad :( )*
+- Easy to copy and paste any function you like to use without include whole library *(I'm sad :( )*
 
 - No additional objects or classes (except Geometry and Tween obviously for exporting functions)
 
@@ -33,7 +35,7 @@ Version 0.6a (Alpha version)
 
 ##### Notes
     
-  - If a function depends on another functions, try to use funch.js provided functions if it have, else ask me if that function can be generalized...
+  - If a function depends on another functions, try to use funch.js provided functions if it had, else ask me if that function can be generalized...
     
   - This is my first library. There maybe some bad coding practice in the codebase :(
   
