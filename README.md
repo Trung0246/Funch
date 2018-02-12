@@ -48,8 +48,13 @@ You can generate document yourself by using [JSDoc](http://usejsdoc.org/).
 #### Special thanks to these libraries and their respect authors:
 
   -[mathplus.js](https://github.com/pr1001/MathPlus/) (Peter Robinett, MIT)
+  
   -[xorshift.js](https://github.com/AndreasMadsen/xorshift/) (Andreas Madsen & Emil Bay, MIT)
+  
   -[Geometry.js](https://github.com/tsh96/Geometry) (Tan Sia How, MIT)
+  
   -[polyk.js](http://polyk.ivank.net) (Ivan Kuckir, MIT)
+  
   -[kiwi.js](https://github.com/gamelab/kiwi.js/) (Gamelab, MIT)
+  
   -And many more I forgot to name...
