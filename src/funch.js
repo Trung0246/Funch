@@ -3,11 +3,11 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.7a
+	Funch.js, v0.8a
 
 	MIT License
 
-	Copyright (c) 2017 Trung0246
+	Copyright (c) 2017 Trung Tran
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,18 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 
-	P.S: you can just link to "github.com/Trung0246/Funch" when using this library is enough for me instead include this whole license...
+	Some portion of this code is under MIT, BSD-3 license:
+
+	For a copy, see <https://opensource.org/licenses/MIT> and <https://opensource.org/licenses/BSD-3-Clause>
+
+	- mathplus.js (Peter Robinett, MIT)	       <github.com/pr1001/MathPlus/>
+	- xorshift.js (Andreas Madsen & Emil Bay, MIT) <github.com/AndreasMadsen/xorshift/>
+	- Geometry.js (Tan Sia How, MIT)               <github.com/tsh96/Geometry>
+	- polyk.js    (Ivan Kuckir, MIT)               <polyk.ivank.net/>
+	- kiwi.js     (Gamelab, MIT)                   <github.com/gamelab/kiwi.js/>
+	- phaser.js   (Photon Storm Ltd, MIT)          <github.com/photonstorm/phaser/>
+	- jmat.js     (Lode Vandevenne, BSD-3)         <github.com/lvandeve/jmat/>
+	- game-math   (Nick Pruehs, MIT)               <github.com/npruehs/game-math>
 	*/
 
 	//Namespace
@@ -167,6 +178,7 @@
 		return ((((num1 & 0xffff) * num2) + ((((num1 >>> 16) * num2) & 0xffff) << 16))) & 0xffffffff;
 	}
 
+	//Factorial
 	function _helper5(num) {
 		if (num !== oldFloor(num) || num < 0 || num > 170) {
 			return NaN;
@@ -180,6 +192,7 @@
 		return t;
 	}
 
+	//GCD
 	function _helper6(num1, num2) {
 		let signX = (num1 < 0) ? -1 : 1,
 			signY = (num2 < 0) ? -1 : 1,
@@ -208,6 +221,7 @@
 		_memory_1_[2] = signY * y;
 	}
 
+	//Xorshift
 	function _helper7() {
 		let s1U = _memory_1_[0],
 			s1L = _memory_1_[1],
@@ -248,6 +262,7 @@
 		_memory_1_[6] = resL;
 	}
 
+	//Murmurhash3
 	function _helper8() {
 		let h1 = arguments[2],
 			numargs = arguments.length - 1,
@@ -359,6 +374,7 @@
 		}
 	}
 
+	//Solve root of x^3
 	function _helper19(a0, a1, a2, a3) {
 		a2 /= a3;
 		a1 /= a3;
@@ -377,8 +393,9 @@
 		return 2 * Math.sqrt(-Q) * Math.cos(Math.acos(R / Math.sqrt(-QQQ)) / 3) - a2 / 3;
 	}
 
+	//Solve root of x^4
 	function _helper20(a0, a1, a2, a3, a4) {
-		_memory_1_.length = 0;
+		_helper1();
 		a3 /= a4;
 		a2 /= a4;
 		a1 /= a4;
@@ -458,9 +475,7 @@
 		let k, verySmallNumber = 1e-10,
 			allEqual = true,
 			flip = (type === 2 ? 1 : -1);
-		_memory_1_.length = 0;
-		_memory_2_.length = 0;
-		_memory_3_.length = 0;
+		_helper1();
 		if (typeof places != "number" && !(places instanceof Number)) {
 			places = 10;
 		}
@@ -835,11 +850,74 @@
 	function Math_pow(base, exponent) {
 		let result = oldPow(base, exponent);
 		if (Number.isNaN(result)) {
-			let check = base < 0 && exponent < 0,
-				temp = check && Number_isEven(exponent) ? NaN : oldPow(Math.abs(base), exponent);
-			result = check && temp ? -temp : temp;
+			switch (exponent) {
+				case 0.5: {
+					return Math.sqrt(base);
+				}
+				break;
+				case _helper9_1_: {
+					return Math.cbrt(base);
+				}
+				break;
+				default: {
+					let tempExponent = 1 / exponent;
+					if (base < 0 && !Number_isEven(tempExponent)) {
+						return -oldPow(Math.abs(base), exponent);
+					}
+				}
+			}
 		}
 		return result;
+	}
+
+	/**
+	 *	
+	 * Find n of `num2 ** n === num1`
+	 *
+	 * @param {number} num1
+	 * @param {number} num2
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.of(32, 2);
+	 * //5
+	 *
+	 * @function of
+	 * @memberof Math
+	 **/
+	function Math_of(num1, num2) {
+		//x != 0 && (x & (x - 1)) == 0;
+		if (num1 === num2) {
+			return 1;
+		}
+		if (num1 <= 0 || num2 <= 0 || num1 === 1 || num2 > num1) {
+			return 0;
+		}
+		let temp1 = num2,
+			temp2 = num2,
+			result = 1;
+		_helper1();
+		while (temp1 < num1) {
+			_memory_1_.push(temp2);
+			temp1 *= temp2;
+			result *= 2;
+			if (temp1 === num1) return result;
+			temp2 *= temp2;
+		}
+		if (temp1 === Infinity) return 0;
+		let temp3;
+		while (_memory_1_.length > 0) {
+			temp3 = _memory_1_.pop();
+			if (temp1 > num1) {
+				temp1 /= temp3;
+				result -= (1 << _memory_1_.length);
+			} else {
+				temp1 *= temp3;
+				result += (1 << _memory_1_.length);
+			}
+			if (temp1 === num1) return result;
+		}
+		return 0;
 	}
 
 	/**
@@ -1264,7 +1342,7 @@
 	 * @memberof Math
 	 **/
 	function Math_ierf(num) {
-		return Math_iNorm((num + 1) / 2) / Math.SQRT2;
+		return Math_invNorm((num + 1) / 2) / Math.SQRT2;
 	}
 
 	/**
@@ -1282,7 +1360,7 @@
 	 * @memberof Math
 	 **/
 	function Math_ierfc(num) {
-		return -Math_iNorm(num / 2) / Math.SQRT2;
+		return -Math_invNorm(num / 2) / Math.SQRT2;
 	}
 
 	/**
@@ -1307,10 +1385,21 @@
 			let nm = num * num;
 			return num > 5e7 ? _erfcx_1_[21] / num : _erfcx_1_[21] * (nm * (nm + 4.5) + 2) / (num * (nm * (nm + 5) + 3.75));
 		}
-		let E = _erfcx_1_[0] + num * (_erfcx_1_[1] + num * (_erfcx_1_[2] + num * (_erfcx_1_[3] + num * (_erfcx_1_[4] +
-				num * (_erfcx_1_[5] + num * (_erfcx_1_[6] + num * (_erfcx_1_[7] + num * (_erfcx_1_[8] + num * _erfcx_1_[9])))))))),
-			I = _erfcx_1_[10] + num * (_erfcx_1_[11] + num * (_erfcx_1_[12] + num * (_erfcx_1_[13] + num * (_erfcx_1_[14] + num * (_erfcx_1_[15] +
-				num * (_erfcx_1_[16] + num * (_erfcx_1_[17] + num * (_erfcx_1_[18] + num * (_erfcx_1_[19] + num * _erfcx_1_[20])))))))));
+		let E = 0, I = 0;
+		for (let i = 9; i > -1; i --) {
+			E += _erfcx_1_[i];
+			if (i === 0) {
+				break;
+			}
+			E *= num;
+		}
+		for (let i = 20; i > 9; i --) {
+			I += _erfcx_1_[i];
+			if (i === 10) {
+				break;
+			}
+			I *= num;
+		}
 		return E / I;
 	}
 
@@ -1322,24 +1411,46 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.iNorm(1);
+	 * Math.invNorm(1);
 	 * //3.5005420375954306
 	 *
 	 * @function invNorm
 	 * @memberof Math
 	 **/
-	function Math_iNorm(num) {
-		let qw, we, er, result;
+	function Math_invNorm(num) {
+		let qw, we, er = 0, er2 = 0, result;
 		if (num < _invNorm_1_[21]) {
 			qw = Math.sqrt(-2 * Math_ln(num));
-			er = (((((_invNorm_1_[11] * qw + _invNorm_1_[12]) * qw + _invNorm_1_[13]) * qw + _invNorm_1_[14]) * qw + _invNorm_1_[15]) * qw + _invNorm_1_[16]) /
-				((((_invNorm_1_[17] * qw + _invNorm_1_[18]) * qw + _invNorm_1_[19]) * qw + _invNorm_1_[20]) * qw + 1);
-			result = er;
+			for (let i = 11; i < 17; i ++) {
+				er += _invNorm_1_[i];
+				if (i === 16) {
+					break;
+				}
+				er *= qw;
+			}
+			for (let i = 17; i < 21; i ++) {
+				er2 += _invNorm_1_[i];
+				er2 *= qw;
+			}
+			er2 += 1;
+			result = er / er2;
 		} else {
 			qw = num - 0.5;
 			we = qw * qw;
-			er = (((((_invNorm_1_[0] * we + _invNorm_1_[1]) * we + _invNorm_1_[2]) * we + _invNorm_1_[3]) * we + _invNorm_1_[4]) * we + _invNorm_1_[5]) * qw /
-				(((((_invNorm_1_[6] * we + _invNorm_1_[7]) * we + _invNorm_1_[8]) * we + _invNorm_1_[9]) * we + _invNorm_1_[10]) * we + 1);
+			for (let i = 0; i < 6; i ++) {
+				er += _invNorm_1_[i];
+				if (i === 5) {
+					er *= qw;
+					break;
+				}
+				er *= we;
+			}
+			for (let i = 6; i < 11; i ++) {
+				er2 += _invNorm_1_[i];
+				er2 *= we;
+			}
+			er2 += 1;
+			er /= er2;
 			result = er - Math_SQRTTAU * (0.5 * Math_erfcx(-er / Math.SQRT2) - Math.exp(0.5 * er * er) * num);
 		}
 		return result;
@@ -1382,6 +1493,37 @@
 	 **/
 	function Math_bernstein(x, v, n) {
 		return Math_nCr(n, v) * Math_pow(x, v) * Math_pow(1 - x, n - v);
+	}
+
+	/**
+	 *	
+	 * [Smooth function]{@link http://iquilezles.org/www/articles/smin/smin.htm}
+	 * Inverse is -smooth(-a,-b,k)
+	 *
+	 * @param {number} num1
+	 * @param {number} num2
+	 * @param {number} smoothness - if isOver is `true`, default is `32`, else `0.1`
+	 * @param {boolean} isOver - use better algorithm but slower
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.smooth(0, 1);
+	 * //0
+	 *
+	 * @function smooth
+	 * @memberof Math
+	 **/
+	function Math_smooth(num1, num2, smoothness, isOver) {
+		let h;
+		if (isOver) {
+			smoothness = _helper0(smoothness, 32);
+			h = Math.exp(-smoothness * num1) + Math.exp(-smoothness * num2);
+			return -Math_ln(h) / smoothness;
+		}
+		smoothness = _helper0(smoothness, 0.1);
+		h = Math_clamp(0.5 + 0.5 * (num2 - num1) / smoothness, 0, 1);
+		return Math_lerp(h, num2, num1) - smoothness * h * (1 - h);
+		//Same for max with -smooth stuff
 	}
 
 	/**
@@ -1696,8 +1838,9 @@
 	 * @param {number} num
 	 * @param {number} gap - The interval gap of the grid
 	 * @param {number=} [offset=0]
+	 * @param {boolean} [isLocate=false] - use adjust by digit location and base if true
 	 * @param {number=} [digits=0]
-	 * @param {number=} base
+	 * @param {number=} [base=10]
 	 * @return {number}
 	 *
 	 * @example
@@ -1707,39 +1850,39 @@
 	 * @function snap
 	 * @memberof Math
 	 **/
-	function Math_snap(type, num, gap, offset, digits, base) {
+	function Math_snap(type, num, gap, offset, isLocate, digits, base) {
 		offset = _helper0(offset, 0);
 		if (gap === 0) return num;
 		num -= offset;
-		num = gap * Math_adjust(type, num / gap, digits, base);
+		num = gap * (isLocate ? Math_adjust2(type, num / gap, digits, base) : Math_adjust(type, num / gap, digits, base));
 		return offset + num;
 	}
 
 	/**
 	 *	
-	 * Snap a number to nearest number grid by digit location and base
+	 * Same as `snap` but different a little bit...
 	 *
 	 * @param {number} type - 0: round, 1: floor, 2: ceil, 3: trunc, 4: away
 	 * @param {number} num
-	 * @param {number} gap - The interval gap of the grid
-	 * @param {number=} [offset=0]
+	 * @param {number} a
+	 * @param {number} b
+	 * @param {number=} [gap=1] - The interval gap of the grid
+	 * @param {boolean} [isLocate=false] - use adjust by digit location and base if true
 	 * @param {number=} [digits=0]
-	 * @param {number=} base
+	 * @param {number=} [base=10]
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.snap2(0, 12, 5);
-	 * //0
+	 * Math.discrete(0, 0.5, 0, 1);
+	 * //1
 	 *
-	 * @function snap2
+	 * @function discrete
 	 * @memberof Math
 	 **/
-	function Math_snap2(type, num, gap, offset, digits, base) {
-		offset = _helper0(offset, 0);
-		if (gap === 0) return num;
-		num -= offset;
-		num = gap * Math_adjust2(type, num / gap, digits, base);
-		return offset + num;
+	function Math_discrete(type, num, a, b, gap, isLocate, digits, base) {
+		gap = _helper0(gap, 1);
+		let temp = (a * (1 - num) + b * num) / gap;
+		return (isLocate ? Math_adjust2(type, temp, digits, base) : Math_adjust(type, temp, digits, base)) * gap;
 	}
 
 	/**
@@ -2093,9 +2236,10 @@
 	 **/
 	function Math_clamp(num, min, max) {
 		if (num < min) {
-			num = min;
-		} else if (num > max) {
-			num = max;
+			return min;
+		}
+		if (num > max) {
+			return max;
 		}
 		return num;
 	}
@@ -2202,8 +2346,7 @@
 	 * @memberof Math
 	 **/
 	function Math_map(num, min1, max1, min2, max2) {
-		let percent = (num - min1) / (max1 - min1);
-		return min2 + percent * (max2 - min2);
+		return (max1 - num) * (max2 - min2) / (min1 - max1) + max2;
 	}
 
 	/**
@@ -2243,7 +2386,7 @@
 	 * @memberof Math
 	 **/
 	function Math_lerp(num, min, max) {
-		return (1 - num) * min + num * max;
+		return num * (max - min) + min;
 	}
 
 	/**
@@ -3572,22 +3715,22 @@
 	 *	
 	 * Check if a point is inside a circle, return 1, 0, -1 based on location
 	 *
-	 * @param {number} a_x - x position of point
-	 * @param {number} a_y - y position of point
 	 * @param {number} o_x - x position of center point
 	 * @param {number} o_y - y position of center point
 	 * @param {number} o_r - radius of the circle
+	 * @param {number} a_x - x position of point
+	 * @param {number} a_y - y position of point
 	 * @param {number=} [accuracy=1e-10] - Accuracy
 	 * @return {number}
 	 *
 	 * @example
-	 * Geometry.colliCircPnt(1, 1, 0, 0, 2);
+	 * Geometry.colliCircPnt(0, 0, 2, 1, 1);
 	 * //1
 	 *
 	 * @function colliCircPnt
 	 * @memberof Geometry
 	 **/
-	function Geometry_colliCircPnt(a_x, a_y, o_x, o_y, o_r, accuracy) {
+	function Geometry_colliCircPnt(o_x, o_y, o_r, a_x, a_y, accuracy) {
 		accuracy = _helper0(accuracy, 1e-10);
 		let dist = Geometry_distPnt(a_x, a_y, o_x, o_y, false),
 			rSq = o_r * o_r;
@@ -6073,32 +6216,6 @@
 
 	/**
 	 *	
-	 * Check if `num2 ** n === num1`
-	 *
-	 * @param {number} num1
-	 * @param {number} num2
-	 * @return {boolean}
-	 *
-	 * @example
-	 * Number.isPower(32, 2);
-	 * //true
-	 *
-	 * @function isPower
-	 * @memberof Number
-	 **/
-	function Number_isPower(num1, num2, epsilon) {
-		epsilon = _helper0(epsilon, Math_precision(num2));
-		let d = Math_ln(Math.abs(num1)) / Math_ln(Math.abs(num2));
-		if ((num1 < 0 && num2 < 0) || (num1 > 0 && num2 > 0)) {
-			return Math_trunc(d, epsilon) === d;
-		} else if (num1 > 0 && num2 < 0) {
-			return Math_trunc(d, epsilon) % 2 === 0;
-		}
-		return false;
-	}
-
-	/**
-	 *	
 	 * Check if a number is even
 	 *
 	 * @param {number} num
@@ -7065,6 +7182,59 @@
 
 	/**
 	 *	
+	 * Berp
+	 *
+	 * @param {number} time
+	 * @param {number=} [num1=0.2]
+	 * @param {number=} [num2=2.5]
+	 * @param {number=} [num3=2.2]
+	 * @param {number=} [num4=1.2]
+	 * @return {number}
+	 *
+	 * @example
+	 * Tween.berp(0.5);
+	 * //1.702349952859165
+	 *
+	 * @function berp
+	 * @memberof Tween
+	 **/
+	function Tween_berp(time, num1, num2, num3, num4) {
+		num1 = _helper0(num1, 0.2);
+		num2 = _helper0(num2, 2.5);
+		num3 = _helper0(num3, 2.2);
+		num4 = _helper0(num4, 1.2);
+		return (num4 * (time - 1) - 1) * ((Math_pow(time, num3) - 1)  * Math.sin(Math.PI * num1 * time + Math.PI * Math_pow(time, 4) * num2) - time);
+	}
+
+	/**
+	 *	
+	 * Envelope
+	 *
+	 * @param {number} time
+	 * @param {number=} [num1=0.5] - Rise
+	 * @param {number=} [num2=0.5] - Fall
+	 * @return {number}
+	 *
+	 * @example
+	 * Tween.envelope(0.5);
+	 * //1
+	 *
+	 * @function envelope
+	 * @memberof Tween
+	 **/
+	function Tween_envelope(time, num1, num2) {
+		num1 = _helper0(num1, 0.5);
+		num2 = _helper0(num2, 0.5);
+		if (time < 0 || time > 1) return 0;
+		if (time <= 1 - num2) {
+			if (time >= num1) return 1;
+			else return time / num1;
+		}
+		else return (1 - time) / num2;
+	}
+
+	/**
+	 *	
 	 * Customizable tween
 	 *
 	 * @param {number} time
@@ -7237,14 +7407,14 @@
 
 			/**
 			 *	
-			 * Configurable counting number function, see `Tween.count` for the function that returned this function
+			 * Configurable counting number function, see `Tween.count` for the function that return this function
 			 *
-			 * @param {boolean} _check - `true` if you want the function to return internal object, else just number
-			 * @param {number} _min
-			 * @param {number} _max
-			 * @param {number} _change
-			 * @param {number} _current - current start number (not minimum)
-			 * @param {number} _mode - there are different modes from 0 to 5, you can test it yourself (recommended to use 1 and 3)
+			 * @param {boolean=} _check - `true` if you want the function to return internal object, else just number
+			 * @param {number=} _min
+			 * @param {number=} _max
+			 * @param {number=} _change
+			 * @param {number=} _current - current start number (not minimum)
+			 * @param {number=} _mode - there are different modes from 0 to 5, you can test it yourself (recommended to use 1 and 3)
 			 * @return {number|{min: number, max: number, change: number, next: number, current: number, mode: number}}
 			 *
 			 * Internal object: `{min: number, max: number, change: number, next: number, current: number, mode: number}`
@@ -7612,6 +7782,7 @@
 		["M", "nCr", Math_nCr],
 		["M", "nPr", Math_nPr],
 		["M", "pow", Math_pow],
+		["M", "of", Math_of],
 		["M", "sigmoid", Math_sigmoid],
 		["M", "pair", Math_pair],
 		["M", "integral", Math_integral],
@@ -7627,9 +7798,10 @@
 		["M", "ierf", Math_ierf],
 		["M", "ierfc", Math_ierfc],
 		["M", "erfcx", Math_erfcx],
-		["M", "iNorm", Math_iNorm],
+		["M", "invNorm", Math_invNorm],
 		["M", "kelly", Math_kelly],
 		["M", "bernstein", Math_bernstein],
+		["M", "smooth", Math_smooth],
 		["M", "adjust", Math_adjust],
 		["M", "adjust2", Math_adjust2],
 		["M", "round", Math_round],
@@ -7644,7 +7816,7 @@
 		["M", "away2", Math_away2],
 		["M", "correct", Math_correct],
 		["M", "snap", Math_snap],
-		["M", "snap2", Math_snap2],
+		["M", "discrete", Math_discrete],
 		["M", "shear", Math_shear],
 		["M", "precision", Math_precision],
 		["M", "order", Math_order],
@@ -7802,7 +7974,6 @@
 
 		["N", "isPrime", Number_isPrime],
 		["N", "isMinusZero", Number_isMinusZero],
-		["N", "isPower", Number_isPower],
 		["N", "isEven", Number_isEven],
 		["N", "isNumeric", Number_isNumeric],
 		["N", "epsilon", Number_epsilon],
@@ -7844,6 +8015,8 @@
 		["T", "bounce", Tween_bounce],
 		["T", "smoothStep", Tween_smoothStep],
 		["T", "overShoot", Tween_overShoot],
+		["T", "berp", Tween_berp],
+		["T", "envelope", Tween_envelope],
 		["T", "poly", Tween_poly],
 		["T", "bezier", Tween_bezier],
 		["T", "spline", Tween_spline],
@@ -7913,6 +8086,59 @@
 );
 
 //Junk code zone, may useful for future ?
+
+//let percent = (num - min1) / (max1 - min1);
+//return min2 + percent * (max2 - min2);
+//return (Math.sin(time * Math.PI * (num1 + num2 * time * time * time)) * (1.0 - Math.pow(time, num3)) + time) * (1.0 + (num4 * (1.0 - time)));
+
+//~~x: truncate decimal, like x | 0, but precedence
+/*function pingpong(n) {
+    return ~~n%2
+      ? 1.0 - n + ~~n
+      : n - ~~n;
+  }*/
+/*function Number_isPower(num1, num2, epsilon) {
+	epsilon = _helper0(epsilon, Math_precision(num2));
+	let d = Math_ln(Math.abs(num1)) / Math_ln(Math.abs(num2));
+	if ((num1 < 0 && num2 < 0) || (num1 > 0 && num2 > 0)) {
+		return Math_trunc(d, epsilon) === d;
+	} else if (num1 > 0 && num2 < 0) {
+		return Math_trunc(d, epsilon) % 2 === 0;
+	}
+	return false;
+}*/
+
+/*let check = base < 0 && exponent < 0,
+		temp = check && Number_isEven(exponent) ? NaN : oldPow(Math.abs(base), exponent);
+	result = check && temp ? -temp : temp; //Maybe bug here*/
+	//let check = base < 0 && exponent < 0,
+
+/*if (num < min) {
+	num = min;
+} else if (num > max) {
+	num = max;
+}
+return num;*/
+
+/*let qw, we, er, result;
+if (num < _invNorm_1_[21]) {
+	qw = Math.sqrt(-2 * Math_ln(num));
+	er = (((((_invNorm_1_[11] * qw + _invNorm_1_[12]) * qw + _invNorm_1_[13]) * qw + _invNorm_1_[14]) * qw + _invNorm_1_[15]) * qw + _invNorm_1_[16]) /
+		((((_invNorm_1_[17] * qw + _invNorm_1_[18]) * qw + _invNorm_1_[19]) * qw + _invNorm_1_[20]) * qw + 1);
+	result = er;
+} else {
+	qw = num - 0.5;
+	we = qw * qw;
+	er = (((((_invNorm_1_[0] * we + _invNorm_1_[1]) * we + _invNorm_1_[2]) * we + _invNorm_1_[3]) * we + _invNorm_1_[4]) * we + _invNorm_1_[5]) * qw /
+		(((((_invNorm_1_[6] * we + _invNorm_1_[7]) * we + _invNorm_1_[8]) * we + _invNorm_1_[9]) * we + _invNorm_1_[10]) * we + 1);
+	result = er - Math_SQRTTAU * (0.5 * Math_erfcx(-er / Math.SQRT2) - Math.exp(0.5 * er * er) * num);
+}
+return result;*/
+
+/*let E = _erfcx_1_[0] + num * (_erfcx_1_[1] + num * (_erfcx_1_[2] + num * (_erfcx_1_[3] + num * (_erfcx_1_[4] +
+		num * (_erfcx_1_[5] + num * (_erfcx_1_[6] + num * (_erfcx_1_[7] + num * (_erfcx_1_[8] + num * _erfcx_1_[9])))))))),
+	I = _erfcx_1_[10] + num * (_erfcx_1_[11] + num * (_erfcx_1_[12] + num * (_erfcx_1_[13] + num * (_erfcx_1_[14] + num * (_erfcx_1_[15] +
+		num * (_erfcx_1_[16] + num * (_erfcx_1_[17] + num * (_erfcx_1_[18] + num * (_erfcx_1_[19] + num * _erfcx_1_[20])))))))));*/
 
 //if (r[0] !== 1) throw new Error('No modular inverse exists');
 //return r[1] % m;
