@@ -4,9 +4,9 @@
 
 An all-in-one library that dedicated to improve Javascript default functions and provide more functions mostly focus on game development.
 
-Version 0.7a (Alpha version)
+Version 0.8a (Alpha version)
 
-[Download](https://cdn.rawgit.com/Trung0246/Funch/0d89f1ed/src/funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/0d89f1ed/src/funch.min.js))
+[Download](https://cdn.rawgit.com/Trung0246/Funch/83be8888/src/funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/83be8888/src/funch.min.js))
 
 [Documentation](https://cdn.rawgit.com/Trung0246/Funch/6ac5420e/docs/index.html) (old, may not update to lastest version)
 
@@ -42,19 +42,3 @@ You can generate document yourself by using [JSDoc](http://usejsdoc.org/).
   - I am very inexperienced in Node and modules related stuff, any helps really appreciated :D
   
   - Also I am still don't know how to use git and github properly yet...
-
----
-
-#### Special thanks to these libraries and their respect authors:
-
-  - [mathplus.js](https://github.com/pr1001/MathPlus/) (Peter Robinett, MIT)
-  
-  - [xorshift.js](https://github.com/AndreasMadsen/xorshift/) (Andreas Madsen & Emil Bay, MIT)
-  
-  - [Geometry.js](https://github.com/tsh96/Geometry) (Tan Sia How, MIT)
-  
-  - [polyk.js](http://polyk.ivank.net) (Ivan Kuckir, MIT)
-  
-  - [kiwi.js](https://github.com/gamelab/kiwi.js/) (Gamelab, MIT)
-  
-  - And many more I forgot to name...
