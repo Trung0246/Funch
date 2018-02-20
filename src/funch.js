@@ -1,9 +1,7 @@
-/*jshint esversion: 6*/
-/*jslint bitwise: true*/
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.8a
+	Funch.js, v0.9a
 
 	MIT License
 
@@ -31,7 +29,7 @@
 
 	For a copy, see <https://opensource.org/licenses/MIT> and <https://opensource.org/licenses/BSD-3-Clause>
 
-	- mathplus.js (Peter Robinett, MIT)	       <github.com/pr1001/MathPlus/>
+	- mathplus.js (Peter Robinett, MIT)            <github.com/pr1001/MathPlus/>
 	- xorshift.js (Andreas Madsen & Emil Bay, MIT) <github.com/AndreasMadsen/xorshift/>
 	- Geometry.js (Tan Sia How, MIT)               <github.com/tsh96/Geometry>
 	- polyk.js    (Ivan Kuckir, MIT)               <polyk.ivank.net/>
@@ -79,11 +77,11 @@
 		[0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]
 	],
 	_helper7_1_ = Math.pow(2, 32),
-	_noise_4_ = 0.5 * (Math.sqrt(3.0) - 1.0),
-	_noise_5_ = (3.0 - Math.sqrt(3.0)) / 6.0,
-	_noise_6_ = 1.0 / 6.0,
+	_noise_4_ = 0.5 * (Math.sqrt(3) - 1),
+	_noise_5_ = (3 - Math.sqrt(3)) / 6,
+	_noise_6_ = 1 / 6,
 	_helper9_1_ = 1 / 3,
-	_helper19_1_ = 3 / 4,
+	_helper10_1_ = 80 * Math.sqrt(10),
 	_toRad_1_ = Math.PI / 180,
 	_toDeg_1_ = 180 / Math.PI,
 	_diffAngle_1_ = Math.PI * 3,
@@ -308,26 +306,14 @@
 	}
 
 	function _helper10(p) {
-		let a = 40,
-			b, c, aaa, aa, bbb, bb, m, n, r;
 		p *= 10;
-
-		b = -27 * p;
-		c = -54 * p;
-
-		aaa = a * a * a;
-		aa = a * a;
-		bbb = b * b * b;
-		bb = b * b;
-
-		m = (27 * aa * b + 2 * bbb - 9 * a * b * c) / (54 * aaa);
-		n = (3 * a * c - bb) / (9 * aa);
-
-		r = Math.sqrt(m * m + n * n * n);
-
-		return oldPow(-m + r, _helper9_1_) + oldPow(-m - r, _helper9_1_) - b / (3 * a);
+		let m = 27 * p * p + 360 * p + 800,
+			n = _helper10_1_ * Math.sqrt(p + 10);
+		return 0.075 * ((Math.cbrt((m - n) * p) + Math.cbrt((m + n) * p)) + 3 * p);
 	}
 
+	//More information (Japanese): http://void.heteml.jp/blog/archives/2014/05/easing_magicnumber.html
+	//English version: https://github.com/Michaelangel007/easing#the-magic-of-170158
 	function _helper11(overShoot) {
 		return 1 - (overShoot + 3) / (3 * overShoot + 3);
 	}
@@ -405,7 +391,7 @@
 			a04 = 4 * a0,
 			length = 0;
 		let y1 = _helper19(4 * a2 * a0 - a1 * a1 - a3a3 * a0, a1 * a3 - a04, -a2, 1),
-			a334 = a3a3 * _helper19_1_;
+			a334 = a3a3 * 0.75;
 		let RSquare = a3a3 / 4 - a2 + y1;
 		let R = Math.sqrt(RSquare),
 			a34 = -a3 / 4,
@@ -522,6 +508,52 @@
 		_bounce_stack_[i].H = curve2H;
 	}
 
+	function _helper26(type, time, amplitude, period) {
+		let s;
+		amplitude = _helper0(amplitude, 0.1);
+		period = _helper0(period, 0.1);
+		if (time === 0) {
+			return 0;
+		}
+		if (time === 1) {
+			return 1;
+		}
+		if (amplitude < 1) {
+			amplitude = 1;
+			s = period / 4;
+		} else {
+			s = period * Math_acsc(amplitude) / Math_TAU;
+		}
+		switch (type) {
+			case 0: {
+				return -amplitude * Math_pow(2, 10 * (time -= 1)) * Math.sin((time - s) * Math_TAU / period);
+			}
+			break;
+			case 1: {
+				return amplitude * Math_pow(2, -10 * time) * Math.sin((time - s) * Math_TAU / period) + 1;
+			}
+			break;
+			case 2: {
+				if ((time *= 2) < 1) {
+					return -(amplitude * Math_pow(2, 10 * (time -= 1)) * Math.sin((time - s) * Math_TAU / period)) / 2;
+				}
+				return amplitude * Math_pow(2, -10 * (time -= 1)) * Math.sin((time - s) * Math_TAU / period) / 2 + 1;
+			}
+			break;
+		}
+	}
+
+	function _helper27(uniform) {
+		_helper1();
+		_memory_1_[0] = oldRandom();
+		_memory_1_[1] = oldRandom();
+		if (uniform && _memory_1_[1] < _memory_1_[0]) {
+			let c = _memory_1_[1];
+			_memory_1_[1] = _memory_1_[0];
+			_memory_1_[0] = c;
+		}
+	}
+
 	/**
 	 * @constant {number} HALFPI
 	 * 
@@ -529,7 +561,7 @@
 	 *
 	 * @memberof Math
 	 */
-	let Math_HALFPI = Math.PI / 2;
+	let Math_HALF_PI = Math.PI / 2;
 
 	/**
 	 * @constant {number} TAU
@@ -547,7 +579,7 @@
 	 *
 	 * @memberof Math
 	 */
-	let Math_SQRTPI = Math.sqrt(Math.PI);
+	let Math_SQRT_PI = Math.sqrt(Math.PI);
 
 	/**
 	 * @constant {number} SQRTTAU
@@ -556,7 +588,7 @@
 	 *
 	 * @memberof Math
 	 */
-	let Math_SQRTTAU = Math.sqrt(Math_TAU);
+	let Math_SQRT_TAU = Math.sqrt(Math_TAU);
 
 	/**
 	 * @constant {number} PHI
@@ -594,7 +626,7 @@
 	 **/
 
 	/**
-	 *	
+	 *
 	 * Calculate natural logarithm
 	 *
 	 * @param {number} num - The number to calculate
@@ -610,7 +642,7 @@
 	let Math_ln = Math.log;
 
 	/**
-	 *	
+	 *
 	 * Calculate logarithm of n base
 	 *
 	 * @param {number} num - The number to calculate
@@ -630,7 +662,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate modulo (not remainder) by `num1 % num2`
 	 *
 	 * @param {number} num1
@@ -649,7 +681,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate remainder with more options ?
 	 *
 	 * @param {number} num
@@ -687,7 +719,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate `num1` divided by [remainder]{@link http://en.wikipedia.org/wiki/Remainder} of `num2`. If the remainder is negative, adjust it to a positive number in the range of `0` - `num2`
 	 *
 	 * @param {number} num1
@@ -710,7 +742,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Gamma function
 	 *
 	 * @param {number} num - The number to calculate
@@ -735,12 +767,12 @@
 				temp += _gamma_1_[i] / (num + i);
 			}
 			let temp2 = num + accuracy + 0.5;
-			return Math_SQRTTAU * Math_pow(temp2, (num + 0.5)) * Math.exp(-temp2) * temp;
+			return Math_SQRT_TAU * Math_pow(temp2, (num + 0.5)) * Math.exp(-temp2) * temp;
 		}
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate natural logarithm of gamma function
 	 *
 	 * @param {number} num - The number to calculate
@@ -766,7 +798,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate factorial of number
 	 *
 	 * @param {number} num - The number to calculate
@@ -785,7 +817,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate [combination]{@link https://en.wikipedia.org/wiki/Combination}
 	 * (a.k.a [binomial coefficient]{@link https://en.wikipedia.org/wiki/Binomial_coefficient} or
 	 * [pascal triangle]{@link https://en.wikipedia.org/wiki/Pascal%27s_triangle})
@@ -810,7 +842,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate [permutation]{@link https://en.wikipedia.org/wiki/Permutation}
 	 *
 	 * @param {number} num1
@@ -833,7 +865,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate power
 	 *
 	 * @param {number} base
@@ -871,7 +903,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Find n of `num2 ** n === num1`
 	 *
 	 * @param {number} num1
@@ -886,7 +918,6 @@
 	 * @memberof Math
 	 **/
 	function Math_of(num1, num2) {
-		//x != 0 && (x & (x - 1)) == 0;
 		if (num1 === num2) {
 			return 1;
 		}
@@ -921,7 +952,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Sigmoid function]{@link https://en.wikipedia.org/wiki/Sigmoid_function}
 	 *
 	 * @param {number} num
@@ -939,7 +970,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Pairing function]{@link https://en.wikipedia.org/wiki/Pairing_function}
 	 *
 	 * @param {number} num1
@@ -958,7 +989,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate [integral]{@link https://en.wikipedia.org/wiki/Integral}
 	 *
 	 * @param {number} a - The begin of interval
@@ -984,7 +1015,7 @@
 		for (k = 0; k < 20 * oldPow(2, iteration); k++) {
 			t = k * h;
 			sinht = Math.sinh(t);
-			_memory_1_[k] = Math.tanh(Math_HALFPI * sinht);
+			_memory_1_[k] = Math.tanh(Math_HALF_PI * sinht);
 			_memory_2_[k] = Math.PI * Math.cosh(t) / (Math.cosh(Math.PI * sinht) + 1);
 			if (Math.abs(1 - _memory_1_[k]) < epsilon) {
 				break;
@@ -1010,7 +1041,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate [derivative]{@link https://en.wikipedia.org/wiki/Derivative} by using [Romberg's method]{@link https://en.wikipedia.org/wiki/Romberg%27s_method}
 	 *
 	 * @param {number} num - The number to calculate
@@ -1053,7 +1084,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate [limit]{@link https://en.wikipedia.org/wiki/Limit_(mathematics)}
 	 *
 	 * @param {number=} [type=0] - 0: limit, 1: limit left, 2: limit right
@@ -1108,7 +1139,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Solve a function where `f(x) = 0`
 	 *
 	 * @param {number} x0 - Minimum guessing range
@@ -1161,7 +1192,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate numerator and denominator of a number
 	 *
 	 * @param {number} num - The number to calculate
@@ -1216,7 +1247,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Probability density function]{@link https://en.wikipedia.org/wiki/Probability_density_function} or maybe [Normal distribution]{@link https://en.wikipedia.org/wiki/Normal_distribution} ?
 	 *
 	 * @param {number} mean - [Mean]{@link https://en.wikipedia.org/wiki/Mean} or [Expected value]{@link https://en.wikipedia.org/wiki/Expected_value}
@@ -1233,13 +1264,13 @@
 	 * @memberof Math
 	 **/
 	function Math_pdf(mean, variance, std, num) {
-		let m = std * Math_SQRTTAU,
+		let m = std * Math_SQRT_TAU,
 			e = Math.exp(-Math_pow(num - mean, 2) / (2 * variance));
 		return e / m;
 	}
 
 	/**
-	 *	
+	 *
 	 * [Cumulative distribution function]{@link https://en.wikipedia.org/wiki/Cumulative_distribution_function}
 	 *
 	 * @param {number} mean - [Mean]{@link https://en.wikipedia.org/wiki/Mean} or [Expected value]{@link https://en.wikipedia.org/wiki/Expected_value}
@@ -1259,7 +1290,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Not sure if this function is [Production–possibility frontier function]{@link https://en.wikipedia.org/wiki/Production%E2%80%93possibility_frontier}
 	 *
 	 * @param {number} mean - [Mean]{@link https://en.wikipedia.org/wiki/Mean} or [Expected value]{@link https://en.wikipedia.org/wiki/Expected_value}
@@ -1279,7 +1310,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Error function]{@link https://en.wikipedia.org/wiki/Error_function}
 	 *
 	 * @param {number} num
@@ -1305,11 +1336,11 @@
 			s *= -1;
 			sum += (s * oldPow(num, 2 * i + 1)) / (m * (2 * i + 1));
 		}
-		return 2 * sum / Math_SQRTPI;
+		return 2 * sum / Math_SQRT_PI;
 	}
 
 	/**
-	 *	
+	 *
 	 * [Complementary error function]{@link https://en.wikipedia.org/wiki/Error_function#Complementary_error_function}
 	 *
 	 * @param {number} num
@@ -1328,7 +1359,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Inverse error function]{@link https://en.wikipedia.org/wiki/Error_function#Inverse_functions}
 	 *
 	 * @param {number} num
@@ -1346,7 +1377,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Inverse complementary error function]{@link http://mathworld.wolfram.com/InverseErfc.html}
 	 *
 	 * @param {number} num
@@ -1364,7 +1395,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Scaled complementary error function
 	 *
 	 * @param {number} num
@@ -1404,7 +1435,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Inverse normal distribution function]{@link https://en.wikipedia.org/wiki/Inverse_Gaussian_distribution}
 	 *
 	 * @param {number} num
@@ -1451,13 +1482,13 @@
 			}
 			er2 += 1;
 			er /= er2;
-			result = er - Math_SQRTTAU * (0.5 * Math_erfcx(-er / Math.SQRT2) - Math.exp(0.5 * er * er) * num);
+			result = er - Math_SQRT_TAU * (0.5 * Math_erfcx(-er / Math.SQRT2) - Math.exp(0.5 * er * er) * num);
 		}
 		return result;
 	}
 
 	/**
-	 *	
+	 *
 	 * [Kelly function]{@link https://en.wikipedia.org/wiki/Kelly_criterion}
 	 *
 	 * @param {number} num1
@@ -1476,7 +1507,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Bernstein function]{@link https://en.wikipedia.org/wiki/Bernstein_polynomial}
 	 *
 	 * @param {number} x
@@ -1496,7 +1527,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Smooth function]{@link http://iquilezles.org/www/articles/smin/smin.htm}
 	 * Inverse is -smooth(-a,-b,k)
 	 *
@@ -1527,7 +1558,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Adjust decimal of a number
 	 *
 	 * @param {number} type - 0: round, 1: floor, 2: ceil, 3: trunc, 4: away
@@ -1553,7 +1584,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Adjust decimal of a number by digit location and base
 	 *
 	 * @param {number} type - 0: round, 1: floor, 2: ceil, 3: trunc, 4: away
@@ -1593,7 +1624,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Round number by digits and base
 	 *
 	 * @param {number} num
@@ -1615,7 +1646,7 @@
 	let Math_round = Math_adjust.bind(this, 0);
 
 	/**
-	 *	
+	 *
 	 * Floor number by digits and base
 	 *
 	 * @param {number} num
@@ -1637,7 +1668,7 @@
 	let Math_floor = Math_adjust.bind(this, 1);
 
 	/**
-	 *	
+	 *
 	 * Ceil number by digits and base
 	 *
 	 * @param {number} num
@@ -1659,7 +1690,7 @@
 	let Math_ceil = Math_adjust.bind(this, 2);
 
 	/**
-	 *	
+	 *
 	 * Truncate number by digits and base
 	 *
 	 * @param {number} num
@@ -1681,7 +1712,7 @@
 	let Math_trunc = Math_adjust.bind(this, 3);
 
 	/**
-	 *	
+	 *
 	 * Truncate away from zero of a number by digits and base
 	 *
 	 * @param {number} num
@@ -1703,7 +1734,7 @@
 	let Math_away = Math_adjust.bind(this, 4);
 
 	/**
-	 *	
+	 *
 	 * Round number by digit location and base
 	 *
 	 * @param {number} num
@@ -1724,7 +1755,7 @@
 	let Math_round2 = Math_adjust2.bind(this, 0);
 
 	/**
-	 *	
+	 *
 	 * Floor number by digit location and base
 	 *
 	 * @param {number} num
@@ -1745,7 +1776,7 @@
 	let Math_floor2 = Math_adjust2.bind(this, 1);
 
 	/**
-	 *	
+	 *
 	 * Ceil number by digit location and base
 	 *
 	 * @param {number} num
@@ -1766,7 +1797,7 @@
 	let Math_ceil2 = Math_adjust2.bind(this, 2);
 
 	/**
-	 *	
+	 *
 	 * Truncate number by digit location and base
 	 *
 	 * @param {number} num
@@ -1787,7 +1818,7 @@
 	let Math_trunc2 = Math_adjust2.bind(this, 3);
 
 	/**
-	 *	
+	 *
 	 * Truncate away from zero of a number by digit location and base
 	 *
 	 * @param {number} num
@@ -1808,7 +1839,7 @@
 	let Math_away2 = Math_adjust2.bind(this, 4);
 
 	/**
-	 *	
+	 *
 	 * Attempt to correct rounding off error
 	 *
 	 * @param {number} num
@@ -1831,7 +1862,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Snap a number to nearest number grid
 	 *
 	 * @param {number} type - 0: round, 1: floor, 2: ceil, 3: trunc, 4: away
@@ -1859,7 +1890,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Same as `snap` but different a little bit...
 	 *
 	 * @param {number} type - 0: round, 1: floor, 2: ceil, 3: trunc, 4: away
@@ -1886,7 +1917,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Strip off integer part of a number
 	 *
 	 * @param {number} num
@@ -1906,7 +1937,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Count total digits of fractional part of a number
 	 *
 	 * @param {number} num
@@ -1933,7 +1964,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Count total digits of integer part of a number
 	 *
 	 * @param {number} num
@@ -1951,7 +1982,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Ramp function]{@link https://en.wikipedia.org/wiki/Ramp_function}
 	 *
 	 * @param {number} num
@@ -1972,7 +2003,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Heaviside step function]{@link https://en.wikipedia.org/wiki/Heaviside_step_function}
 	 *
 	 * @param {number} type - when `num == 0`, if `type` is `1`, then return `0`; if `type == 2`, return `1`, else `0.5`
@@ -2016,7 +2047,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Haar function]{@link https://en.wikipedia.org/wiki/Haar_wavelet}
 	 *
 	 * @param {number} num
@@ -2039,7 +2070,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Rectangular function]{@link https://en.wikipedia.org/wiki/Rectangular_function}
 	 *
 	 * @param {number} num
@@ -2065,7 +2096,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Triangular function]{@link https://en.wikipedia.org/wiki/Triangular_function}
 	 *
 	 * @param {number} num
@@ -2087,7 +2118,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Folding function]{@link http://mathworld.wolfram.com/FoldingFunction.html}
 	 *
 	 * @param {boolean} type
@@ -2115,7 +2146,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Return 1 if even, return -1 if odd
 	 *
 	 * @param {number} num
@@ -2133,7 +2164,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Flip sign of num
 	 *
 	 * @param {number} num
@@ -2152,7 +2183,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if number is within range
 	 *
 	 * @param {number} num
@@ -2184,7 +2215,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Compare two numbers
 	 *
 	 * @param {number} num1
@@ -2219,7 +2250,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Clamp number within range
 	 *
 	 * @param {number} num
@@ -2245,7 +2276,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Wrap number within range
 	 *
 	 * @param {number} num
@@ -2270,7 +2301,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Move back and front within range
 	 *
 	 * @param {number} num
@@ -2300,7 +2331,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Not sure, but definitely useful and may act as same as bounce, wrap,...
 	 *
 	 * @param {number} num1
@@ -2328,7 +2359,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Map number from a range to another range
 	 *
 	 * @param {number} num
@@ -2350,7 +2381,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Normalize number from specific range to 0-1
 	 *
 	 * @param {number} num
@@ -2370,7 +2401,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Normalize number from 0-1 to specific range
 	 *
 	 * @param {number} num
@@ -2390,7 +2421,28 @@
 	}
 
 	/**
-	 *	
+	 *
+	 * Change linear
+	 *
+	 * @param {number} num
+	 * @param {number} min
+	 * @param {number} change
+	 * @param {number} duration
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.change(0, 50, 150, 1);
+	 * //50
+	 *
+	 * @function change
+	 * @memberof Math
+	 **/
+	function Math_change(num, min, change, duration) {
+		return change * num / duration + min;
+	}
+
+	/**
+	 *
 	 * Calculate [greatest common divisor]{@link https://en.wikipedia.org/wiki/Greatest_common_divisor}
 	 *
 	 * No limit of parameter, but all of them must be number, except final one maybe array if you want to pass return data to that array
@@ -2419,7 +2471,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate [least common multiple]{@link https://en.wikipedia.org/wiki/Least_common_multiple}
 	 *
 	 * No limit of parameter, but all of them must be number
@@ -2448,7 +2500,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate prime factor of a number
 	 *
 	 * @param {number} num
@@ -2474,7 +2526,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate divisor of a number
 	 *
 	 * @param {number} num
@@ -2506,7 +2558,7 @@
 
 	//Random
 	/**
-	 *	
+	 *
 	 * Pseudo random number generator uniformly distributed with options
 	 *
 	 * @param {number=} [min=0] - Minimum
@@ -2552,7 +2604,7 @@
 				returnValue = larger;
 			}
 			return returnValue;
-		} else if (min == max) {
+		} else if (min === max) {
 			if (equal == null) {
 				returnValue = min;
 			} else {
@@ -2637,7 +2689,7 @@
 	 * @example
 	 * let arraySeed = [];
 	 * for (let i = 0; i < 512; i ++) {
-	 *	arraySeed.push(11);
+	 *arraySeed.push(11);
 	 * }
 	 * Math.noise(arraySeed, 100, 100);
 	 * //-0.4099981169018467
@@ -2645,141 +2697,128 @@
 	 * @function noise
 	 * @memberof Math
 	 **/
-	function Math_noise(seed, x, y, z) {
-		let tempI, tempI2, tempI3, tempJ, tempJ2, tempJ3, tempK, tempK2, tempK3, tempX, tempY, tempZ, tempX2, tempY2, tempZ2, tempG, tempM, sum = 0;
-		if (typeof z === "number") {
-			tempM = (x + y + z) * _helper9_1_;
-			tempI = oldFloor(x + tempM);
-			tempJ = oldFloor(y + tempM);
-			tempK = oldFloor(z + tempM);
-			tempM = (tempI + tempJ + tempK) * _noise_6_;
-			tempX = x - (tempI - tempM);
-			tempY = y - (tempJ - tempM);
-			tempZ = z - (tempK - tempM);
-			if (tempX >= tempY) {
-				if (tempY >= tempZ) {
-					tempI2 = 1;
-					tempJ2 = 0;
-					tempK2 = 0;
-					tempI3 = 1;
-					tempJ3 = 1;
-					tempK3 = 0;
-				} else if (tempX >= tempZ) {
-					tempI2 = 1;
-					tempJ2 = 0;
-					tempK2 = 0;
-					tempI3 = 1;
-					tempJ3 = 0;
-					tempK3 = 1;
-				} else {
-					tempI2 = 0;
-					tempJ2 = 0;
-					tempK2 = 1;
-					tempI3 = 1;
-					tempJ3 = 0;
-					tempK3 = 1;
-				}
+	let Math_noise = (function() {
+		let tempI, tempI2, tempI3, tempJ, tempJ2, tempJ3, tempK, tempK2, tempK3, tempX, tempY, tempZ, tempX2, tempY2, tempZ2, tempG, tempM, sum;
+		function _helperNoise(seed, i, j, k, a) {
+			if (a) {
+				tempX2 = tempX - i + a * _noise_6_;
+				tempY2 = tempY - j + a * _noise_6_;
+				tempZ2 = tempZ - k + a * _noise_6_;
 			} else {
-				if (tempY < tempZ) {
-					tempI2 = 0;
-					tempJ2 = 0;
-					tempK2 = 1;
-					tempI3 = 0;
-					tempJ3 = 1;
-					tempK3 = 1;
-				} else if (tempX < tempZ) {
-					tempI2 = 0;
-					tempJ2 = 1;
-					tempK2 = 0;
-					tempI3 = 0;
-					tempJ3 = 1;
-					tempK3 = 1;
+				tempX2 = tempX;
+				tempY2 = tempY;
+				tempZ2 = tempZ;
+			}
+			tempM = 0.6 - tempX2 * tempX2 - tempY2 * tempY2 - tempZ2 * tempZ2;
+			tempG = seed[tempI + i + seed[tempJ + j + seed[tempK + k]]];
+			_helperNoise3();
+		}
+		function _helperNoise2(seed, i, j, a) {
+			if (a) {
+				tempX2 = tempX - i + a * _noise_5_;
+				tempY2 = tempY - j + a * _noise_5_;
+			} else {
+				tempX2 = tempX;
+				tempY2 = tempY;
+			}
+			tempM = 0.5 - tempX2 * tempX2 - tempY2 * tempY2;
+			tempG = seed[tempI + i + seed[tempJ + j]];
+			_helperNoise3();
+		}
+		function _helperNoise3() {
+			if (tempM >= 0) {
+				tempM *= tempM;
+				sum += tempM * tempM * Math_dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
+			}
+		}
+		return function(seed, x, y, z) {
+			sum = 0;
+			if (typeof z === "number") {
+				tempM = (x + y + z) * _helper9_1_;
+				tempI = oldFloor(x + tempM);
+				tempJ = oldFloor(y + tempM);
+				tempK = oldFloor(z + tempM);
+				tempM = (tempI + tempJ + tempK) * _noise_6_;
+				tempX = x - (tempI - tempM);
+				tempY = y - (tempJ - tempM);
+				tempZ = z - (tempK - tempM);
+				if (tempX >= tempY) {
+					if (tempY >= tempZ) {
+						tempI2 = 1;
+						tempJ2 = 0;
+						tempK2 = 0;
+						tempI3 = 1;
+						tempJ3 = 1;
+						tempK3 = 0;
+					} else if (tempX >= tempZ) {
+						tempI2 = 1;
+						tempJ2 = 0;
+						tempK2 = 0;
+						tempI3 = 1;
+						tempJ3 = 0;
+						tempK3 = 1;
+					} else {
+						tempI2 = 0;
+						tempJ2 = 0;
+						tempK2 = 1;
+						tempI3 = 1;
+						tempJ3 = 0;
+						tempK3 = 1;
+					}
 				} else {
-					tempI2 = 0;
-					tempJ2 = 1;
-					tempK2 = 0;
-					tempI3 = 1;
-					tempJ3 = 1;
-					tempK3 = 0;
+					if (tempY < tempZ) {
+						tempI2 = 0;
+						tempJ2 = 0;
+						tempK2 = 1;
+						tempI3 = 0;
+						tempJ3 = 1;
+						tempK3 = 1;
+					} else if (tempX < tempZ) {
+						tempI2 = 0;
+						tempJ2 = 1;
+						tempK2 = 0;
+						tempI3 = 0;
+						tempJ3 = 1;
+						tempK3 = 1;
+					} else {
+						tempI2 = 0;
+						tempJ2 = 1;
+						tempK2 = 0;
+						tempI3 = 1;
+						tempJ3 = 1;
+						tempK3 = 0;
+					}
 				}
+				tempI &= 255;
+				tempJ &= 255;
+				tempK &= 255;
+				_helperNoise(seed, 0, 0, 0);
+				_helperNoise(seed, tempI2, tempJ2, tempK2, 1);
+				_helperNoise(seed, tempI3, tempJ3, tempK3, 2);
+				_helperNoise(seed, 1, 1, 1, 3);
+				return 32.0 * sum;
+			}
+			tempI2 = (x + y) * _noise_4_;
+			tempI = oldFloor(x + tempI2);
+			tempJ = oldFloor(y + tempI2);
+			tempJ2 = (tempI + tempJ) * _noise_5_;
+			tempX = x - (tempI - tempJ2);
+			tempY = y - (tempJ - tempJ2);
+			if (tempX > tempY) {
+				tempI2 = 1;
+				tempJ2 = 0;
+			} else {
+				tempI2 = 0;
+				tempJ2 = 1;
 			}
 			tempI &= 255;
 			tempJ &= 255;
-			tempK &= 255;
-			tempM = 0.6 - tempX * tempX - tempY * tempY - tempZ * tempZ;
-			tempG = seed[tempI + seed[tempJ + seed[tempK]]];
-			if (tempM >= 0) {
-				tempM *= tempM;
-				sum += tempM * tempM * Math_dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX, tempY);
-			}
-			tempX2 = tempX - tempI2 + _noise_6_;
-			tempY2 = tempY - tempJ2 + _noise_6_;
-			tempZ2 = tempZ - tempK2 + _noise_6_;
-			tempM = 0.6 - tempX2 * tempX2 - tempY2 * tempY2 - tempZ2 * tempZ2;
-			tempG = seed[tempI + tempI2 + seed[tempJ + tempJ2 + seed[tempK + tempK2]]];
-			if (tempM >= 0) {
-				tempM *= tempM;
-				sum += tempM * tempM * Math_dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
-			}
-			tempX2 = tempX - tempI3 + 2.0 * _noise_6_;
-			tempY2 = tempY - tempJ3 + 2.0 * _noise_6_;
-			tempZ2 = tempZ - tempK3 + 2.0 * _noise_6_;
-			tempM = 0.6 - tempX2 * tempX2 - tempY2 * tempY2 - tempZ2 * tempZ2;
-			tempG = seed[tempI + tempI3 + seed[tempJ + tempJ3 + seed[tempK + tempK3]]];
-			if (tempM >= 0) {
-				tempM *= tempM;
-				sum += tempM * tempM * Math_dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
-			}
-			tempX2 = tempX - 1.0 + 3.0 * _noise_6_;
-			tempY2 = tempY - 1.0 + 3.0 * _noise_6_;
-			tempZ2 = tempZ - 1.0 + 3.0 * _noise_6_;
-			tempM = 0.6 - tempX2 * tempX2 - tempY2 * tempY2 - tempZ2 * tempZ2;
-			tempG = seed[tempI + 1 + seed[tempJ + 1 + seed[tempK + 1]]];
-			if (tempM >= 0) {
-				tempM *= tempM;
-				sum += tempM * tempM * Math_dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
-			}
-			return 32.0 * sum;
-		}
-		tempI2 = (x + y) * _noise_4_;
-		tempI = oldFloor(x + tempI2);
-		tempJ = oldFloor(y + tempI2);
-		tempJ2 = (tempI + tempJ) * _noise_5_;
-		tempX = x - (tempI - tempJ2);
-		tempY = y - (tempJ - tempJ2);
-		if (tempX > tempY) {
-			tempI2 = 1;
-			tempJ2 = 0;
-		} else {
-			tempI2 = 0;
-			tempJ2 = 1;
-		}
-		tempI &= 255;
-		tempJ &= 255;
-		tempM = 0.5 - tempX * tempX - tempY * tempY;
-		tempG = seed[tempI + seed[tempJ]];
-		if (tempM >= 0) {
-			tempM *= tempM;
-			sum += tempM * tempM * Math_dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX, tempY);
-		}
-		tempX2 = tempX - tempI2 + _noise_5_;
-		tempY2 = tempY - tempJ2 + _noise_5_;
-		tempM = 0.5 - tempX2 * tempX2 - tempY2 * tempY2;
-		tempG = seed[tempI + tempI2 + seed[tempJ + tempJ2]];
-		if (tempM >= 0) {
-			tempM *= tempM;
-			sum += tempM * tempM * Math_dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
-		}
-		tempX2 = tempX - 1.0 + 2.0 * _noise_5_;
-		tempY2 = tempY - 1.0 + 2.0 * _noise_5_;
-		tempM = 0.5 - tempX2 * tempX2 - tempY2 * tempY2;
-		tempG = seed[tempI + 1 + seed[tempJ + 1]];
-		if (tempM >= 0) {
-			tempM *= tempM;
-			sum += tempM * tempM * Math_dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
-		}
-		return 70.0 * sum;
-	}
+			_helperNoise2(seed, 0, 0);
+			_helperNoise2(seed, tempI2, tempJ2, 1);
+			_helperNoise2(seed, 1, 1, 2);
+			return 70.0 * sum;
+		};
+	})();
 
 	/**
 	 *
@@ -2790,7 +2829,7 @@
 	 **/
 
 	/**
-	 *	
+	 *
 	 * Normalize angle in radians
 	 *
 	 * @param {number} num - The angle needs to normalize
@@ -2812,7 +2851,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Convert degrees to radians
 	 *
 	 * @param {number} num - The angle needs to convert
@@ -2830,7 +2869,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Wrap angle within 0 to TAU in radians
 	 *
 	 * @param {number} num - The angle needs to wrap
@@ -2848,7 +2887,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Normalize angle in degrees
 	 *
 	 * @param {number} num - The angle needs to normalize
@@ -2870,7 +2909,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Convert radians to degrees
 	 *
 	 * @param {number} num - The angle needs to convert
@@ -2888,7 +2927,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Wrap angle within 0 to 360 in degrees
 	 *
 	 * @param {number} num - The angle needs to wrap
@@ -2906,7 +2945,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Get angle from two points
 	 *
 	 * @param {number} a_x - x position of first point
@@ -2927,7 +2966,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Get reflection angle from mirror angle
 	 *
 	 * @param {number} num - current angle in radians
@@ -2946,7 +2985,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Get different angle between two angles
 	 *
 	 * @param {number} num1 - angle in radians
@@ -2965,7 +3004,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if angle is between two angles
 	 *
 	 * @param {number} num - angle in radians
@@ -2974,7 +3013,7 @@
 	 * @return {boolean}
 	 *
 	 * @example
-	 * Geometry.isBetwAngle(Math_HALFPI, 0, Math.PI);
+	 * Geometry.isBetwAngle(Math_HALF_PI, 0, Math.PI);
 	 * //true
 	 *
 	 * @function isBetwAngle
@@ -2992,7 +3031,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if an angle from two points is in an angle range
 	 *
 	 * @param {number} o_1 - angle in radians
@@ -3016,7 +3055,7 @@
 
 	//Point
 	/**
-	 *	
+	 *
 	 * Calculate distance of two points
 	 *
 	 * @param {number} a_x - x position of first point
@@ -3044,7 +3083,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate distance of two points using polar coordinate
 	 *
 	 * @param {number} r_1 - radial of first point
@@ -3055,7 +3094,7 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Geometry.polarDistPnt(0, 0, 1, Math_HALFPI, true);
+	 * Geometry.polarDistPnt(0, 0, 1, Math_HALF_PI, true);
 	 * //1
 	 *
 	 * @function polarDistPnt
@@ -3070,7 +3109,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate [Manhattan distance]{@link https://en.wikipedia.org/wiki/Taxicab_geometry} of two points
 	 *
 	 * @param {number} a_x - x position of first point
@@ -3091,7 +3130,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate [Chebyshev distance]{@link https://en.wikipedia.org/wiki/Chebyshev_distance} of two points
 	 *
 	 * @param {number} a_x - x position of first point
@@ -3112,7 +3151,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Rotate a point from center point
 	 *
 	 * Recommended to set `x_x` and `x_y` to same value
@@ -3127,7 +3166,7 @@
 	 * @return {{x: number, y: number}}
 	 *
 	 * @example
-	 * Geometry.rotPnt(0, 0, 0, 1, Math_HALFPI, Math_HALFPI);
+	 * Geometry.rotPnt(0, 0, 0, 1, Math_HALF_PI, Math_HALF_PI);
 	 * //{x: -1, y: 6.123233995736766e-17}
 	 *
 	 * @function rotPnt
@@ -3145,7 +3184,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Get angle from three points
 	 *
 	 * @param {number} a_x - x position of first point
@@ -3172,7 +3211,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Get center of circles from two points and radius
 	 *
 	 * @param {number} a_x - x position of first point
@@ -3208,7 +3247,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Compare two points and return 1, 0 or -1
 	 *
 	 * @param {number} a_x - x position of first point
@@ -3234,7 +3273,7 @@
 
 	//Line
 	/**
-	 *	
+	 *
 	 * Calculate slope of a line segment
 	 *
 	 * @param {number} a_x - x position of first point of the segment
@@ -3255,7 +3294,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Convert to standard form of a line segment where `ax + by + c = 0`
 	 *
 	 * @param {number} a_x - x position of first point of the segment
@@ -3288,7 +3327,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate distance from a line to a point with different modes
 	 *
 	 * @param {boolean} type - `true` if calculate perpendicular distance
@@ -3323,7 +3362,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate distance from a line to another line with different modes
 	 *
 	 * @param {boolean} type - `true` if calculate perpendicular distance
@@ -3359,7 +3398,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Find intersection of two lines
 	 *
 	 * @param {number} a_x - x position of first point of the first segment
@@ -3423,7 +3462,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Find intersections of a circle and a line
 	 *
 	 * @param {number} a_x - x position of first point of the segment
@@ -3489,7 +3528,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate cross product of a line with a point
 	 *
 	 * To check if point is left side of the line, check if returnData > 0
@@ -3516,7 +3555,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate location of a point on a line
 	 *
 	 * @param {number} a_x - x position of first point of the line segment
@@ -3547,7 +3586,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if a point is on a line
 	 *
 	 * @param {boolean} type - true if two points is line segment
@@ -3578,7 +3617,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate x coordinate of a point on a line known y coordinate
 	 *
 	 * @param {number} a_x - x position of first point of the line segment
@@ -3610,7 +3649,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate y coordinate of a point on a line known x coordinate
 	 *
 	 * @param {number} a_x - x position of first point of the line segment
@@ -3642,7 +3681,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if a ray collide a rectangle
 	 *
 	 * @param {number} a_x - x position of vertex point of the ray
@@ -3682,7 +3721,7 @@
 
 	//Circle
 	/**
-	 *	
+	 *
 	 * Check if a point is inside an arc
 	 *
 	 * @param {number} a_x - x position of point
@@ -3712,7 +3751,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if a point is inside a circle, return 1, 0, -1 based on location
 	 *
 	 * @param {number} o_x - x position of center point
@@ -3738,7 +3777,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if a circle collide another circle
 	 *
 	 * @param {number} a_x - x position of center point of first circle
@@ -3764,7 +3803,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if a circle collide a rectangle
 	 *
 	 * @param {number} o_x - x position of center point
@@ -3788,7 +3827,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Find intersection of 2 circles
 	 *
 	 * @param {number} a_x - x position of center point of first circle
@@ -3828,7 +3867,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Generate random point inside circle
 	 *
 	 * @param {number} x - x position of center point
@@ -3846,20 +3885,13 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_randomCirc(x, y, radius, uniform, returnData) {
-		let a = oldRandom(),
-			b = oldRandom(),
-			c;
-		if (uniform && b < a) {
-			c = b;
-			b = a;
-			a = c;
-		}
-		return Math_rec(x, y, b * radius, Math_TAU * a / b, returnData);
+		_helper27(uniform);
+		return Math_rec(x, y, _memory_1_[1] * radius, Math_TAU * _memory_1_[0] / _memory_1_[1], returnData);
 	}
 
 	//Ellipse
 	/**
-	 *	
+	 *
 	 * Calculate point on an ellipse
 	 *
 	 * @param {number} x - x position of center point
@@ -3890,7 +3922,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if a point inside an ellipse
 	 *
 	 * @param {number} x - x position of center point
@@ -3921,7 +3953,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Find intersection points of two ellipses
 	 *
 	 * @param {number} x_1 - x position of center point of first ellipse
@@ -3993,7 +4025,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Find intersection points of an ellipse and a line
 	 *
 	 * @param {number} x - x position of center point of the ellipse
@@ -4052,7 +4084,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Find bounding box of an ellipse
 	 *
 	 * @param {number} x - x position of center point of the ellipse
@@ -4086,7 +4118,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Generate a random point inside an ellipse
 	 *
 	 * @param {number} x - x position of center point of the ellipse
@@ -4106,19 +4138,12 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_randomElli(x, y, radius1, radius2, angle, uniform, returnData) {
-		let a = oldRandom(),
-			b = oldRandom(),
-			c;
-		if (uniform && b < a) {
-			c = b;
-			b = a;
-			a = c;
-		}
-		return Geometry_onElli(x, y, b * radius1, b * radius2, angle, Math_TAU * a / b, returnData);
+		_helper27(uniform);
+		return Geometry_onElli(x, y, _memory_1_[1] * radius1, _memory_1_[1] * radius2, angle, Math_TAU * _memory_1_[0] / _memory_1_[1], returnData);
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate distance from a point on an ellipse to it's center
 	 *
 	 * @param {number} radius1 - radius of major axis of the ellipse
@@ -4127,7 +4152,7 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Geometry.distElliPnt(2, 1, Math_HALFPI);
+	 * Geometry.distElliPnt(2, 1, Math_HALF_PI);
 	 * //1
 	 *
 	 * @function distElliPnt
@@ -4143,7 +4168,7 @@
 
 	//Triangle
 	/**
-	 *	
+	 *
 	 * Calculate centroid point of triangle
 	 *
 	 * @param {number} x_1 - x position of the first vertex
@@ -4170,7 +4195,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Construct equilateral triangle
 	 *
 	 * @param {number} x - x position of point
@@ -4200,7 +4225,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Construct right triangle
 	 *
 	 * @param {number} x - x position of point
@@ -4228,7 +4253,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate center point of triangle
 	 *
 	 * @param {number} x_1 - x position of the first vertex
@@ -4262,7 +4287,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate center point of a circle form by three point from the triangle
 	 *
 	 * @param {number} x_1 - x position of the first vertex
@@ -4300,7 +4325,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate inscribed center point of a circle form by three point from the triangle
 	 *
 	 * @param {number} x_1 - x position of the first vertex
@@ -4333,7 +4358,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if a point inside the triangle
 	 *
 	 * @param {number} a_x - x position of the first vertex
@@ -4369,7 +4394,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate area of the triangle
 	 *
 	 * @param {number} x_1 - x position of the first vertex
@@ -4392,7 +4417,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Generate random point in the triangle
 	 *
 	 * @param {number} a_x - x position of the first vertex
@@ -4424,7 +4449,7 @@
 
 	//Rectangle
 	/**
-	 *	
+	 *
 	 * Check if a point inside the rectangle
 	 *
 	 * @param {number} x_min - x position of top-left corner
@@ -4450,7 +4475,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if a rectangle collide another rectangle
 	 *
 	 * @param {number} x_min - x position of top-left corner of first rectangle
@@ -4478,7 +4503,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate corner of bounding rectangle from two rectangles
 	 *
 	 * @param {number} x_min - x position of top-left corner of first rectangle
@@ -4512,7 +4537,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Generate random point inside a rectangle
 	 *
 	 * @param {number} x_min - x position of top-left corner
@@ -4538,7 +4563,7 @@
 
 	//Polygon
 	/**
-	 *	
+	 *
 	 * Check if a point inside a polygon (convex, concave, complex)
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
@@ -4570,7 +4595,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if a circle collide a polygon (convex, concave, complex)
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
@@ -4599,7 +4624,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if a polygon (convex, concave, complex) collide another polygon (convex, concave, complex)
 	 *
 	 * @param {number[]} points - array of points of first polygon [x1, y1, x2, y2, ...]
@@ -4632,7 +4657,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if a polygon is not complex polygon (check if not self-intersecting)
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
@@ -4691,7 +4716,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if a polygon is convex
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
@@ -4722,7 +4747,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if a polygon is clockwise (point location sequence)
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
@@ -4755,7 +4780,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Find bounding box of a polygon (convex, concave, complex)
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
@@ -4788,7 +4813,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Triangulate a polygon (convex, concave, complex)
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
@@ -4860,7 +4885,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate area of a polygon (convex, concave, complex)
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
@@ -4868,7 +4893,7 @@
 	 *
 	 * @example
 	 * Geometry.areaPoly([0, 0, 50, 0, 100, 50, 50, 100, 0, 100]);
-	 *	//7500
+	 * //7500
 	 *
 	 * @function areaPoly
 	 * @memberof Geometry
@@ -4892,7 +4917,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Find centroid of a polygon (convex, concave, complex)
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
@@ -4901,7 +4926,7 @@
 	 *
 	 * @example
 	 * Geometry.centroidPoly([0, 0, 50, 0, 100, 50, 50, 100, 0, 100]);
-	 *	//{x: 38.888888888888886, y: 50}
+	 * //{x: 38.888888888888886, y: 50}
 	 *
 	 * @function centroidPoly
 	 * @memberof Geometry
@@ -4935,7 +4960,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Find convex hull of a set of points
 	 *
 	 * @param {number[]} points - array of points [[x1, y1], [x2, y2], ...]
@@ -4974,7 +4999,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Finds the closest point of a polygon (convex, concave, ~~complex~~) that lay on ray
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
@@ -5034,7 +5059,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Finds the point on polygon edges (convex, concave, complex), which is closest to the point
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
@@ -5083,7 +5108,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Reverse point sequence of a polygon
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
@@ -5107,7 +5132,7 @@
 
 	//Accel
 	/**
-	 *	
+	 *
 	 * Calculates the time required to move with acceleration [a] from speed [u] to speed [v]
 	 *
 	 * @param {number} u - current speed
@@ -5127,7 +5152,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculates the acceleration needed to move from speed [u] to speed [v] in time [t]
 	 *
 	 * @param {number} u - current speed
@@ -5147,7 +5172,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculates the acceleration needed to cover distance [s] with starting speed [u] and max speed [v]
 	 *
 	 * @param {number} u - current speed
@@ -5167,7 +5192,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculates the time needed to cover distance [s] with acceleration [a] and base speed [u]
 	 *
 	 * @param {number} u - current speed
@@ -5193,14 +5218,14 @@
 
 	/**
 	 *
-	 *	All of functions that related to Vector
+	 *All of functions that related to Vector
 	 *
 	 * @namespace Vector
 	 *
 	 **/
 	//Have heavy relationship with complex number, where re: x and im: y
 	/**
-	 *	
+	 *
 	 * Convert cartesian to polar coordinates
 	 *
 	 * @param {number} x - x position
@@ -5223,7 +5248,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Convert polar to cartesian coordinates
 	 *
 	 * @param {number} x - x position
@@ -5248,7 +5273,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Normalize vector as scaling r to 1
 	 *
 	 * @param {number} x - x position
@@ -5272,7 +5297,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Scale vector
 	 *
 	 * @param {number} x - x position
@@ -5296,7 +5321,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Truncate vector to r = 1
 	 *
 	 * @param {number} x - x position
@@ -5319,7 +5344,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate magnitude of vector
 	 *
 	 * @param {number} x - x position
@@ -5344,7 +5369,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate dot product of two vectors
 	 *
 	 * @param {number} a_x - x position of first vector
@@ -5366,7 +5391,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate cross product of two vectors
 	 *
 	 * @param {number} a_x - x position of first vector
@@ -5389,7 +5414,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate projection vector from two vectors
 	 *
 	 * @param {number} a_x - x position of first vector
@@ -5411,7 +5436,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate rejection vector from two vectors
 	 *
 	 * @param {number} a_x - x position of first vector
@@ -5436,7 +5461,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate per product from vector
 	 *
 	 * @param {number} x - x position
@@ -5461,7 +5486,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Interpolates from two vectors
 	 *
 	 * @param {number} a_x - x position of first vector
@@ -5487,14 +5512,14 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate angle of vector
 	 *
 	 * @param {number} x - x position
 	 * @param {number} y - y position
 	 * @return {number}
 	 *
-	 *	Angle in radians
+	 *Angle in radians
 	 *
 	 * @example
 	 * Math.headVec(5, 5);
@@ -5508,7 +5533,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Reverse vector
 	 *
 	 * @param {number} x - x position
@@ -5530,7 +5555,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if second vector is on the right of first vector
 	 *
 	 * @param {number} a_x - x position of first vector
@@ -5559,14 +5584,14 @@
 	 **/
 
 	/**
-	 *	
+	 *
 	 * [Sinc function]{@link https://en.wikipedia.org/wiki/Sinc_function}
 	 *
 	 * @param {number} num
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.sinc(Math_HALFPI);
+	 * Math.sinc(Math_HALF_PI);
 	 * //-0.19765087483668042
 	 *
 	 * @function sinc
@@ -5586,14 +5611,14 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Chord function]{@link https://en.wikipedia.org/wiki/Chord_(geometry)#Chords_in_trigonometry}
 	 *
 	 * @param {number} num
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.crd(Math_HALFPI);
+	 * Math.crd(Math_HALF_PI);
 	 * //1.414213562373095
 	 *
 	 * @function crd
@@ -5604,7 +5629,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Exsecant function]{@link https://en.wikipedia.org/wiki/Exsecant#Exsecant}
 	 *
 	 * @param {number} num
@@ -5622,7 +5647,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Excosecant function]{@link https://en.wikipedia.org/wiki/Exsecant#Excosecant}
 	 *
 	 * @param {number} num
@@ -5640,7 +5665,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Arcexsecant function]{@link https://en.wikipedia.org/wiki/Exsecant#Inverse_functions}
 	 *
 	 * @param {number} num
@@ -5658,7 +5683,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Arcexcosecant function]{@link https://en.wikipedia.org/wiki/Exsecant#Inverse_functions}
 	 *
 	 * @param {number} num
@@ -5676,14 +5701,14 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Versine function]{@link https://en.wikipedia.org/wiki/Versine}
 	 *
 	 * @param {number} num
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.vsin(Math_HALFPI);
+	 * Math.vsin(Math_HALF_PI);
 	 * //0.9999999999999999
 	 *
 	 * @function vsin
@@ -5694,14 +5719,14 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Vercosine function]{@link https://en.wikipedia.org/wiki/Versine#Mathematical_identities}
 	 *
 	 * @param {number} num
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.vcos(Math_HALFPI);
+	 * Math.vcos(Math_HALF_PI);
 	 * //1
 	 *
 	 * @function vcos
@@ -5712,14 +5737,14 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Coversine function]{@link https://en.wikipedia.org/wiki/Versine#Mathematical_identities}
 	 *
 	 * @param {number} num
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.cvsin(Math_HALFPI);
+	 * Math.cvsin(Math_HALF_PI);
 	 * //0
 	 *
 	 * @function cvsin
@@ -5730,14 +5755,14 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Covercosine function]{@link https://en.wikipedia.org/wiki/Versine#Mathematical_identities}
 	 *
 	 * @param {number} num
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.cvcos(Math_HALFPI);
+	 * Math.cvcos(Math_HALF_PI);
 	 * //2
 	 *
 	 * @function cvcos
@@ -5748,14 +5773,14 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Haversine function]{@link https://en.wikipedia.org/wiki/Versine#Mathematical_identities}
 	 *
 	 * @param {number} num
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.hvsin(Math_HALFPI);
+	 * Math.hvsin(Math_HALF_PI);
 	 * //0.49999999999999994
 	 *
 	 * @function hvsin
@@ -5766,14 +5791,14 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Havercosine function]{@link https://en.wikipedia.org/wiki/Versine#Mathematical_identities}
 	 *
 	 * @param {number} num
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.hvcos(Math_HALFPI);
+	 * Math.hvcos(Math_HALF_PI);
 	 * //0.5
 	 *
 	 * @function hvcos
@@ -5784,14 +5809,14 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Hacoversine function]{@link https://en.wikipedia.org/wiki/Versine#Mathematical_identities}
 	 *
 	 * @param {number} num
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.hcvsin(Math_HALFPI);
+	 * Math.hcvsin(Math_HALF_PI);
 	 * //0
 	 *
 	 * @function hcvsin
@@ -5802,14 +5827,14 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Hacovercosine function]{@link https://en.wikipedia.org/wiki/Versine#Mathematical_identities}
 	 *
 	 * @param {number} num
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.hcvcos(Math_HALFPI);
+	 * Math.hcvcos(Math_HALF_PI);
 	 * //1
 	 *
 	 * @function hcvcos
@@ -5820,7 +5845,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Arcversine function]{@link https://en.wikipedia.org/wiki/Versine#Inverse_functions}
 	 *
 	 * @param {number} num
@@ -5838,7 +5863,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Arcvercosine function]{@link https://en.wikipedia.org/wiki/Versine#Inverse_functions}
 	 *
 	 * @param {number} num
@@ -5856,7 +5881,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Arccoversine function]{@link https://en.wikipedia.org/wiki/Versine#Inverse_functions}
 	 *
 	 * @param {number} num
@@ -5874,7 +5899,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Arccovercosine function]{@link https://en.wikipedia.org/wiki/Versine#Inverse_functions}
 	 *
 	 * @param {number} num
@@ -5892,7 +5917,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Archaversine function]{@link https://en.wikipedia.org/wiki/Versine#Inverse_functions}
 	 *
 	 * @param {number} num
@@ -5910,7 +5935,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Archavercosine function]{@link https://en.wikipedia.org/wiki/Versine#Inverse_functions}
 	 *
 	 * @param {number} num
@@ -5928,14 +5953,14 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Cosecant function]{@link https://en.wikipedia.org/wiki/Trigonometric_functions#Cosecant.2C_secant.2C_and_cotangent}
 	 *
 	 * @param {number} num
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.csc(Math_HALFPI);
+	 * Math.csc(Math_HALF_PI);
 	 * //1
 	 *
 	 * @function csc
@@ -5946,14 +5971,14 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Hyperbolic cosecant function]{@link https://en.wikipedia.org/wiki/Hyperbolic_function#Definitions}
 	 *
 	 * @param {number} num
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.csch(Math_HALFPI);
+	 * Math.csch(Math_HALF_PI);
 	 * //0.4345372080946958
 	 *
 	 * @function csch
@@ -5964,7 +5989,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Secant function]{@link https://en.wikipedia.org/wiki/Trigonometric_functions#Cosecant.2C_secant.2C_and_cotangent}
 	 *
 	 * @param {number} num
@@ -5982,14 +6007,14 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Hyperbolic secant function]{@link https://en.wikipedia.org/wiki/Hyperbolic_function#Definitions}
 	 *
 	 * @param {number} num
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.sech(Math_HALFPI);
+	 * Math.sech(Math_HALF_PI);
 	 * //0.3985368153383867
 	 *
 	 * @function sech
@@ -6000,14 +6025,14 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Cotangent function]{@link https://en.wikipedia.org/wiki/Trigonometric_functions#Cosecant.2C_secant.2C_and_cotangent}
 	 *
 	 * @param {number} num
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.cot(Math_HALFPI);
+	 * Math.cot(Math_HALF_PI);
 	 * //6.123233995736766e-17
 	 *
 	 * @function cot
@@ -6018,14 +6043,14 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Hyperbolic cotangent function]{@link https://en.wikipedia.org/wiki/Hyperbolic_function#Definitions}
 	 *
 	 * @param {number} num
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.coth(Math_HALFPI);
+	 * Math.coth(Math_HALF_PI);
 	 * //1.0903314107273683
 	 *
 	 * @function coth
@@ -6036,7 +6061,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Arccosecant function]{@link https://en.wikipedia.org/wiki/Inverse_trigonometric_functions#Basic_properties}
 	 *
 	 * @param {number} num
@@ -6054,7 +6079,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Hyperbolic arccosecant function]{@link https://en.wikipedia.org/wiki/Inverse_hyperbolic_functions#Definitions_in_terms_of_logarithms}
 	 *
 	 * @param {number} num
@@ -6072,7 +6097,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Arcsecant function]{@link https://en.wikipedia.org/wiki/Inverse_trigonometric_functions#Basic_properties}
 	 *
 	 * @param {number} num
@@ -6090,7 +6115,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Hyperbolic arcsecant function]{@link https://en.wikipedia.org/wiki/Inverse_hyperbolic_functions#Definitions_in_terms_of_logarithms}
 	 *
 	 * @param {number} num
@@ -6108,7 +6133,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Arccotangent function]{@link https://en.wikipedia.org/wiki/Inverse_trigonometric_functions#Basic_properties}
 	 *
 	 * @param {number} num
@@ -6126,7 +6151,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Hyperbolic arccotangent function]{@link https://en.wikipedia.org/wiki/Inverse_hyperbolic_functions#Definitions_in_terms_of_logarithms}
 	 *
 	 * @param {number} num
@@ -6144,7 +6169,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Calculate sine and cosine at a same time
 	 *
 	 * @param {number} num
@@ -6154,7 +6179,7 @@
 	 * Cosine on the left, sine on the right
 	 *
 	 * @example
-	 * Math.sincos(Math_HALFPI);
+	 * Math.sincos(Math_HALF_PI);
 	 * //[0, 1]
 	 *
 	 * @function sincos
@@ -6177,7 +6202,7 @@
 	 **/
 
 	/**
-	 *	
+	 *
 	 * Check if a number is prime
 	 *
 	 * @param {number} num
@@ -6197,7 +6222,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if negative zero
 	 *
 	 * @param {number} num
@@ -6215,7 +6240,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if a number is even
 	 *
 	 * @param {number} num
@@ -6233,7 +6258,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if input is legal numeric
 	 *
 	 * @param {*} num
@@ -6251,7 +6276,25 @@
 	}
 
 	/**
-	 *	
+	 *
+	 * Check if number is power of 2
+	 *
+	 * @param {number} num
+	 * @return {boolean}
+	 *
+	 * @example
+	 * Number.isPOT(4);
+	 * //true
+	 *
+	 * @function isPOT
+	 * @memberof Number
+	 **/
+	function Number_isPOT(num) {
+		return num !== 0 && (num & (num - 1)) === 0;
+	}
+
+	/**
+	 *
 	 * Calculate epsilon of current machine (may equal to Number.EPSILON)
 	 *
 	 * @return {number}
@@ -6279,7 +6322,7 @@
 	 **/
 
 	/**
-	 *	
+	 *
 	 * In Quad
 	 *
 	 * @param {number} time
@@ -6297,7 +6340,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Out Quad
 	 *
 	 * @param {number} time
@@ -6315,7 +6358,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * In Out Quad
 	 *
 	 * @param {number} time
@@ -6333,7 +6376,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * In Cubic
 	 *
 	 * @param {number} time
@@ -6351,7 +6394,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Out Cubic
 	 *
 	 * @param {number} time
@@ -6369,7 +6412,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * In Out Cubic
 	 *
 	 * @param {number} time
@@ -6387,7 +6430,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * In Quart
 	 *
 	 * @param {number} time
@@ -6405,7 +6448,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Out Quart
 	 *
 	 * @param {number} time
@@ -6423,7 +6466,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * In Out Quart
 	 *
 	 * @param {number} time
@@ -6441,7 +6484,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * In Quint
 	 *
 	 * @param {number} time
@@ -6459,7 +6502,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Out Quint
 	 *
 	 * @param {number} time
@@ -6477,7 +6520,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * In Out Quint
 	 *
 	 * @param {number} time
@@ -6495,7 +6538,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * In Pow (same as quad, cubic,... but modifiable exponent)
 	 *
 	 * @param {number} time
@@ -6514,7 +6557,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Out Pow (same as quad, cubic,... but modifiable exponent)
 	 *
 	 * @param {number} time
@@ -6534,7 +6577,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * In Out Pow (same as quad, cubic,... but modifiable exponent)
 	 *
 	 * @param {number} time
@@ -6553,9 +6596,70 @@
 			check = Number_isEven(pow - 1) ? 1 : -1;
 		return time < 0.5 ? temp * Math_pow(time, pow) : 1 + temp * (time -= 1) * Math_pow(time, pow - 1) * check;
 	}
+	
+	/**
+	 *
+	 * In Log
+	 *
+	 * @param {number} time
+	 * @param {number} pow - exponent
+	 * @return {number}
+	 *
+	 * @example
+	 * Tween.inLog(0.25, 2);
+	 * //0.19264507794239594
+	 *
+	 * @function inLog
+	 * @memberof Tween
+	 **/
+	function Tween_inLog(time, pow) {
+		return 1 - Tween_outLog(1 - time, pow);
+	}
 
 	/**
-	 *	
+	 *
+	 * Out Log
+	 *
+	 * @param {number} time
+	 * @param {number} pow - exponent
+	 * @return {number}
+	 *
+	 * @example
+	 * Tween.outLog(0.25, 2);
+	 * //0.32192809488736235
+	 *
+	 * @function outLog
+	 * @memberof Tween
+	 **/
+	function Tween_outLog(time, pow) {
+		return Math_log(time * (pow - 1) + 1, pow);
+	}
+
+	/**
+	 *
+	 * In Out Log
+	 *
+	 * @param {number} time
+	 * @param {number} pow - exponent
+	 * @return {number}
+	 *
+	 * @example
+	 * Tween.inOutLog(0.25, 2);
+	 * //0.2075187496394219
+	 *
+	 * @function inOutLog
+	 * @memberof Tween
+	 **/
+	function Tween_inOutLog(time, pow) {
+		time *= 2;
+		if (time < 1) {
+			return 0.5 - Tween_outLog(1 - time, pow) / 2;
+		}
+		return 0.5 + Tween_outLog(time - 1, pow) / 2;
+	}
+
+	/**
+	 *
 	 * In Sine
 	 *
 	 * @param {number} time
@@ -6570,11 +6674,11 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inSine(time, pow) {
-		return -Math_pow(Math.cos(time * Math_HALFPI), pow) + 1;
+		return -Math_pow(Math.cos(time * Math_HALF_PI), pow) + 1;
 	}
 
 	/**
-	 *	
+	 *
 	 * Out Sine
 	 *
 	 * @param {number} time
@@ -6589,11 +6693,11 @@
 	 * @memberof Tween
 	 **/
 	function Tween_outSine(time, pow) {
-		return Math_pow(Math.sin(time * Math_HALFPI), pow);
+		return Math_pow(Math.sin(time * Math_HALF_PI), pow);
 	}
 
 	/**
-	 *	
+	 *
 	 * In Out Sine
 	 *
 	 * @param {number} time
@@ -6615,7 +6719,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * In Exponent
 	 *
 	 * @param {number} time
@@ -6633,7 +6737,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Out Exponent
 	 *
 	 * @param {number} time
@@ -6651,7 +6755,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * In Out Exponent
 	 *
 	 * @param {number} time
@@ -6678,7 +6782,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * In Circular
 	 *
 	 * @param {number} time
@@ -6696,7 +6800,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Out Circular
 	 *
 	 * @param {number} time
@@ -6714,7 +6818,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * In Out Circular
 	 *
 	 * @param {number} time
@@ -6735,7 +6839,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * In Elastic
 	 *
 	 * @param {number} time
@@ -6750,27 +6854,10 @@
 	 * @function inElastic
 	 * @memberof Tween
 	 **/
-	function Tween_inElastic(time, amplitude, period) {
-		let s;
-		amplitude = _helper0(amplitude, 0.1);
-		period = _helper0(period, 0.1);
-		if (time === 0) {
-			return 0;
-		}
-		if (time === 1) {
-			return 1;
-		}
-		if (amplitude < 1) {
-			amplitude = 1;
-			s = period / 4;
-		} else {
-			s = period * Math.asin(1 / amplitude) / Math_TAU;
-		}
-		return -amplitude * Math_pow(2, 10 * (time -= 1)) * Math.sin((time - s) * Math_TAU / period);
-	}
+	let Tween_inElastic = _helper26.bind(this, 0);
 
 	/**
-	 *	
+	 *
 	 * Out Elastic
 	 *
 	 * @param {number} time
@@ -6785,27 +6872,10 @@
 	 * @function outElastic
 	 * @memberof Tween
 	 **/
-	function Tween_outElastic(time, amplitude, period) {
-		let s;
-		amplitude = _helper0(amplitude, 0.1);
-		period = _helper0(period, 0.1);
-		if (time === 0) {
-			return 0;
-		}
-		if (time === 1) {
-			return 1;
-		}
-		if (amplitude < 1) {
-			amplitude = 1;
-			s = period / 4;
-		} else {
-			s = period * Math.asin(1 / amplitude) / Math_TAU;
-		}
-		return amplitude * Math_pow(2, -10 * time) * Math.sin((time - s) * Math_TAU / period) + 1;
-	}
+	let Tween_outElastic = _helper26.bind(this, 1);
 
 	/**
-	 *	
+	 *
 	 * In Out Elastic
 	 *
 	 * @param {number} time
@@ -6820,30 +6890,10 @@
 	 * @function inOutElastic
 	 * @memberof Tween
 	 **/
-	function Tween_inOutElastic(time, amplitude, period) {
-		let s;
-		amplitude = _helper0(amplitude, 0.1);
-		period = _helper0(period, 0.1);
-		if (time === 0) {
-			return 0;
-		}
-		if (time === 1) {
-			return 1;
-		}
-		if (amplitude < 1) {
-			amplitude = 1;
-			s = period / 4;
-		} else {
-			s = period * Math.asin(1 / amplitude) / Math_TAU;
-		}
-		if ((time *= 2) < 1) {
-			return -(amplitude * Math_pow(2, 10 * (time -= 1)) * Math.sin((time - s) * Math_TAU / period)) / 2;
-		}
-		return amplitude * Math_pow(2, -10 * (time -= 1)) * Math.sin((time - s) * Math_TAU / period) / 2 + 1;
-	}
+	let Tween_inOutElastic = _helper26.bind(this, 2);
 
 	/**
-	 *	
+	 *
 	 * In Back
 	 *
 	 * @param {number} time
@@ -6853,22 +6903,18 @@
 	 *
 	 * @example
 	 * Tween.inBack(0.25, 2);
-	 * //0.7024967320129584
+	 * //-0.7024967320129584
 	 *
 	 * @function inBack
 	 * @memberof Tween
 	 **/
 	function Tween_inBack(time, overShoot, isOver) {
-		if (overShoot == undefined) {
-			overShoot = 1.70158;
-		} else {
-			overShoot = isOver ? overShoot : _helper10(overShoot);
-		}
+		overShoot = overShoot ? (isOver ? overShoot : _helper10(overShoot)) : 1.70158;
 		return 1 * time * time * ((overShoot + 1) * time - overShoot);
 	}
 
 	/**
-	 *	
+	 *
 	 * Out Back
 	 *
 	 * @param {number} time
@@ -6884,16 +6930,12 @@
 	 * @memberof Tween
 	 **/
 	function Tween_outBack(time, overShoot, isOver) {
-		if (overShoot == undefined) {
-			overShoot = 1.70158;
-		} else {
-			overShoot = isOver ? overShoot : _helper10(overShoot);
-		}
+		overShoot = overShoot ? (isOver ? overShoot : _helper10(overShoot)) : 1.70158;
 		return (time -= 1) * time * ((overShoot + 1) * time + overShoot) + 1;
 	}
 
 	/**
-	 *	
+	 *
 	 * In Out Back
 	 *
 	 * @param {number} time
@@ -6909,11 +6951,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inOutBack(time, overShoot, isOver) {
-		if (overShoot == undefined) {
-			overShoot = 1.70158;
-		} else {
-			overShoot = isOver ? overShoot : _helper10(overShoot);
-		}
+		overShoot = overShoot ? (isOver ? overShoot : _helper10(overShoot)) : 1.70158;
 		let temp = isOver ? 1 : 1.525;
 		if ((time *= 2) < 1) {
 			return (time * time * (((overShoot *= temp) + 1) * time - overShoot)) / 2;
@@ -6922,7 +6960,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * In Bounce
 	 *
 	 * @param {number} time
@@ -6940,7 +6978,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Out Bounce
 	 *
 	 * @param {number} time
@@ -6966,7 +7004,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * In Out Bounce
 	 *
 	 * @param {number} time
@@ -6987,7 +7025,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Spring
 	 *
 	 * @param {number} time
@@ -7023,7 +7061,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Bounce
 	 *
 	 * @param {number} time
@@ -7100,7 +7138,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Smoothstep]{@link https://en.wikipedia.org/wiki/Smoothstep}
 	 *
 	 * @param {number} time
@@ -7161,7 +7199,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Overshoot
 	 *
 	 * @param {number} time
@@ -7181,7 +7219,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Berp
 	 *
 	 * @param {number} time
@@ -7207,7 +7245,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Envelope
 	 *
 	 * @param {number} time
@@ -7234,7 +7272,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Customizable tween
 	 *
 	 * @param {number} time
@@ -7266,7 +7304,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Bezier]{@link https://en.wikipedia.org/wiki/B%C3%A9zier_curve} tween
 	 *
 	 * @param {number} time
@@ -7297,7 +7335,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * [Cubic Hermite spline]{@link https://en.wikipedia.org/wiki/Cubic_Hermite_spline} tween using [Kochanek–Bartels spline]{@link https://en.wikipedia.org/wiki/Kochanek%E2%80%93Bartels_spline} version
 	 *
 	 * @param {number} continuty
@@ -7366,7 +7404,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Configurable counting number function
 	 *
 	 * @param {number} min
@@ -7406,7 +7444,7 @@
 			}
 
 			/**
-			 *	
+			 *
 			 * Configurable counting number function, see `Tween.count` for the function that return this function
 			 *
 			 * @param {boolean=} _check - `true` if you want the function to return internal object, else just number
@@ -7561,7 +7599,7 @@
 	 **/
 
 	/**
-	 *	
+	 *
 	 * AndNot boolean function, see [here]{@link http://mathworld.wolfram.com/BooleanFunction.html}
 	 *
 	 * @param {boolean} a
@@ -7580,7 +7618,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * NotAnd boolean function, see [here]{@link http://mathworld.wolfram.com/BooleanFunction.html}
 	 *
 	 * @param {boolean} a
@@ -7599,7 +7637,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Nand boolean function, see [here]{@link http://mathworld.wolfram.com/BooleanFunction.html}
 	 *
 	 * @param {boolean} a
@@ -7618,7 +7656,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * OrNot boolean function, see [here]{@link http://mathworld.wolfram.com/BooleanFunction.html}
 	 *
 	 * @param {boolean} a
@@ -7637,7 +7675,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * NotOr boolean function, see [here]{@link http://mathworld.wolfram.com/BooleanFunction.html}
 	 *
 	 * @param {boolean} a
@@ -7656,7 +7694,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Nor boolean function, see [here]{@link http://mathworld.wolfram.com/BooleanFunction.html}
 	 *
 	 * @param {boolean} a
@@ -7675,7 +7713,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Xor boolean function, see [here]{@link http://mathworld.wolfram.com/BooleanFunction.html}
 	 *
 	 * @param {boolean} a
@@ -7694,7 +7732,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Xnor boolean function, see [here]{@link http://mathworld.wolfram.com/BooleanFunction.html}
 	 *
 	 * @param {boolean} a
@@ -7713,7 +7751,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if all value in an array is truthy
 	 *
 	 * @param {Array}
@@ -7737,7 +7775,7 @@
 	}
 
 	/**
-	 *	
+	 *
 	 * Check if at least one value in an array is truthy
 	 *
 	 * @param {Array}
@@ -7763,10 +7801,10 @@
 	//This is a very terrible way to export these functions because Closure advanced mode :(
 	//If you have any ideas to improve this I'm really appreciated :D
 	module([
-		["M", "HALFPI", Math_HALFPI],
+		["M", "HALF_PI", Math_HALF_PI],
 		["M", "TAU", Math_TAU],
-		["M", "SQRTPI", Math_SQRTPI],
-		["M", "SQRTTAU", Math_SQRTTAU],
+		["M", "SQRT_PI", Math_SQRT_PI],
+		["M", "SQRT_TAU", Math_SQRT_TAU],
 		["M", "PHI", Math_PHI],
 		["M", "SILVER", Math_SILVER],
 		["M", "UPC", Math_UPC],
@@ -7827,6 +7865,7 @@
 		["M", "tri", Math_tri],
 		["M", "fold", Math_fold],
 		["M", "one", Math_one],
+		["M", "flip", Math_flip],
 		["M", "range", Math_range],
 		["M", "compare", Math_compare],
 		["M", "clamp", Math_clamp],
@@ -7836,6 +7875,7 @@
 		["M", "map", Math_map],
 		["M", "norm", Math_norm],
 		["M", "lerp", Math_lerp],
+		["M", "change", Math_change],
 		["M", "gcd", Math_gcd],
 		["M", "lcm", Math_lcm],
 		["M", "factor", Math_factor],
@@ -7977,6 +8017,7 @@
 		["N", "isEven", Number_isEven],
 		["N", "isNumeric", Number_isNumeric],
 		["N", "epsilon", Number_epsilon],
+		["N", "isPOT", Number_isPOT],
 
 		["T", "inQuad", Tween_inQuad],
 		["T", "outQuad", Tween_outQuad],
@@ -7993,6 +8034,9 @@
 		["T", "inPow", Tween_inPow],
 		["T", "outPow", Tween_outPow],
 		["T", "inOutPow", Tween_inOutPow],
+		["T", "inLog", Tween_inLog],
+		["T", "outLog", Tween_outLog],
+		["T", "inOutLog", Tween_inOutLog],
 		["T", "inSine", Tween_inSine],
 		["T", "outSine", Tween_outSine],
 		["T", "inOutSine", Tween_inOutSine],
@@ -8085,67 +8129,14 @@
 	typeof global !== "undefined" ? global : this
 );
 
-//Junk code zone, may useful for future ?
+/*
+//ac = -a * p * 54;
+//(3 * ac - bb) / (9 * aa);
+//(27 * aa + 2 * bb - 9 * ac) * b / (54 * aa * a);
+//(27 * a * a + 2 * b * b - 9 * -a * p * 54) * b / (54 * a * a * a)
 
-//let percent = (num - min1) / (max1 - min1);
-//return min2 + percent * (max2 - min2);
-//return (Math.sin(time * Math.PI * (num1 + num2 * time * time * time)) * (1.0 - Math.pow(time, num3)) + time) * (1.0 + (num4 * (1.0 - time)));
 
-//~~x: truncate decimal, like x | 0, but precedence
-/*function pingpong(n) {
-    return ~~n%2
-      ? 1.0 - n + ~~n
-      : n - ~~n;
-  }*/
-/*function Number_isPower(num1, num2, epsilon) {
-	epsilon = _helper0(epsilon, Math_precision(num2));
-	let d = Math_ln(Math.abs(num1)) / Math_ln(Math.abs(num2));
-	if ((num1 < 0 && num2 < 0) || (num1 > 0 && num2 > 0)) {
-		return Math_trunc(d, epsilon) === d;
-	} else if (num1 > 0 && num2 < 0) {
-		return Math_trunc(d, epsilon) % 2 === 0;
-	}
-	return false;
-}*/
-
-/*let check = base < 0 && exponent < 0,
-		temp = check && Number_isEven(exponent) ? NaN : oldPow(Math.abs(base), exponent);
-	result = check && temp ? -temp : temp; //Maybe bug here*/
-	//let check = base < 0 && exponent < 0,
-
-/*if (num < min) {
-	num = min;
-} else if (num > max) {
-	num = max;
-}
-return num;*/
-
-/*let qw, we, er, result;
-if (num < _invNorm_1_[21]) {
-	qw = Math.sqrt(-2 * Math_ln(num));
-	er = (((((_invNorm_1_[11] * qw + _invNorm_1_[12]) * qw + _invNorm_1_[13]) * qw + _invNorm_1_[14]) * qw + _invNorm_1_[15]) * qw + _invNorm_1_[16]) /
-		((((_invNorm_1_[17] * qw + _invNorm_1_[18]) * qw + _invNorm_1_[19]) * qw + _invNorm_1_[20]) * qw + 1);
-	result = er;
-} else {
-	qw = num - 0.5;
-	we = qw * qw;
-	er = (((((_invNorm_1_[0] * we + _invNorm_1_[1]) * we + _invNorm_1_[2]) * we + _invNorm_1_[3]) * we + _invNorm_1_[4]) * we + _invNorm_1_[5]) * qw /
-		(((((_invNorm_1_[6] * we + _invNorm_1_[7]) * we + _invNorm_1_[8]) * we + _invNorm_1_[9]) * we + _invNorm_1_[10]) * we + 1);
-	result = er - Math_SQRTTAU * (0.5 * Math_erfcx(-er / Math.SQRT2) - Math.exp(0.5 * er * er) * num);
-}
-return result;*/
-
-/*let E = _erfcx_1_[0] + num * (_erfcx_1_[1] + num * (_erfcx_1_[2] + num * (_erfcx_1_[3] + num * (_erfcx_1_[4] +
-		num * (_erfcx_1_[5] + num * (_erfcx_1_[6] + num * (_erfcx_1_[7] + num * (_erfcx_1_[8] + num * _erfcx_1_[9])))))))),
-	I = _erfcx_1_[10] + num * (_erfcx_1_[11] + num * (_erfcx_1_[12] + num * (_erfcx_1_[13] + num * (_erfcx_1_[14] + num * (_erfcx_1_[15] +
-		num * (_erfcx_1_[16] + num * (_erfcx_1_[17] + num * (_erfcx_1_[18] + num * (_erfcx_1_[19] + num * _erfcx_1_[20])))))))));*/
-
-//if (r[0] !== 1) throw new Error('No modular inverse exists');
-//return r[1] % m;
-
-//let Geometry = {}, Tween = {}, Math = global.Math, Boolean = global.Boolean, Number = global.Number;
-
-/*function _helper13(u, v) {
+function _helper13(u, v) {
 	return Geometry.distPnt(_slicePoly_1_.x, _slicePoly_1_.y, u.x, u.y, true) - Geometry.distPnt(_slicePoly_1_.x, _slicePoly_1_.y, v.x, v.y, true);
 }
 
@@ -8169,7 +8160,7 @@ function _helper15(ps, ind0, ind1, nps) {
 }*/
 
 	/**
-	 *	
+	 *
 	 * Slice a polygon (convex, concave, complex) to half
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
@@ -8291,12 +8282,3 @@ function _helper15(ps, ind0, ind1, nps) {
 		}
 		return result;
 	};*/
-
-/*
-function Tween.rebound(time, frequency, friction) {
-	return //(Math.pow(Math.pow(20, friction / 100) / 10, -time) * (1 - time)) * Math.sin(Math.max(1, frequency / 20) * time); // Pretty dangerous..., maybe Math.cos(f * t - HALFPI)
-	(time - 1) * Math.pow(-2, (time - (friction * time) / 50)) * Math.pow(5, (time - (friction * time) / 100)) * Math.sin(time * Math.max(1, frequency / 20))
-};
-*/
-
-//https://github.com/foam-lib/foam-math/blob/master/Ease.js and Utils.js isPOT = isPowerOf2
