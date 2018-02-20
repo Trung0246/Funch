@@ -25,10 +25,13 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 
-	Some portion of this code is under MIT, BSD-3 license:
-
-	For a copy, see <https://opensource.org/licenses/MIT> and <https://opensource.org/licenses/BSD-3-Clause>
-
+	Some portion of this code is under MIT, BSD-3 and Apache-2.0 license:
+	<https://opensource.org/licenses/MIT>
+	<https://opensource.org/licenses/BSD-3-Clause>
+	<https://opensource.org/licenses/Apache-2.0>
+	
+	For a copy, see:
+	- numbers.js  (Steve Kaliski, Apache-2.0)      <github.com/numbers/numbers.js/>
 	- mathplus.js (Peter Robinett, MIT)            <github.com/pr1001/MathPlus/>
 	- xorshift.js (Andreas Madsen & Emil Bay, MIT) <github.com/AndreasMadsen/xorshift/>
 	- Geometry.js (Tan Sia How, MIT)               <github.com/tsh96/Geometry>
@@ -6674,7 +6677,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inSine(time, pow) {
-		return -Math_pow(Math.cos(time * Math_HALF_PI), pow) + 1;
+		return 1 - Math_pow(Math.cos(time * Math_HALF_PI), pow);
 	}
 
 	/**
@@ -6713,7 +6716,7 @@
 	 **/
 	function Tween_inOutSine(time, pow) {
 		if ((time *= 2) < 1) {
-			return -Math_pow(Math.cos(Math.PI * time), pow) / 2 + 0.5;
+			return 0.5 - Math_pow(Math.cos(Math.PI * time), pow) / 2;
 		}
 		return Math_pow(Math.cos(Math.PI * (time - 1)), pow) / 2 + 0.5;
 	}
