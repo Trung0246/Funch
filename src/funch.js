@@ -1,7 +1,7 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.10a
+	Funch.js, v0.11a
 
 	MIT License
 
@@ -88,8 +88,8 @@
 	_helper10_1_ = 80 * Math.sqrt(10),
 	_toRad_1_ = Math.PI / 180,
 	_toDeg_1_ = 180 / Math.PI,
-	_diffAngle_1_ = Math.PI * 3,
 	_triEquil_1_ = Math.sqrt(3) / 2,
+	_epsilon_1_ = 4 / 3 - 1,
 	oldRound = Math.round,
 	oldFloor = Math.floor,
 	oldCeil = Math.ceil,
@@ -112,33 +112,29 @@
 	}
 
 	function _helper0(current, type) {
-		let temp = typeof current === typeof type;
-		if (!temp) {
-			switch (type) {
-				case "_a_":
-				if (current == null || current.constructor !== Array) {
-					current = Array();
-				}
-				break;
-				case "_o_":
-				if (current == null || current.constructor !== Object) {
-					current = Object();
-				}
-				break;
-				default:
-				current = type;
-			}
+		if (current == null) {
+			return type;
 		}
 		return current;
 	}
 
-	function _helper1() {
+	function _helper1(current, type) {
+		if (current != null) {
+			return current;
+		}
+		if (type) {
+			return {};
+		}
+		return [];
+	}
+
+	function _helper2() {
 		_memory_1_.length = 0;
 		_memory_2_.length = 0;
 		_memory_3_.length = 0;
 	}
 
-	function _helper2() {
+	function _helper3() {
 		for (let key in _memory2_1_) {
 			if (_memory2_1_.hasOwnProperty(key)) {
 				delete _memory2_1_[key];
@@ -146,7 +142,7 @@
 		}
 	}
 
-	function _helper3(type, num) {
+	function _helper4(type, num) {
 		switch (type) {
 			case 0:
 				{
@@ -176,12 +172,12 @@
 		}
 	}
 
-	function _helper4(num1, num2) {
+	function _helper9(num1, num2) {
 		return ((((num1 & 0xffff) * num2) + ((((num1 >>> 16) * num2) & 0xffff) << 16))) & 0xffffffff;
 	}
 
 	//Factorial
-	function _helper5(num) {
+	function _helper10(num) {
 		if (num !== oldFloor(num) || num < 0 || num > 170) {
 			return NaN;
 		} else if (0 === num || 1 === num) {
@@ -195,7 +191,7 @@
 	}
 
 	//GCD
-	function _helper6(num1, num2) {
+	function _helper11(num1, num2) {
 		let signX = (num1 < 0) ? -1 : 1,
 			signY = (num2 < 0) ? -1 : 1,
 			x = 0,
@@ -224,11 +220,11 @@
 	}
 
 	//Xorshift
-	let _helper7 = (function() {
+	let _helper12 = (function() {
 		let s1U, s1L, s0U, s0L, sumL, tU, tL;
 		function _helper_helper7_1(a, sU, sL) {
-			tU = tU ^ (sU >>> a);
-			tL = tL ^ ((sL >>> a) | ((sU & (0xFFFFFFFF >>> (32 - a))) << (32 - a)));
+			tU ^= sU >>> a;
+			tL ^= sL >>> a | (sU & 0xFFFFFFFF >>> 32 - a) << 32 - a;
 		}
 		return function() {
 			s1U = _memory_1_[0];
@@ -237,16 +233,16 @@
 			s0L = _memory_1_[3];
 			sumL = (s0L >>> 0) + (s1L >>> 0);
 
-			_memory_1_[5] = (s0U + s1U + (sumL / 2 >>> 31)) >>> 0;
+			_memory_1_[5] = s0U + s1U + (sumL / 2 >>> 31) >>> 0;
 			_memory_1_[6] = sumL >>> 0;
 
 			_memory_1_[0] = s0U;
 			_memory_1_[1] = s0L;
 
-			tU = (s1U << 23) | ((s1L & (0xFFFFFFFF << 9)) >>> 9);
+			tU = s1U << 23 | (-0x200 & s1L) >>> 9;
 			tL = s1L << 23;
-			s1U = s1U ^ tU;
-			s1L = s1L ^ tL;
+			s1U ^= tU;
+			s1L ^= tL;
 			tU = s1U ^ s0U;
 			tL = s1L ^ s0L;
 
@@ -259,15 +255,15 @@
 	})();
 
 	//Murmurhash3
-	function _helper8() {
+	function _helper13() {
 		let h1 = arguments[2],
 			numargs = arguments.length - 1,
 			h1b, k1, i;
 		for (i = 0; i < numargs; i++) {
 			k1 = arguments[i] | 0;
-			k1 = _helper4(k1, 0xcc9e2d51);
+			k1 = _helper9(k1, 0xcc9e2d51);
 			k1 = (k1 << 15) | (k1 >>> 17);
-			k1 = _helper4(k1, 0x1b873593);
+			k1 = _helper9(k1, 0x1b873593);
 			h1 ^= k1;
 			h1 = (h1 << 13) | (h1 >>> 19);
 			h1b = ((((h1 & 0xffff) * 5) + ((((h1 >>> 16) * 5) & 0xffff) << 16))) & 0xffffffff;
@@ -275,14 +271,14 @@
 		}
 		h1 ^= numargs;
 		h1 ^= h1 >>> 16;
-		h1 = _helper4(h1, 0x85ebca6b);
+		h1 = _helper9(h1, 0x85ebca6b);
 		h1 ^= h1 >>> 13;
-		h1 = _helper4(h1, 0xc2b2ae35);
+		h1 = _helper9(h1, 0xc2b2ae35);
 		h1 ^= h1 >>> 16;
 		return (h1 >>> 0) / _helper7_1_;
 	}
 
-	function _helper9(num) {
+	function _helper14(num) {
 		if (Number.isNaN(num) || !Number.isFinite(num)) return NaN;
 		if (num === 0) return 0;
 		if (num % 1 || num * num < 2) return 1;
@@ -303,7 +299,7 @@
 		return num;
 	}
 
-	function _helper10(p) {
+	function _helper15(p) {
 		p *= 10;
 		let m = 27 * p * p + 360 * p + 800,
 			n = _helper10_1_ * Math.sqrt(p + 10);
@@ -312,7 +308,7 @@
 
 	//More information (Japanese): http://void.heteml.jp/blog/archives/2014/05/easing_magicnumber.html
 	//English version: https://github.com/Michaelangel007/easing#the-magic-of-170158
-	function _helper11(overShoot) {
+	function _helper16(overShoot) {
 		return 1 - (overShoot + 3) / (3 * overShoot + 3);
 	}
 
@@ -379,7 +375,7 @@
 
 	//Solve root of x^4
 	function _helper20(a0, a1, a2, a3, a4) {
-		_helper1();
+		_helper2();
 		a3 /= a4;
 		a2 /= a4;
 		a1 /= a4;
@@ -455,11 +451,11 @@
 	}
 
 	function _helper23(num, func, places, type) {
-		_helper1();
+		_helper2();
 		let k, verySmallNumber = 1e-10,
 			allEqual = true,
 			flip = (type === 2 ? 1 : -1);
-		_helper1();
+		_helper2();
 		if (typeof places != "number" && !(places instanceof Number)) {
 			places = 10;
 		}
@@ -543,7 +539,7 @@
 	}
 
 	function _helper27(uniform) {
-		_helper1();
+		_helper2();
 		_memory_1_[0] = oldRandom();
 		_memory_1_[1] = oldRandom();
 		if (uniform && _memory_1_[1] < _memory_1_[0]) {
@@ -813,7 +809,7 @@
 	 **/
 	function Math_factorial(num) {
 		num++;
-		return num === oldFloor(num) ? _helper5(num - 1) : num < 0 ? Math.PI / (Math.sin(Math.PI * num) * Math_gamma(1 - num)) : Math.exp(Math_lnGamma(num));
+		return num === oldFloor(num) ? _helper10(num - 1) : num < 0 ? Math.PI / (Math.sin(Math.PI * num) * Math_gamma(1 - num)) : Math.exp(Math_lnGamma(num));
 	}
 
 	/**
@@ -927,7 +923,7 @@
 		let temp1 = num2,
 			temp2 = num2,
 			result = 1;
-		_helper1();
+		_helper2();
 		while (temp1 < num1) {
 			_memory_1_.push(temp2);
 			temp1 *= temp2;
@@ -1007,7 +1003,7 @@
 	 * @memberof Math
 	 **/
 	function Math_integral(a, b, func, epsilon, iteration) {
-		_helper1();
+		_helper2();
 		epsilon = _helper0(epsilon, 1e-17);
 		iteration = _helper0(iteration, 11);
 		let h = oldPow(2, -iteration),
@@ -1059,7 +1055,7 @@
 	 * @memberof Math
 	 **/
 	function Math_derivative(num, func, columns, accuracy1, accuracy2) {
-		_helper1();
+		_helper2();
 		columns = _helper0(columns, 6);
 		accuracy1 = _helper0(accuracy1, 1e-15); //tol
 		accuracy2 = _helper0(accuracy2, 1);
@@ -1217,7 +1213,7 @@
 			best = 0,
 			besterror = 0,
 			i = 1,
-			result = _helper0(returnData, "_a_");
+			result = _helper1(returnData, false);
 
 		result[0] = num;
 		result[1] = 1;
@@ -1238,7 +1234,7 @@
 			i++;
 		} while (iteration !== 0 ? i <= iteration : result[0] / result[1] !== num);
 
-		// return x/1 instead of 0/0 if a better solution can't be found
+		// return x/1 instead of 0/0
 		if (result[0] === 0 && result[1] === 0) {
 			result[0] = num;
 			result[1] = 1;
@@ -1579,7 +1575,7 @@
 		base = _helper0(base, 10);
 		let result, temp;
 		temp = Math_pow(base, digits);
-		result = _helper3(type, num * temp) / temp;
+		result = _helper4(type, num * temp) / temp;
 		return result;
 	}
 
@@ -1616,9 +1612,9 @@
 		exp = oldFloor(exp - digits + 1.0);
 		temp = Math_pow(base2, Math.abs(exp));
 		if (exp < 0) {
-			temp2 = _helper3(type, num * temp) / temp;
+			temp2 = _helper4(type, num * temp) / temp;
 		} else {
-			temp2 = _helper3(type, num / temp) * temp;
+			temp2 = _helper4(type, num / temp) * temp;
 		}
 		return temp2;
 	}
@@ -2165,6 +2161,28 @@
 
 	/**
 	 *
+	 * Copy sign of `num2` to `num1`
+	 *
+	 * @param {number} num1
+	 * @param {number} num2
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.copy(2);
+	 * //-1
+	 *
+	 * @function copy
+	 * @memberof Math
+	 **/
+	function Math_copy(num1, num2) {
+		if (Number_isSameSign(num1, num2)) {
+			return num1;
+		}
+		return -num1;
+	}
+
+	/**
+	 *
 	 * Flip sign of num
 	 *
 	 * @param {number} num
@@ -2457,15 +2475,15 @@
 	 * @memberof Math
 	 **/
 	function Math_gcd() {
-		_helper1();
-		let returnData = _helper0(arguments[arguments.length - 1], []);
+		_helper2();
+		let returnData = _helper1(arguments[arguments.length - 1], false);
 		if (0 === arguments.length - 1) {
 			return NaN;
 		}
 		_memory_1_[0] = arguments[0];
 		let temp = arguments.length - (typeof arguments[arguments.length - 1] === "object" ? 1 : 0);
 		for (let r = 1; r < temp; r++) {
-			_helper6(_memory_1_[0], arguments[r]);
+			_helper11(_memory_1_[0], arguments[r]);
 		}
 		return returnData.concat(_memory_1_);
 	}
@@ -2486,14 +2504,14 @@
 	 * @memberof Math
 	 **/
 	function Math_lcm() {
-		_helper1();
+		_helper2();
 		if (0 === arguments.length) {
 			return NaN;
 		}
 		let t = arguments[0];
 		_memory_1_[0] = t;
 		for (let r = 1; r < arguments.length; r++) {
-			_helper6(t, arguments[r]);
+			_helper11(t, arguments[r]);
 			t = (t * arguments[r]) / _memory_1_[0];
 		}
 		return t;
@@ -2515,7 +2533,7 @@
 	 * @memberof Math
 	 **/
 	function Math_factor(num, returnData) {
-		let factors = _helper0(returnData, []), i;
+		let factors = _helper1(returnData, false), i;
 		for (i = 2; i <= num; i++) {
 			while ((num % i) === 0) {
 				factors.push(i);
@@ -2580,7 +2598,7 @@
 	function Math_random(min, max, round, seed, larger, equal) {
 		let returnValue;
 		if (seed) {
-			_helper1();
+			_helper2();
 			if (typeof seed === "number") {
 				_memory_1_[0] = seed;
 			} else {
@@ -2590,8 +2608,8 @@
 			_memory_1_[2] = _helper0(seed[2], 0);
 			_memory_1_[3] = _helper0(seed[3], 0);
 			_memory_1_[4] = _helper0(seed[4], 0);
-			_helper7();
-			returnValue = _helper8(_memory_1_[5], _memory_1_[6], _memory_1_[4]);
+			_helper12();
+			returnValue = _helper13(_memory_1_[5], _memory_1_[6], _memory_1_[4]);
 		} else {
 			returnValue = oldRandom();
 		}
@@ -2984,7 +3002,7 @@
 	 */
 	function Geometry_scaleAngle(scale, num1, num2, dir) {
 		num1 = Math_mod(num1, Math_TAU);
-		num2 = Math_mod(num2, Math_TAU)
+		num2 = Math_mod(num2, Math_TAU);
 		if (num1 === num2) return num1;
 		if (!dir) {
 			dir =- Math_TAU;
@@ -3234,7 +3252,7 @@
 			c = Math.cos(x_x);
 		b_x -= a_x;
 		b_y -= a_y;
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.x = b_x * c - b_y * s + a_x;
 		returnData.y = b_x * s + b_y * c + a_y;
 		return returnData;
@@ -3295,7 +3313,7 @@
 		pq = p / q;
 		dataOne = (a_y - b_y) * pq;
 		dataTwo = (b_x - a_x) * pq;
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.x1 = c_x + dataOne;
 		returnData.y1 = c_y + dataTwo;
 		returnData.x2 = c_x - dataOne;
@@ -3369,7 +3387,7 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_stdLine(a_x, a_y, b_x, b_y, returnData) {
-		let result = _helper0(returnData, "_o_");
+		let result = _helper1(returnData, true);
 		if (b_x - a_x === 0) {
 			result.a = -1;
 			result.b = 0;
@@ -3477,7 +3495,7 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_intrLine(a_x, a_y, b_x, b_y, c_x, c_y, d_x, d_y, returnData) {
-		let denominator, a, b, s1_x, s1_y, s2_x, s2_y, numerator1, numerator2, result = _helper0(returnData, "_o_");
+		let denominator, a, b, s1_x, s1_y, s2_x, s2_y, numerator1, numerator2, result = _helper1(returnData, true);
 
 		result.x = null;
 		result.y = null;
@@ -3547,7 +3565,7 @@
 		//xy is perpendicular intersection
 		let dist1, dist2, d_x, d_y, t, dt;
 
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.x = null;
 		returnData.y = null;
 		returnData.x1 = null;
@@ -3636,7 +3654,7 @@
 		let smallerXLen = xlen * scale,
 			smallerYLen = ylen * scale;
 
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.x = a_x + smallerXLen;
 		returnData.y = a_y + smallerYLen;
 		return returnData;
@@ -3915,7 +3933,7 @@
 		let b = Math.sqrt(a_r * a_r - temp1 * temp1) / c_dist;
 		temp1 = (b_y - a_y);
 		temp2 = (b_x - a_x);
-		returnData = _helper0(returnData, "_a_");
+		returnData = _helper1(returnData, false);
 		returnData[0] = tempP_x - b * temp1;
 		returnData[1] = tempP_y + b * temp2;
 		returnData[2] = tempP_x + b * temp1;
@@ -3972,7 +3990,7 @@
 			angle2_2 = Math.sin(angle2);
 		angle = Math.cos(angle);
 		angle2 = Math.cos(angle2);
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.x = radius1 * angle2 * angle - radius2 * angle2_2 * angle_2 + x;
 		returnData.y = radius2 * angle2_2 * angle + radius1 * angle2 * angle_2 + y;
 		return returnData;
@@ -4037,7 +4055,7 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_intrElli(x_1, y_1, radius1_1, radius2_1, angle_1, x_2, y_2, radius1_2, radius2_2, angle_2, returnData) {
-		_helper1();
+		_helper2();
 		let tempAngle1_1 = Math.cos(angle_1),
 			tempAngle1_2 = Math.sin(angle_1),
 			tempAngle2_1 = Math.cos(angle_2),
@@ -4062,7 +4080,7 @@
 			df4 = 4 * d * f,
 			ab2 = 2 * a * b,
 			de2 = 2 * d * e;
-		let result = _helper0(returnData, []),
+		let result = _helper1(returnData, false),
 			l, t2, t2_1, t2_2;
 		l = _helper20(
 			aa + ab2 + bb + dd + de2 + ee - rr,
@@ -4120,7 +4138,7 @@
 			tempB = -2 * x1_x1_ + 2 * x1_x2_ - 2 * y1_y1_ + 2 * y1_y2_,
 			tempC = -r * r + x1_x1_ + y1_y1_;
 		let D = tempB * tempB - 4 * tempA * tempC,
-			t, result = _helper0(returnData, "_a_")
+			t, result = _helper1(returnData, false);
 		if (D === 0) {
 			t = -tempB / (2 * tempA);
 			result[0] = (1 - t) * a_x + t * b_x;
@@ -4166,7 +4184,7 @@
 		angle = Math.cos(angle);
 		temp_x = Math.abs(radius1 * Math.cos(temp_x) * angle - radius2 * Math.sin(temp_x) * angle_2);
 		temp_y = Math.abs(radius2 * Math.sin(temp_y) * angle + radius1 * Math.cos(temp_y) * angle_2);
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.xMin = -temp_x + x;
 		returnData.yMin = -temp_y + y;
 		returnData.xMax = temp_x + x;
@@ -4245,7 +4263,7 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_centroidTri(x_1, y_1, x_2, y_2, x_3, y_3, returnData) {
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.x = (x_1 + x_2 + x_3) / 3;
 		returnData.y = (y_1 + y_2 + y_3) / 3;
 		return returnData;
@@ -4271,7 +4289,7 @@
 	function Geometry_equilTri(x, y, len, returnData) {
 		let temp = y + len * _triEquil_1_,
 			temp2 = len / 2;
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.x1 = x;
 		returnData.y1 = y;
 		returnData.x2 = x + temp2;
@@ -4372,7 +4390,7 @@
 			F = C * (x_1 + x_3) + D * (y_1 + y_3),
 			G = 2 * (A * (y_3 - y_2) - B * (x_3 - x_2)),
 			dx, dy;
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.x = (D * E - B * F) / G;
 		returnData.y = (A * F - C * E) / G;
 		dx = returnData.x - x_1;
@@ -4407,7 +4425,7 @@
 			d3 = Geometry_distPnt(x_2, y_2, x_1, y_1, true);
 		let p = d1 + d2 + d3,
 			temp = (d3 + d1 + d2) / 2;
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.x = (x_1 * d1 + x_2 * d2 + x_3 * d3) / p;
 		returnData.y = (y_1 * d1 + y_2 * d2 + y_3 * d3) / p;
 		returnData.r = Math.sqrt(temp * (temp - d3) * (temp - d1) * (temp - d2)) / temp;
@@ -4439,7 +4457,7 @@
 		let s = a_y * c_x - a_x * c_y + (c_y - a_y) * o_x + (a_x - c_x) * o_y,
 			t = a_x * b_y - a_y * b_x + (a_y - b_y) * o_x + (b_x - a_x) * o_y;
 
-		if ((s < 0) != (t < 0)) return false;
+		if ((s < 0) !== (t < 0)) return false;
 
 		let area = -b_y * c_x + a_y * (c_x - b_x) + a_x * (b_y - c_y) + b_x * c_y;
 		if (area < 0.0) {
@@ -4583,7 +4601,7 @@
 	 **/
 	function Geometry_intrRect(x_min, y_min, x_max, y_max, x2_min, y2_min, x2_max, y2_max, returnData) {
 		if (Geometry_colliRect(x_min, y_min, x_max, y_max, x2_min, y2_min, x2_max, y2_max)) {
-			returnData = _helper0(returnData, "_o_");
+			returnData = _helper1(returnData, true);
 			returnData.xMin = Math.max(x_min, x2_min);
 			returnData.yMin = Math.max(y_min, y2_min);
 			returnData.xMax = Math.min(x_max, x2_max);
@@ -4612,7 +4630,7 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_randomRect(x_min, y_min, x_max, y_max, returnData) {
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.x = x_min + oldRandom() * Math.abs(x_max - x_min);
 		returnData.y = y_min + oldRandom() * Math.abs(y_max - y_min);
 		return returnData;
@@ -4728,7 +4746,7 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_isSimplePoly(points) {
-		_helper2();
+		_helper3();
 		let n = points.length >> 1;
 		if (n < 4) {
 			return true;
@@ -4852,7 +4870,7 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_boundPoly(points, returnData) {
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.xMin = Number.MAX_SAFE_INTEGER;
 		returnData.yMin = Number.MAX_SAFE_INTEGER;
 		returnData.xMax = Number.MIN_SAFE_INTEGER;
@@ -4889,13 +4907,13 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_triPoly(points, returnData) {
-		returnData = _helper0(returnData, "_a_");
+		returnData = _helper1(returnData, false);
 		let n, i, al, i0, i1, i2, ax, ay, bx, by, cx, cy, eF, vi;
 		n = points.length >> 1;
 		if (n < 3) {
 			return returnData.concat(points);
 		}
-		_helper1();
+		_helper2();
 		for (i = 0; i < n; i++) {
 			_memory_2_.push(i);
 		}
@@ -4989,7 +5007,7 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_centroidPoly(points, returnData) {
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.x = 0.0;
 		returnData.y = 0.0;
 		let	x1, x2, y1, y2, f, area;
@@ -5032,7 +5050,7 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_convexHullPoly(points, returnData) {
-		_helper1();
+		_helper2();
 		let i;
 
 		points.sort(function(a, b) {
@@ -5089,7 +5107,7 @@
 		a2.x = a_x + b_x;
 		a2.y = a_y + b_y;
 
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.dist = Infinity;
 		returnData.edge = 0;
 		returnData.norm_x = 0;
@@ -5136,7 +5154,7 @@
 	 **/
 	function Geometry_intrPolyPnt(points, x, y, returnData) {
 		let len = points.length - 2, idst;
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.dist = Infinity;
 		returnData.edge = 0;
 		returnData.point_x = 0;
@@ -5180,7 +5198,7 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_reversePoly(points, returnData) {
-		returnData = _helper0(returnData, "_a_");
+		returnData = _helper1(returnData, false);
 		for (let j = points.length - 2; j >= 0; j -= 2) {
 			returnData.push(points[j], points[j + 1]);
 		}
@@ -5298,7 +5316,7 @@
 	 * @memberof Vector
 	 **/
 	function Math_pol(x, y, returnData) {
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.angle = Geometry_getAngle(0, 0, x, y);
 		returnData.radial = Geometry_distPnt(0, 0, x, y, true);
 		return returnData;
@@ -5323,7 +5341,7 @@
 	 * @memberof Vector
 	 **/
 	function Math_rec(x, y, radial, angle, returnData) {
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.x = Math.cos(angle) * radial + x;
 		returnData.y = Math.sin(angle) * radial + y;
 		return returnData;
@@ -5346,7 +5364,7 @@
 	 * @memberof Vector
 	 **/
 	function Math_normVec(x, y, returnData) {
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		let length = Math_magVec(x, y, true);
 		returnData.x = x / length;
 		returnData.y = y / length;
@@ -5371,7 +5389,7 @@
 	 * @memberof Vector
 	 **/
 	function Math_scaleVec(x, y, scale, returnData) {
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.x = x * scale;
 		returnData.y = y * scale;
 		return returnData;
@@ -5534,7 +5552,7 @@
 	 * @memberof Vector
 	 **/
 	function Math_perVec(x, y, returnData) {
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.x1 = -y;
 		returnData.y1 = x;
 		returnData.x2 = y;
@@ -5562,7 +5580,7 @@
 	 * @memberof Vector
 	 **/
 	function Math_lerpVec(a_x, a_y, b_x, b_y, scale, returnData) {
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.x = (b_x - a_x) * scale + a_x;
 		returnData.y = (b_y - a_y) * scale + a_y;
 		return returnData;
@@ -5605,7 +5623,7 @@
 	 * @memberof Vector
 	 **/
 	function Math_revVec(x, y, returnData) {
-		returnData = _helper0(returnData, "_o_");
+		returnData = _helper1(returnData, true);
 		returnData.x *= -1;
 		returnData.y *= -1;
 		return returnData;
@@ -6244,7 +6262,7 @@
 	 **/
 	function Math_cssn(num, returnData) {
 		let temp = Math.sin(num);
-		returnData = _helper0(returnData, "_a_");
+		returnData = _helper1(returnData, false);
 		returnData[0] = Math.sqrt(1 - temp * temp);
 		returnData[1] = temp;
 		return returnData;
@@ -6274,7 +6292,7 @@
 	 **/
 	function Number_isPrime(num) {
 		if (Number.isNaN(num) || !Number.isFinite(num) || num < 2) return false;
-		if (num == _helper9(num)) return true;
+		if (num == _helper14(num)) return true;
 		return false;
 	}
 
@@ -6348,6 +6366,27 @@
 	 **/
 	function Number_isPOT(num) {
 		return num !== 0 && (num & (num - 1)) === 0;
+	}
+
+	/**
+	 *
+	 * Check if two nnumbers have same signs
+	 *
+	 * @param {number} num1
+	 * @param {number} num2
+	 * @return {boolean}
+	 *
+	 * @example
+	 * Number.isSameSign(-4, -5);
+	 * //true
+	 *
+	 * @function isSameSign
+	 * @memberof Number
+	 **/
+	function Number_isSameSign(num1, num2) {
+		//Handle 0
+		return (num1 >= 0) !== (num2 < 0);
+		//return num1 * num2 >= 0;
 	}
 
 	/**
@@ -6968,7 +7007,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inBack(time, overShoot, isOver) {
-		overShoot = overShoot ? (isOver ? overShoot : _helper10(overShoot)) : 1.70158;
+		overShoot = overShoot ? (isOver ? overShoot : _helper15(overShoot)) : 1.70158;
 		return 1 * time * time * ((overShoot + 1) * time - overShoot);
 	}
 
@@ -6989,7 +7028,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_outBack(time, overShoot, isOver) {
-		overShoot = overShoot ? (isOver ? overShoot : _helper10(overShoot)) : 1.70158;
+		overShoot = overShoot ? (isOver ? overShoot : _helper15(overShoot)) : 1.70158;
 		return time * (overShoot * ((time - 2) * time + 1) + (time - 3) * time + 3);
 	}
 
@@ -7010,7 +7049,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inOutBack(time, overShoot, isOver) {
-		overShoot = overShoot ? (isOver ? overShoot : _helper10(overShoot)) : 1.70158;
+		overShoot = overShoot ? (isOver ? overShoot : _helper15(overShoot)) : 1.70158;
 		let temp = isOver ? 1 : 1.525, temp2;
 		if (time < 0.5) {
 			temp2 = time * 2;
@@ -7128,7 +7167,7 @@
 	 * @param {number} time
 	 * @param {number=} [bounciness=400]
 	 * @param {number=} [elasticity=200]
-	 * @param {boolean=} [returnsToSelf=false] - `true` if return back to 0
+	 * @param {boolean=} [back=false] - `true` if return back to 0
 	 * @return {number}
 	 *
 	 * @example
@@ -7138,7 +7177,7 @@
 	 * @function bounce
 	 * @memberof Tween
 	 **/
-	function Tween_bounce(time, bounciness, elasticity, returnsToSelf) {
+	function Tween_bounce(time, bounciness, elasticity, back) {
 		let tempL, tempL2, tempb2, curve2a, curve2b, curve2H, curveLength = 0, gravity = 100;
 		bounciness = Math.min(_helper0(bounciness, 400) / 1250, 0.8);
 		elasticity = _helper0(elasticity, 200) / 1000;
@@ -7152,7 +7191,7 @@
 			curve2a = -tempb2;
 			curve2b = tempb2;
 			curve2H = 1;
-			if (returnsToSelf) {
+			if (back) {
 				curve2a = 0;
 				curve2b = curve2b * 2;
 			}
@@ -7185,17 +7224,62 @@
 			}
 		}
 		if (i > curveLength - 1) {
-			returnData = returnsToSelf ? 0 : 1;
+			returnData = back ? 0 : 1;
 		} else {
 			let temp2;
 			tempL = curve.b - curve.a;
 			temp2 = (-2 * curve.a - tempL + 2 * time) / tempL;
 			returnData = temp2 * temp2 * curve.H - curve.H + 1;
-			if (returnsToSelf) {
+			if (back) {
 				returnData = 1 - returnData;
 			}
 		}
 		return returnData;
+	}
+
+	/**
+	 *
+	 * Slow
+	 *
+	 * @param {number} time
+	 * @param {number=} [ratio=0.7]
+	 * @param {number=} [power=0.7]
+	 * @param {boolean=} [back=false] - `true` if return back to 0
+	 * @return {number}
+	 *
+	 * @example
+	 * Tween.slow(0.25);
+	 * //0.425
+	 *
+	 * @function slow
+	 * @memberof Tween
+	 **/
+	function Tween_slow(time, ratio, power, back) {
+		power = time + (0.5 - time) * (ratio !== 1 ? (power || power === 0) ? power : 0.7 : 0);
+		if (ratio == null) {
+			ratio = 0.7;
+		} else if (ratio > 1) {
+			ratio = 1;
+		}
+
+		let temp1 = (1 - ratio) / 2,
+			temp2 = back === true,
+			temp3 = (ratio - 1) * (ratio - 1);
+		if (time < temp1) {
+			if (temp2) {
+				return -(4 * time * (ratio + time - 1)) / temp3;
+			}
+			return power * (1 - oldPow((-ratio - 2 * time + 1) / (1 - ratio), 4));
+		} else if (time > temp1 + ratio) {
+			if (temp2) {
+				if (time === 1) {
+					return 0;
+				}
+				return (4 * (time - 1) * (ratio - time)) / temp3;
+			}
+			return (oldPow(ratio - 2 * time + 1, 4) * (time - power)) / oldPow(ratio - 1, 4) + power;
+		}
+		return temp2 ? 1 : power;
 	}
 
 	/**
@@ -7220,7 +7304,7 @@
 		switch (order) {
 			case 1:
 				{
-					return oldPow(time, 2) * (3 - 2 * time);
+					return time * time * (3 - 2 * time);
 				}
 				break;
 			case 2:
@@ -7440,7 +7524,7 @@
 			count += 2;
 		}
 		count = 2;
-		lines = _helper0(returnData, "_a_")
+		lines = _helper1(returnData, false);
 		while (count < points.length - 4) {
 			lines.push(points[count], points[count + 1]);
 			iteration = density;
@@ -7926,6 +8010,7 @@
 		["M", "tri", Math_tri],
 		["M", "fold", Math_fold],
 		["M", "one", Math_one],
+		["M", "copy", Math_copy],
 		["M", "flip", Math_flip],
 		["M", "range", Math_range],
 		["M", "compare", Math_compare],
@@ -8081,6 +8166,7 @@
 		["N", "isNumeric", Number_isNumeric],
 		["N", "epsilon", Number_epsilon],
 		["N", "isPOT", Number_isPOT],
+		["N", "isSameSign", Number_isSameSign],
 
 		["T", "inQuad", Tween_inQuad],
 		["T", "outQuad", Tween_outQuad],
@@ -8120,6 +8206,7 @@
 		["T", "inOutBounce", Tween_inOutBounce],
 		["T", "spring", Tween_spring],
 		["T", "bounce", Tween_bounce],
+		["T", "slow", Tween_slow],
 		["T", "smoothStep", Tween_smoothStep],
 		["T", "overShoot", Tween_overShoot],
 		["T", "berp", Tween_berp],
