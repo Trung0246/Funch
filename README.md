@@ -4,9 +4,9 @@
 
 An all-in-one library that dedicated to improve Javascript default functions and provide more functions mostly focus on game development.
 
-Version 0.10a (Alpha version)
+Version 0.11a (Alpha version)
 
-[Download](https://cdn.rawgit.com/Trung0246/Funch/a1d28ed2/src/funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/a1d28ed2/src/funch.min.js))
+[Download](https://cdn.rawgit.com/Trung0246/Funch/8b884b79/src/funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/8b884b79/src/funch.min.js))
 
 [Documentation](https://cdn.rawgit.com/Trung0246/Funch/6ac5420e/docs/index.html) (old, may not update to lastest version) (0.6a ?)
 
@@ -15,11 +15,11 @@ You can generate document yourself by using [JSDoc](http://usejsdoc.org/).
 ---
 
 ### Features
-- Over 130 functions that you can use right now
+- Over 250 functions that you can use right now
 
 - Simple to add by copy `<script type="text/javascript" src="funch.js"></script>` or `require("./funch.js");`
 
-- Medium-sized ? (**36.2 KB** compressed using [Babel](https://babeljs.io) -> [Closure Complier](https://closure-compiler.appspot.com/home) -> [JSCompress](https://jscompress.com/))
+- Medium-sized ? (**36.3 KB** compressed using [Babel](https://babeljs.io) -> [Closure Complier](https://closure-compiler.appspot.com/home) -> [JSCompress](https://jscompress.com/))
 
 - Easy to copy and paste any function you like to use without include whole library *(I'm sad :( )*
 
