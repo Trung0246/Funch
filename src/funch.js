@@ -1,7 +1,7 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.9a
+	Funch.js, v0.10a
 
 	MIT License
 
@@ -40,6 +40,7 @@
 	- phaser.js   (Photon Storm Ltd, MIT)          <github.com/photonstorm/phaser/>
 	- jmat.js     (Lode Vandevenne, BSD-3)         <github.com/lvandeve/jmat/>
 	- game-math   (Nick Pruehs, MIT)               <github.com/npruehs/game-math>
+	- angles.js   (Robert Eisele, MIT)             <github.com/infusion/Angles.js>
 	*/
 
 	//Namespace
@@ -115,12 +116,12 @@
 		if (!temp) {
 			switch (type) {
 				case "_a_":
-				if (current == undefined || current.constructor !== Array) {
+				if (current == null || current.constructor !== Array) {
 					current = Array();
 				}
 				break;
 				case "_o_":
-				if (current == undefined || current.constructor !== Object) {
+				if (current == null || current.constructor !== Object) {
 					current = Object();
 				}
 				break;
@@ -169,7 +170,7 @@
 				break;
 			case 4:
 				{
-					return (num > 0) ? oldCeil(num) : oldFloor(num);
+					return num > 0 ? oldCeil(num) : oldFloor(num);
 				}
 				break;
 		}
@@ -223,45 +224,39 @@
 	}
 
 	//Xorshift
-	function _helper7() {
-		let s1U = _memory_1_[0],
-			s1L = _memory_1_[1],
-			s0U = _memory_1_[2],
+	let _helper7 = (function() {
+		let s1U, s1L, s0U, s0L, sumL, tU, tL;
+		function _helper_helper7_1(a, sU, sL) {
+			tU = tU ^ (sU >>> a);
+			tL = tL ^ ((sL >>> a) | ((sU & (0xFFFFFFFF >>> (32 - a))) << (32 - a)));
+		}
+		return function() {
+			s1U = _memory_1_[0];
+			s1L = _memory_1_[1];
+			s0U = _memory_1_[2];
 			s0L = _memory_1_[3];
-		let sumL = (s0L >>> 0) + (s1L >>> 0);
-		let resU = (s0U + s1U + (sumL / 2 >>> 31)) >>> 0,
-			resL = sumL >>> 0;
-		_memory_1_[0] = s0U;
-		_memory_1_[1] = s0L;
-		let t1U = 0,
-			t1L = 0,
-			t2U = 0,
-			t2L = 0;
-		let a1 = 23;
-		let m1 = 0xFFFFFFFF << (32 - a1);
-		t1U = (s1U << a1) | ((s1L & m1) >>> (32 - a1));
-		t1L = s1L << a1;
-		s1U = s1U ^ t1U;
-		s1L = s1L ^ t1L;
-		t1U = s1U ^ s0U;
-		t1L = s1L ^ s0L;
-		let a2 = 18;
-		let m2 = 0xFFFFFFFF >>> (32 - a2);
-		t2U = s1U >>> a2;
-		t2L = (s1L >>> a2) | ((s1U & m2) << (32 - a2));
-		t1U = t1U ^ t2U;
-		t1L = t1L ^ t2L;
-		let a3 = 5;
-		let m3 = 0xFFFFFFFF >>> (32 - a3);
-		t2U = s0U >>> a3;
-		t2L = (s0L >>> a3) | ((s0U & m3) << (32 - a3));
-		t1U = t1U ^ t2U;
-		t1L = t1L ^ t2L;
-		_memory_1_[2] = t1U;
-		_memory_1_[3] = t1L;
-		_memory_1_[5] = resU;
-		_memory_1_[6] = resL;
-	}
+			sumL = (s0L >>> 0) + (s1L >>> 0);
+
+			_memory_1_[5] = (s0U + s1U + (sumL / 2 >>> 31)) >>> 0;
+			_memory_1_[6] = sumL >>> 0;
+
+			_memory_1_[0] = s0U;
+			_memory_1_[1] = s0L;
+
+			tU = (s1U << 23) | ((s1L & (0xFFFFFFFF << 9)) >>> 9);
+			tL = s1L << 23;
+			s1U = s1U ^ tU;
+			s1L = s1L ^ tL;
+			tU = s1U ^ s0U;
+			tL = s1L ^ s0L;
+
+			_helper_helper7_1(18, s1U, s1L);
+			_helper_helper7_1(5, s0U, s0L);
+
+			_memory_1_[2] = tU;
+			_memory_1_[3] = tL;
+		};
+	})();
 
 	//Murmurhash3
 	function _helper8() {
@@ -529,18 +524,19 @@
 		}
 		switch (type) {
 			case 0: {
-				return -amplitude * Math_pow(2, 10 * (time -= 1)) * Math.sin((time - s) * Math_TAU / period);
+				return amplitude * Math_pow(1024, time - 1) * Math.sin(Math_TAU * (s - time + 1) / period);
 			}
 			break;
 			case 1: {
-				return amplitude * Math_pow(2, -10 * time) * Math.sin((time - s) * Math_TAU / period) + 1;
+				return 1 - amplitude * Math_pow(2, -10 * time) * Math.sin(Math_TAU * (s - time) / period);
 			}
 			break;
 			case 2: {
-				if ((time *= 2) < 1) {
-					return -(amplitude * Math_pow(2, 10 * (time -= 1)) * Math.sin((time - s) * Math_TAU / period)) / 2;
+				s = Math.sin(Math_TAU * (s - 2 * time + 1) / period);
+				if (time < 0.5) {
+					return amplitude * Math_pow(2, 20 * time - 11) * s;
 				}
-				return amplitude * Math_pow(2, -10 * (time -= 1)) * Math.sin((time - s) * Math_TAU / period) / 2 + 1;
+				return 1 - amplitude * Math_pow(2, 9 - 20 * time) * s;
 			}
 			break;
 		}
@@ -680,7 +676,9 @@
 	 * @memberof Math
 	 **/
 	function Math_mod(num1, num2) {
+		//https://math.stackexchange.com/questions/1069751/
 		return num1 - oldFloor(num1 / num2) * num2;
+		//(num1 % num2 + num2) % num2;
 	}
 
 	/**
@@ -770,7 +768,7 @@
 				temp += _gamma_1_[i] / (num + i);
 			}
 			let temp2 = num + accuracy + 0.5;
-			return Math_SQRT_TAU * Math_pow(temp2, (num + 0.5)) * Math.exp(-temp2) * temp;
+			return Math_SQRT_TAU * Math_pow(temp2, num + 0.5) * Math.exp(-temp2) * temp;
 		}
 	}
 
@@ -789,12 +787,11 @@
 	 * @memberof Math
 	 **/
 	function Math_lnGamma(num) {
-		let j = 0,
-			ser = 1.000000000190015,
-			xx, y, tmp;
-		tmp = (y = xx = num) + 5.5;
+		let ser = 1.000000000190015,
+			xx = num, y = num, tmp;
+		tmp = num + 5.5;
 		tmp -= (xx + 0.5) * Math_ln(tmp);
-		for (; j < 6; j++) {
+		for (let j = 0; j < 6; j++) {
 			ser += _lnGamma_1_[j] / ++y;
 		}
 		return Math_ln(2.5066282746310005 * ser / xx) - tmp;
@@ -969,7 +966,7 @@
 	 * @memberof Math
 	 **/
 	function Math_sigmoid(num) {
-		return 1 / (1 + Math_pow(Math.E, -num));
+		return 1 / (1 + Math.exp(-num));
 	}
 
 	/**
@@ -1268,7 +1265,7 @@
 	 **/
 	function Math_pdf(mean, variance, std, num) {
 		let m = std * Math_SQRT_TAU,
-			e = Math.exp(-Math_pow(num - mean, 2) / (2 * variance));
+			e = Math.exp(-oldPow(num - mean, 2) / (2 * variance));
 		return e / m;
 	}
 
@@ -2182,7 +2179,7 @@
 	 **/
 	function Math_flip(num) {
 		return num - num * 2;
-		////x = ~x + 1
+		//x = ~x + 1
 	}
 
 	/**
@@ -2886,7 +2883,7 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_fullRad(num) {
-		return (Math_TAU + (num % Math_TAU)) % Math_TAU;
+		return Math_mod(num, Math_TAU);
 	}
 
 	/**
@@ -2944,7 +2941,59 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_fullDeg(num) {
-		return (360 + (num % 360)) % 360;
+		return Math_mod(num, 360);
+	}
+
+	/**
+	 * Find angle given the sine and cosine of that angle
+	 *
+	 * @param {number} cos
+	 * @param {number} sin
+	 * @returns {number}
+	 *
+	 * @example
+	 * Geometry.cssnAngle(-1, 0);
+	 * //3.141592653589793
+	 *
+	 * @function cssnAngle
+	 * @memberof Geometry
+	 */
+	function Geometry_cssnAngle(cos, sin) {
+		let angle = (1 + Math.acos(cos) / Math_TAU) * Math_TAU;
+		if (sin < 0) {
+			angle = Math_TAU - angle;
+		}
+		return Math_mod(angle, Math_TAU);
+	}
+
+	/**
+	 * Scale angle
+	 *
+	 * @param {number} time - Scale percent
+	 * @param {number} num1 - angle in radians
+	 * @param {number} num2 - angle in radians
+	 * @param {number} dir - if `1` then clockwise, `-1` is counter-clockwise
+	 * @returns {number}
+	 *
+	 * @example
+	 * Geometry.scaleAngle(-1, 0);
+	 * //3.141592653589793
+	 *
+	 * @function scaleAngle
+	 * @memberof Geometry
+	 */
+	function Geometry_scaleAngle(scale, num1, num2, dir) {
+		num1 = Math_mod(num1, Math_TAU);
+		num2 = Math_mod(num2, Math_TAU)
+		if (num1 === num2) return num1;
+		if (!dir) {
+			dir =- Math_TAU;
+		} else if ((dir === 1) === (num1 < num2)) {
+			dir *= Math_TAU;
+		} else {
+			dir = 0;
+		}
+		return Math_mod(num1 + scale * (num2 - num1 - dir), Math_TAU);
 	}
 
 	/**
@@ -2997,13 +3046,14 @@
 	 *
 	 * @example
 	 * Geometry.diffAngle(Math.PI / 4, Math.PI);
-	 * //2.356194490192344
+	 * //-2.356194490192344
 	 *
 	 * @function diffAngle
 	 * @memberof Geometry
 	 **/
 	function Geometry_diffAngle(num1, num2) {
-		return Math.PI - (num1 - num2 + _diffAngle_1_) % Math_TAU;
+		num1 = Geometry_normRad(num1 - num2);
+		return num1 > Math.PI ? (Math_TAU - num1) : num1;
 	}
 
 	/**
@@ -3026,11 +3076,15 @@
 		num = Geometry_fullRad(num);
 		min = Geometry_fullRad(min);
 		max = Geometry_fullRad(max);
-		if (min < max) {
-			return min <= num && num <= max;
-		} else {
-			return min <= num || num <= max;
+		if (Geometry_fullRad(max - min) >= Math.PI) {
+			let swap = min;
+			min = max;
+			max = swap;
 		}
+		if (min <= max) {
+			return num >= min && num <= max;
+		}
+		return num >= min || num <= max;
 	}
 
 	/**
@@ -4163,8 +4217,8 @@
 	 **/
 	function Geometry_distElliPnt(radius1, radius2, angle) {
 		let temp = 1 / Math.sqrt(
-			Math_pow(Math.sin(angle) / radius2, 2) +
-			Math_pow(Math.cos(angle) / radius1, 2)
+			oldPow(Math.sin(angle) / radius2, 2) +
+			oldPow(Math.cos(angle) / radius1, 2)
 		);
 		return Number.isFinite(temp) ? temp : 0;
 	}
@@ -6173,7 +6227,7 @@
 
 	/**
 	 *
-	 * Calculate sine and cosine at a same time
+	 * Calculate cosine and sine at a same time
 	 *
 	 * @param {number} num
 	 * @param {array=} returnData - Array to put data
@@ -6182,13 +6236,13 @@
 	 * Cosine on the left, sine on the right
 	 *
 	 * @example
-	 * Math.sincos(Math_HALF_PI);
+	 * Math.cssn(Math_HALF_PI);
 	 * //[0, 1]
 	 *
-	 * @function sincos
+	 * @function cssn
 	 * @memberof Trigonometry
 	 **/
-	function Math_sincos(num, returnData) {
+	function Math_cssn(num, returnData) {
 		let temp = Math.sin(num);
 		returnData = _helper0(returnData, "_a_");
 		returnData[0] = Math.sqrt(1 - temp * temp);
@@ -6393,7 +6447,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inCubic(time) {
-		return Math_pow(time, 3);
+		return oldPow(time, 3);
 	}
 
 	/**
@@ -6411,7 +6465,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_outCubic(time) {
-		return (time -= 1) * time * time + 1;
+		return oldPow(time - 1, 3) + 1;
 	}
 
 	/**
@@ -6429,7 +6483,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inOutCubic(time) {
-		return time < 0.5 ? 4 * Math_pow(time, 3) : (time - 1) * Math_pow(2 * time - 2, 2) + 1;
+		return time < 0.5 ? 4 * oldPow(time, 3) : (time - 1) * oldPow(2 * time - 2, 2) + 1;
 	}
 
 	/**
@@ -6447,7 +6501,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inQuart(time) {
-		return Math_pow(time, 4);
+		return oldPow(time, 4);
 	}
 
 	/**
@@ -6465,7 +6519,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_outQuart(time) {
-		return 1 - (time -= 1) * Math_pow(time, 3);
+		return 1 - oldPow(time - 1, 4);
 	}
 
 	/**
@@ -6483,7 +6537,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inOutQuart(time) {
-		return time < 0.5 ? 8 * Math_pow(time, 4) : 1 - 8 * (time -= 1) * Math_pow(time, 3);
+		return time < 0.5 ? 8 * oldPow(time, 4) : 1 - 8 * oldPow(time - 1, 4);
 	}
 
 	/**
@@ -6501,7 +6555,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inQuint(time) {
-		return Math_pow(time, 5);
+		return oldPow(time, 5);
 	}
 
 	/**
@@ -6519,7 +6573,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_outQuint(time) {
-		return 1 + (time -= 1) * Math_pow(time, 4);
+		return 1 + oldPow(time - 1, 5);
 	}
 
 	/**
@@ -6537,7 +6591,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inOutQuint(time) {
-		return time < 0.5 ? 16 * Math_pow(time, 5) : 1 + 16 * (time -= 1) * Math_pow(time, 4);
+		return time < 0.5 ? 16 * oldPow(time, 5) : 1 + 16 * oldPow(time - 1, 5);
 	}
 
 	/**
@@ -6576,7 +6630,7 @@
 	 **/
 	function Tween_outPow(time, pow) {
 		let check = Number_isEven(pow - 1) ? 1 : -1;
-		return 1 + (time -= 1) * Math_pow(time, pow - 1) * check;
+		return 1 + Math_pow(time - 1, pow) * check;
 	}
 
 	/**
@@ -6597,7 +6651,7 @@
 	function Tween_inOutPow(time, pow) {
 		let temp = Math_pow(2, pow - 1),
 			check = Number_isEven(pow - 1) ? 1 : -1;
-		return time < 0.5 ? temp * Math_pow(time, pow) : 1 + temp * (time -= 1) * Math_pow(time, pow - 1) * check;
+		return time < 0.5 ? temp * Math_pow(time, pow) : 1 + temp * Math_pow(time - 1, pow) * check;
 	}
 	
 	/**
@@ -6715,7 +6769,8 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inOutSine(time, pow) {
-		if ((time *= 2) < 1) {
+		time *= 2;
+		if (time < 1) {
 			return 0.5 - Math_pow(Math.cos(Math.PI * time), pow) / 2;
 		}
 		return Math_pow(Math.cos(Math.PI * (time - 1)), pow) / 2 + 0.5;
@@ -6754,7 +6809,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_outExpo(time) {
-		return (time === 1) ? 1 : (-Math_pow(2, -10 * time) + 1);
+		return (time === 1) ? 1 : (1 - Math_pow(2, -10 * time));
 	}
 
 	/**
@@ -6778,10 +6833,10 @@
 		if (time === 1) {
 			return 1;
 		}
-		if ((time *= 2) < 1) {
-			return Math_pow(2, 10 * (time - 1)) / 2;
+		if (time < 0.5) {
+			return Math_pow(2, 20 * time - 11);
 		}
-		return (-Math_pow(2, -10 * (time -= 1)) + 2) / 2;
+		return 1 - Math_pow(2, 9 - 20 * time);
 	}
 
 	/**
@@ -6799,7 +6854,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inCirc(time) {
-		return -(Math.sqrt(1 - time * time) - 1);
+		return 1 - Math.sqrt(1 - time * time);
 	}
 
 	/**
@@ -6817,7 +6872,8 @@
 	 * @memberof Tween
 	 **/
 	function Tween_outCirc(time) {
-		return Math.sqrt(1 - (time -= 1) * time);
+		time -= 1;
+		return Math.sqrt(1 - time * time);
 	}
 
 	/**
@@ -6835,10 +6891,10 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inOutCirc(time) {
-		if ((time *= 2) < 1) {
-			return -(Math.sqrt(1 - time * time) - 1) / 2;
+		if (time < 0.5) {
+			return (1 - Math.sqrt(1 - 4 * time * time)) / 2;
 		}
-		return (Math.sqrt(1 - (time -= 2) * time) + 1) / 2;
+		return (Math.sqrt(-4 * (time - 2) * time - 3) + 1) / 2;
 	}
 
 	/**
@@ -6934,7 +6990,7 @@
 	 **/
 	function Tween_outBack(time, overShoot, isOver) {
 		overShoot = overShoot ? (isOver ? overShoot : _helper10(overShoot)) : 1.70158;
-		return (time -= 1) * time * ((overShoot + 1) * time + overShoot) + 1;
+		return time * (overShoot * ((time - 2) * time + 1) + (time - 3) * time + 3);
 	}
 
 	/**
@@ -6948,18 +7004,20 @@
 	 *
 	 * @example
 	 * Tween.inOutBack(0.25, 2);
-	 * //1.3976808550930153
+	 * //-1.3976808550930153
 	 *
 	 * @function inOutBack
 	 * @memberof Tween
 	 **/
 	function Tween_inOutBack(time, overShoot, isOver) {
 		overShoot = overShoot ? (isOver ? overShoot : _helper10(overShoot)) : 1.70158;
-		let temp = isOver ? 1 : 1.525;
-		if ((time *= 2) < 1) {
-			return (time * time * (((overShoot *= temp) + 1) * time - overShoot)) / 2;
+		let temp = isOver ? 1 : 1.525, temp2;
+		if (time < 0.5) {
+			temp2 = time * 2;
+			return 2 * time * time * (overShoot * temp * (temp2 - 1) + temp2);
 		}
-		return ((time -= 2) * time * (((overShoot *= temp) + 1) * time + overShoot) + 2) / 2;
+		temp2 = time - 1;
+		return 2 * temp2 * temp2 * (overShoot * temp * (2 * time - 1) + 2 * temp2) + 1;
 	}
 
 	/**
@@ -7244,7 +7302,7 @@
 		num2 = _helper0(num2, 2.5);
 		num3 = _helper0(num3, 2.2);
 		num4 = _helper0(num4, 1.2);
-		return (num4 * (time - 1) - 1) * ((Math_pow(time, num3) - 1)  * Math.sin(Math.PI * num1 * time + Math.PI * Math_pow(time, 4) * num2) - time);
+		return (num4 * (time - 1) - 1) * ((Math_pow(time, num3) - 1)  * Math.sin(Math.PI * num1 * time + Math.PI * oldPow(time, 4) * num2) - time);
 	}
 
 	/**
@@ -7894,6 +7952,8 @@
 		["G", "normDeg", Geometry_normDeg],
 		["G", "toDeg", Geometry_toDeg],
 		["G", "fullDeg", Geometry_fullDeg],
+		["G", "cssnAngle", Geometry_cssnAngle],
+		["G", "scaleAngle", Geometry_scaleAngle],
 		["G", "getAngle", Geometry_getAngle],
 		["G", "relfAngle", Geometry_relfAngle],
 		["G", "diffAngle", Geometry_diffAngle],
@@ -8013,7 +8073,7 @@
 		["M", "asech", Math_asech],
 		["M", "acot", Math_acot],
 		["M", "acoth", Math_acoth],
-		["M", "sincos", Math_sincos],
+		["M", "cssn", Math_cssn],
 
 		["N", "isPrime", Number_isPrime],
 		["N", "isMinusZero", Number_isMinusZero],
@@ -8133,11 +8193,34 @@
 );
 
 /*
+num = Geometry_fullRad(num);
+min = Geometry_fullRad(min);
+max = Geometry_fullRad(max);
+if (min < max) {
+	return min <= num && num <= max;
+} else {
+	return min <= num || num <= max;
+}
+
+//((max - min) % PI_2 + PI_2) % PI_2
+//return Math.PI - (num1 - num2 + _diffAngle_1_) % Math_TAU;
+//(num % Math_TAU + Math_TAU) % Math_TAU;
+//Same like Geometry.normDeg(ang0 - ang1);
+function ArcAngle(ang0,ang1) {
+	//return absolute(ang0-ang1)<absolute(ang1-ang0) ? ang0-ang1 : ang1-ang0
+	// difference between 'dir' and 'angle'
+	let diff = ang0 - ang1;
+
+	//Second way to normalize angle, slower...
+	while(diff >= 180) { diff -= 360; }    // adjust the range
+	while(diff < -180) { diff += 360; }
+	return diff;
+}
+
 //ac = -a * p * 54;
 //(3 * ac - bb) / (9 * aa);
 //(27 * aa + 2 * bb - 9 * ac) * b / (54 * aa * a);
 //(27 * a * a + 2 * b * b - 9 * -a * p * 54) * b / (54 * a * a * a)
-
 
 function _helper13(u, v) {
 	return Geometry.distPnt(_slicePoly_1_.x, _slicePoly_1_.y, u.x, u.y, true) - Geometry.distPnt(_slicePoly_1_.x, _slicePoly_1_.y, v.x, v.y, true);
@@ -8162,126 +8245,126 @@ function _helper15(ps, ind0, ind1, nps) {
 	return nps;
 }*/
 
-	/**
-	 *
-	 * Slice a polygon (convex, concave, complex) to half
-	 *
-	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
-	 * @param {number} a_x - x position of first point of the line segment
-	 * @param {number} a_y - y position of first point of the line segment
-	 * @param {number} b_x - x position of second point of the line segment
-	 * @param {number} b_y - y position of second point of the line segment
-	 * @param {number=} [accuracy=1e-10]
-	 * @return {number[]}
-	 *
-	 * @example
-	 * Geometry.slicePoly([0, 0, 50, 0, 100, 50, 50, 100, 0, 100], 25, -10, 25, 110);
-	 * //[
-	 * //	[25, 0, 50, 0, 100, 50, 50, 100, 25, 100],
-	 * //	[25, 100, 0, 100, 0, 0, 25, 0]
-	 * //]
-	 *
-	 * @function slicePoly
-	 * @memberof Geometry
-	 **/
-	/*function Geometry_slicePoly(points, a_x, a_y, b_x, b_y, accuracy) {
-		let a, b, isc, iscs, ps, i, fisc, lisc, i0, i1, ind0, ind1, solved, pgn, result, pg, npg, pgs, dir;
-		accuracy = _helper0(accuracy, 1e-10);
-		accuracy *= accuracy;
-		if (Geometry.colliPolyPnt(points, a_x, a_y) || Geometry.colliPolyPnt(points, b_x, b_y)) {
-			return [points.slice(0)];
-		}
-		a = {
-			x: a_x,
-			y: a_y,
-			flag: false
-		};
-		b = {
-			x: b_x,
-			y: b_y,
-			flag: false
-		};
-		iscs = []; // intersections
-		ps = []; // points
-		for (i = 0; i < points.length; i += 2) {
-			ps.push({
-				x: points[i],
-				y: points[i + 1],
-				flag: false
-			});
-		}
+/**
+ *
+ * Slice a polygon (convex, concave, complex) to half
+ *
+ * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
+ * @param {number} a_x - x position of first point of the line segment
+ * @param {number} a_y - y position of first point of the line segment
+ * @param {number} b_x - x position of second point of the line segment
+ * @param {number} b_y - y position of second point of the line segment
+ * @param {number=} [accuracy=1e-10]
+ * @return {number[]}
+ *
+ * @example
+ * Geometry.slicePoly([0, 0, 50, 0, 100, 50, 50, 100, 0, 100], 25, -10, 25, 110);
+ * //[
+ * //	[25, 0, 50, 0, 100, 50, 50, 100, 25, 100],
+ * //	[25, 100, 0, 100, 0, 0, 25, 0]
+ * //]
+ *
+ * @function slicePoly
+ * @memberof Geometry
+ **/
+/*function Geometry_slicePoly(points, a_x, a_y, b_x, b_y, accuracy) {
+let a, b, isc, iscs, ps, i, fisc, lisc, i0, i1, ind0, ind1, solved, pgn, result, pg, npg, pgs, dir;
+accuracy = _helper0(accuracy, 1e-10);
+accuracy *= accuracy;
+if (Geometry.colliPolyPnt(points, a_x, a_y) || Geometry.colliPolyPnt(points, b_x, b_y)) {
+	return [points.slice(0)];
+}
+a = {
+	x: a_x,
+	y: a_y,
+	flag: false
+};
+b = {
+	x: b_x,
+	y: b_y,
+	flag: false
+};
+iscs = []; // intersections
+ps = []; // points
+for (i = 0; i < points.length; i += 2) {
+	ps.push({
+		x: points[i],
+		y: points[i + 1],
+		flag: false
+	});
+}
 
-		for (i = 0; i < ps.length; i++) {
-			isc = Geometry.intrLine(a.x, a.y, b.x, b.y, ps[i].x, ps[i].y, ps[(i + 1) % ps.length].x, ps[(i + 1) % ps.length].y);
-			isc.flag = false;
-			fisc = iscs[0] || {};
-			lisc = iscs[iscs.length - 1] || {};
-			if (
-				isc.onLine1 && isc.onLine2 &&
-				((!fisc.onLine1 && !fisc.onLine2) || Geometry.distPnt(isc.x, isc.y, fisc.x, fisc.y, false) > accuracy) &&
-				((!lisc.onLine1 && !lisc.onLine2) || Geometry.distPnt(isc.x, isc.y, lisc.x, lisc.y, false) > accuracy)
-			) {
-				isc.flag = true;
-				iscs.push(isc);
-				ps.splice(i + 1, 0, isc);
-				i++;
-			}
-		}
+for (i = 0; i < ps.length; i++) {
+	isc = Geometry.intrLine(a.x, a.y, b.x, b.y, ps[i].x, ps[i].y, ps[(i + 1) % ps.length].x, ps[(i + 1) % ps.length].y);
+	isc.flag = false;
+	fisc = iscs[0] || {};
+	lisc = iscs[iscs.length - 1] || {};
+	if (
+		isc.onLine1 && isc.onLine2 &&
+		((!fisc.onLine1 && !fisc.onLine2) || Geometry.distPnt(isc.x, isc.y, fisc.x, fisc.y, false) > accuracy) &&
+		((!lisc.onLine1 && !lisc.onLine2) || Geometry.distPnt(isc.x, isc.y, lisc.x, lisc.y, false) > accuracy)
+	) {
+		isc.flag = true;
+		iscs.push(isc);
+		ps.splice(i + 1, 0, isc);
+		i++;
+	}
+}
 
-		if (iscs.length < 2) {
-			return [points.slice(0)];
-		}
-		_slicePoly_1_ = a;
-		iscs.sort(_helper13);
+if (iscs.length < 2) {
+	return [points.slice(0)];
+}
+_slicePoly_1_ = a;
+iscs.sort(_helper13);
 
-		pgs = [];
-		dir = 0;
-		while (iscs.length > 0) {
-			i0 = iscs[0];
-			i1 = iscs[1];
-			ind0 = ps.indexOf(i0);
-			ind1 = ps.indexOf(i1);
-			solved = false;
+pgs = [];
+dir = 0;
+while (iscs.length > 0) {
+	i0 = iscs[0];
+	i1 = iscs[1];
+	ind0 = ps.indexOf(i0);
+	ind1 = ps.indexOf(i1);
+	solved = false;
 
-			if (_helper14(ps, ind0) == ind1) {
-				solved = true;
-			} else {
-				i0 = iscs[1];
-				i1 = iscs[0];
-				ind0 = ps.indexOf(i0);
-				ind1 = ps.indexOf(i1);
-				if (_helper14(ps, ind0) == ind1) {
-					solved = true;
-				}
-			}
-			if (solved) {
-				dir--;
-				_slicePoly_2_.length = 0;
-				_slicePoly_3_.length = 0;
-				pgn = _helper15(ps, ind0, ind1, _slicePoly_2_);
-				pgs.push(pgn);
-				ps = _helper15(ps, ind1, ind0, _slicePoly_3_);
-				i0.flag = i1.flag = false;
-				iscs.splice(0, 2);
-				if (iscs.length === 0) {
-					pgs.push(ps);
-				}
-			} else {
-				dir++;
-				iscs.reverse();
-			}
-			if (dir > 1) {
-				break;
-			}
+	if (_helper14(ps, ind0) == ind1) {
+		solved = true;
+	} else {
+		i0 = iscs[1];
+		i1 = iscs[0];
+		ind0 = ps.indexOf(i0);
+		ind1 = ps.indexOf(i1);
+		if (_helper14(ps, ind0) == ind1) {
+			solved = true;
 		}
-		result = [];
-		for (i = 0; i < pgs.length; i++) {
-			pg = pgs[i];
-			npg = [];
-			for (var j = 0; j < pg.length; j++) {
-				npg.push(pg[j].x, pg[j].y);
-			}
-			result.push(npg);
+	}
+	if (solved) {
+		dir--;
+		_slicePoly_2_.length = 0;
+		_slicePoly_3_.length = 0;
+		pgn = _helper15(ps, ind0, ind1, _slicePoly_2_);
+		pgs.push(pgn);
+		ps = _helper15(ps, ind1, ind0, _slicePoly_3_);
+		i0.flag = i1.flag = false;
+		iscs.splice(0, 2);
+		if (iscs.length === 0) {
+			pgs.push(ps);
 		}
-		return result;
-	};*/
+	} else {
+		dir++;
+		iscs.reverse();
+	}
+	if (dir > 1) {
+		break;
+	}
+}
+result = [];
+for (i = 0; i < pgs.length; i++) {
+	pg = pgs[i];
+	npg = [];
+	for (var j = 0; j < pg.length; j++) {
+		npg.push(pg[j].x, pg[j].y);
+	}
+	result.push(npg);
+}
+return result;
+};*/
