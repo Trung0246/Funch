@@ -1,10 +1,10 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.12a
+	Funch.js, v0.13a
 
 	MIT License
-
+	
 	Copyright (c) 2017 Trung Tran
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -25,22 +25,24 @@
 	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 	SOFTWARE.
 
-	Some portion of this code is under MIT, BSD-3 and Apache-2.0 license:
+	Some portion of this code is under MIT, BSD-3, Apache-2.0, and some were modified to suit this library:
 	<https://opensource.org/licenses/MIT>
 	<https://opensource.org/licenses/BSD-3-Clause>
 	<https://opensource.org/licenses/Apache-2.0>
 	
 	For a copy, see:
-	- numbers.js  (Steve Kaliski, Apache-2.0)      <github.com/numbers/numbers.js/>
-	- mathplus.js (Peter Robinett, MIT)            <github.com/pr1001/MathPlus/>
-	- xorshift.js (Andreas Madsen & Emil Bay, MIT) <github.com/AndreasMadsen/xorshift/>
-	- Geometry.js (Tan Sia How, MIT)               <github.com/tsh96/Geometry>
-	- polyk.js    (Ivan Kuckir, MIT)               <polyk.ivank.net/>
-	- kiwi.js     (Gamelab, MIT)                   <github.com/gamelab/kiwi.js/>
-	- phaser.js   (Photon Storm Ltd, MIT)          <github.com/photonstorm/phaser/>
-	- jmat.js     (Lode Vandevenne, BSD-3)         <github.com/lvandeve/jmat/>
-	- game-math   (Nick Pruehs, MIT)               <github.com/npruehs/game-math>
-	- angles.js   (Robert Eisele, MIT)             <github.com/infusion/Angles.js>
+	- numbers.js    (Steve Kaliski, Apache-2.0)      <github.com/numbers/numbers.js/>
+	- mathplus.js   (Peter Robinett, MIT)            <github.com/pr1001/MathPlus/>
+	- xorshift.js   (Andreas Madsen & Emil Bay, MIT) <github.com/AndreasMadsen/xorshift/>
+	- Geometry.js   (Tan Sia How, MIT)               <github.com/tsh96/Geometry>
+	- polyk.js      (Ivan Kuckir, MIT)               <polyk.ivank.net/>
+	- kiwi.js       (Gamelab, MIT)                   <github.com/gamelab/kiwi.js/>
+	- phaser.js     (Photon Storm Ltd, MIT)          <github.com/photonstorm/phaser/>
+	- jmat.js       (Lode Vandevenne, BSD-3)         <github.com/lvandeve/jmat/>
+	- game-math     (Nick Pruehs, MIT)               <github.com/npruehs/game-math>
+	- angles.js     (Robert Eisele, MIT)             <github.com/infusion/Angles.js>
+	- uniroot.js    (Borgar Thorsteinsson, MIT)      <gist.github.com/borgar/3317728>
+	- StackOverflow (many authors)                   <stackoverflow.com>
 	*/
 
 	//Namespace
@@ -103,7 +105,7 @@
 	_poly_stack_ = [],
 	_bounce_stack_ = [];
 
-	for (var i = 0; i < 6; i++) {
+	for (let i = 0; i < 6; i++) {
 		_poly_stack_.push({
 			x: 0,
 			y: 0,
@@ -884,6 +886,7 @@
 	 * @memberof Math
 	 **/
 	function Math_pow(base, exponent) {
+		//antilog ?
 		let result = oldPow(base, exponent);
 		if (Number.isNaN(result)) {
 			switch (exponent) {
@@ -991,7 +994,8 @@
 	 * @memberof Math
 	 **/
 	function Math_pair(num1, num2) {
-		return (num1 + num2 - 2) * (num1 + num2 - 1) / 2 + num1;
+		num2 += num1 - 1;
+		return (num2 - 1) * num2 / 2 + num1;
 	}
 
 	/**
@@ -1070,12 +1074,12 @@
 		accuracy1 = _helper0(accuracy1, 1e-15); //tol
 		accuracy2 = _helper0(accuracy2, 1);
 		let d1, d2, h2;
-		_memory_1_[0] = (func(num + accuracy2) - func(num - accuracy2)) / (accuracy2 * 2.0);
+		_memory_1_[0] = (func(num + accuracy2) - func(num - accuracy2)) / (accuracy2 * 2);
 		for (let j = 1; j <= columns - 1; j++) {
-			_memory_1_[j] = 0.0;
+			_memory_1_[j] = 0;
 			d1 = _memory_1_[0];
 			h2 = accuracy2;
-			accuracy2 *= 0.5;
+			accuracy2 /= 2;
 			_memory_1_[0] = (func(num + accuracy2) - func(num - accuracy2)) / h2;
 			for (let m = 4, i = 1; i <= j; i++, m *= 4) {
 				d2 = _memory_1_[i];
@@ -1148,51 +1152,76 @@
 	 *
 	 * Solve a function where `f(x) = 0`
 	 *
-	 * @param {number} x0 - Minimum guessing range
-	 * @param {number} x1 - Maximum guessing range
+	 * @param {number} min - Minimum guessing range
+	 * @param {number} max - Maximum guessing range
 	 * @param {function} func - Function to calculate
-	 * @param {number=} [epsilon=1e-17]
-	 * @param {number=} [iteration=1e7]
+	 * @param {number=} [tolerance=0] - accuracy
+	 * @param {number=} [iteration=1000]
 	 * @return {number}
 	 *
 	 * @example
 	 * Math.solve(-100, 100, (x) => {return 3 * x + 2});
-	 * //-0.6666666666666667
+	 * //-0.666666666666666
 	 *
 	 * @function solve
 	 * @memberof Math
-	 **/
-	function Math_solve(x0, x1, func, epsilon, iteration) {
-		x0 = _helper0(x0, -100);
-		x1 = _helper0(x1, 100);
-		let i = 0,
-			result0 = func(x0);
-		if (result0 * func(x1) === 0) {
-			if (result0 === 0) {
-				return x0;
+	 */
+	function Math_solve(min, max, func, tolerance, iteration) {
+		tolerance = _helper0(tolerance, 0);
+		iteration = _helper0(iteration, 1000);
+		let tempTol, newStep, prevStep, p, q, t1, cb, t2,
+			temp1 = min,
+			tempMin = func(min),
+			tempMax = func(max),
+			temp2 = tempMin;
+		while (iteration-- > 0) {
+			prevStep = max - min;
+			if (Math.abs(temp2) < Math.abs(tempMax)) {
+				min = max;
+				max = temp1;
+				temp1 = min;
+				tempMin = tempMax;
+				tempMax = temp2;
+				temp2 = tempMin;
 			}
-			return x1;
-		}
-		let result1 = func((x1 + x0) / 2);
-		epsilon = _helper0(epsilon, 1e-17);
-		iteration = _helper0(iteration, 1e7);
-		while (x1 - x0 > epsilon && i < iteration) {
-			if (result0 * result1 < 0) {
-				x1 = ((x1 + x0) / 2);
-			} else if (result0 * result1 > 0) {
-				x0 = ((x1 + x0) / 2);
-				result0 = func(x0);
-			} else if (result0 * func(x1) === 0) {
-				if (result0 === 0) {
-					return x0;
+			tempTol = 1e-15 * Math.abs(max) + tolerance / 2;
+			newStep = (temp1 - max) / 2;
+			if (Math.abs(newStep) <= tempTol || tempMax === 0) {
+				return max;
+			}
+			if (Math.abs(prevStep) >= tempTol && Math.abs(tempMin) > Math.abs(tempMax)) {
+				cb = temp1 - max;
+				if (min === temp1) {
+					t1 = tempMax / tempMin;
+					p = cb * t1;
+					q = 1 - t1;
+				} else {
+					q = tempMin / temp2;
+					t1 = tempMax / temp2;
+					t2 = tempMax / tempMin;
+					p = t2 * (cb * q * (q - t1) - (max - min) * (t1 - 1));
+					q = (q - 1) * (t1 - 1) * (t2 - 1);
 				}
-				return x1;
+				if (p > 0) {
+					q *= -1;
+				} else {
+					p *= -1;
+				}
+				if (p < (0.75 * cb * q - Math.abs(tempTol * q) / 2) && p < Math.abs(prevStep * q / 2)) {
+					newStep = p / q;
+				}
 			}
-			result1 = func((x1 + x0) / 2);
-			i ++;
-		}
-		if (result0 * func(x1) < 0) {
-			return (x1 + x0) / 2;
+			if (Math.abs(newStep) < tempTol) {
+				newStep = (newStep > 0) ? tempTol : -tempTol;
+			}
+			min = max;
+			tempMin = tempMax;
+			max += newStep;
+			tempMax = func(max);
+			if ((tempMax > 0 && temp2 > 0) || (tempMax < 0 && temp2 < 0)) {
+				temp1 = min;
+				temp2 = tempMin;
+			}
 		}
 		return NaN;
 	}
@@ -2549,7 +2578,7 @@
 	function Math_factor(num, returnData) {
 		let factors = _helper1(returnData, false), i;
 		for (i = 2; i <= num; i++) {
-			while ((num % i) === 0) {
+			while (num % i === 0) {
 				factors.push(i);
 				num /= i;
 			}
@@ -2575,7 +2604,7 @@
 	function Math_divisor(num, returnData) {
 		let isEven = Number_isEven(num);
 		let inc = isEven ? 1 : 2,
-			factors = _helper0(returnData, []),
+			factors = _helper1(returnData, false),
 			compliment;
 		factors[0] = 1;
 		factors[1] = num;
@@ -3345,7 +3374,7 @@
 	 * @param {number} b_x - x position of current point
 	 * @param {number} b_y - y position of current point
 	 * @param {number} x_x - x angle in radians to rotate
-	 * @param {number} x_y - y angle in radians to rotate
+	 * @param {number=} [x_y=x_x] - y angle in radians to rotate
 	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number}}
 	 *
@@ -3357,6 +3386,7 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_rotPnt(a_x, a_y, b_x, b_y, x_x, x_y, returnData) {
+		x_y = _helper0(x_y, x_x);
 		let s = Math.sin(x_y),
 			c = Math.cos(x_x);
 		b_x -= a_x;
@@ -3819,17 +3849,11 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_getXLine(a_x, a_y, b_x, b_y, num) {
-		let a_numberator = b_y - a_y,
-			a_denominator = b_x - a_x;
+		let a_numberator = b_y - a_y;
 		if (a_numberator === 0) {
 			return null; //b_x; //parallel
-		} else {
-			let a = a_numberator / a_denominator,
-				yDist = num - b_y;
-			let xDist = yDist / a;
-			let x3 = b_x + xDist;
-			return x3;
 		}
+		return (b_x - a_x) * (num - b_y) / a_numberator + b_x;
 	}
 
 	/**
@@ -3851,17 +3875,11 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_getYLine(a_x, a_y, b_x, b_y, num) {
-		let a_numberator = b_y - a_y,
-			a_denominator = b_x - a_x;
+		let a_denominator = b_x - a_x;
 		if (a_denominator === 0) {
 			return null; //b_y;
-		} else {
-			let a = a_numberator / a_denominator,
-				xDist = num - b_x;
-			let yDist = xDist * a;
-			let y3 = b_y + yDist;
-			return y3;
-		}
+		} 
+		return (num - b_x) * (b_y - a_y) / a_denominator + b_y;
 	}
 
 	/**
@@ -4126,8 +4144,8 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_colliElliPnt(x, y, radius1, radius2, angle, o_x, o_y) {
-		let cosa = Math.cos(angle),
-			sina = Math.sin(angle);
+		let sina = Math.sin(angle),
+			cosa = Math.cos(angle);
 		o_x -= x;
 		o_y -= y;
 		let temp = cosa * o_x + sina * o_y;
@@ -4343,10 +4361,7 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_distElliPnt(radius1, radius2, angle) {
-		let temp = 1 / Math.sqrt(
-			oldPow(Math.sin(angle) / radius2, 2) +
-			oldPow(Math.cos(angle) / radius1, 2)
-		);
+		let temp = 1 / Math.sqrt(oldPow(Math.sin(angle) / radius2, 2) + oldPow(Math.cos(angle) / radius1, 2));
 		return Number.isFinite(temp) ? temp : 0;
 	}
 
@@ -4569,7 +4584,7 @@
 		if ((s < 0) !== (t < 0)) return false;
 
 		let area = -b_y * c_x + a_y * (c_x - b_x) + a_x * (b_y - c_y) + b_x * c_y;
-		if (area < 0.0) {
+		if (area < 0) {
 			s = -s;
 			t = -t;
 			area = -area;
@@ -7395,6 +7410,26 @@
 
 	/**
 	 *
+	 * Scale
+	 *
+	 * @param {number} time
+	 * @param {number=} start
+	 * @param {number=} end
+	 * @return {number}
+	 *
+	 * @example
+	 * Tween.scale(0.5, 1, 2);
+	 * //0.41421356237309515
+	 *
+	 * @function scale
+	 * @memberof Tween
+	 **/
+	function Tween_scale(time, start, end) {
+		return (start * (Math.pow(end / start, time) - 1)) / (end - start);
+	}
+
+	/**
+	 *
 	 * [Smoothstep]{@link https://en.wikipedia.org/wiki/Smoothstep}
 	 *
 	 * @param {number} time
@@ -8339,6 +8374,7 @@
 		["T", "spring", Tween_spring],
 		["T", "bounce", Tween_bounce],
 		["T", "slow", Tween_slow],
+		["T", "scale", Tween_scale],
 		["T", "smoothStep", Tween_smoothStep],
 		["T", "overShoot", Tween_overShoot],
 		["T", "berp", Tween_berp],
