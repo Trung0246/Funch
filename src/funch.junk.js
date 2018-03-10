@@ -1,6 +1,7 @@
 //This file contains junk code that may or may not useful or serve other purposes
 
 /*
+Logit function inverse of sigmoid
 Inverse pythagon: 1/h^2 = 1/a^2+1/b^2
 //https://www.youtube.com/watch?v=p-0SOWbzUYI
 function modf(v){ //Returns the fractional part of the given real number.
@@ -87,7 +88,56 @@ function _helper15(ps, ind0, ind1, nps) {
 		nps.push(ps[i % n]);
 	}
 	return nps;
-}*/
+}
+
+//debugger;
+		x0 = _helper0(x0, -100);
+		x1 = _helper0(x1, 100);
+		let i = 0,
+			result0 = func(x0);
+		if (result0 * func(x1) === 0) {
+			if (result0 === 0) {
+				return x0;
+			}
+			return x1;
+		}
+		epsilon = _helper0(epsilon, 1e-17);
+		iteration = _helper0(iteration, 1e7);
+		let temp1, temp2, temp3;
+		while (x1 - x0 > epsilon && i < iteration) {
+			//debugger;
+			/*temp1 = (x1 + x0) / 2;
+			temp2 = func(temp1);
+			temp3 = func(x1);
+			if (temp3 * temp2 < 0) {
+				x1 = temp1;
+			} else if (temp3 * temp2 > 0) {
+				x0 = temp1;
+			} else if (temp3 * func(x1) === 0) {
+				if (temp3 === 0) {
+					return x0;
+				}
+				return x1;
+			}***
+			temp1 = (x0 + x1) / 2;
+			if (func(temp1) > 0) {
+				x1 = temp1;//(temp1 + x0) / 2;
+			} else if (func(temp1) < 0) {
+				x0 = temp1;//(temp1 + x1) / 2;
+			} else if (func(x0) * func(x1) === 0) {
+				if (temp3 === 0) {
+					return x0;
+				}
+				return x1;
+			}
+			i ++;
+		}
+		//if (func(x0) * func(x1) < 0) {
+			return (x1 + x0) / 2;
+		//}
+		//return NaN;
+	
+*/
 
 	/**
 	 *
