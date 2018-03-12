@@ -1,10 +1,10 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.13a
+	Funch.js, v0.14a
 
 	MIT License
-	
+
 	Copyright (c) 2017 Trung Tran
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -46,7 +46,7 @@
 	*/
 
 	//Namespace
-	let Math = global.Math, Boolean = global.Boolean, Number = global.Number,
+	let Math = global.Math, Number = global.Number,
 
 	_gamma_1_ = [
 		0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313,
@@ -800,7 +800,7 @@
 		for (let j = 0; j < 6; j++) {
 			ser += _lnGamma_1_[j] / ++y;
 		}
-		return Math_ln(2.5066282746310005 * ser / xx) - tmp;
+		return Math_ln(Math_SQRT_TAU * ser / xx) - tmp;
 	}
 
 	/**
@@ -2639,6 +2639,19 @@
 	 * @memberof Math
 	 **/
 	function Math_random(min, max, round, seed, larger, equal) {
+		min = _helper0(min, 0);
+		max = _helper0(max, 1);
+		if (min > max) {
+			if (larger == null) {
+				return 0;
+			}
+			return larger;
+		} else if (min === max) {
+			if (equal == null) {
+				return min;
+			}
+			return equal;
+		}
 		let returnValue;
 		if (seed) {
 			_helper2();
@@ -2656,23 +2669,7 @@
 		} else {
 			returnValue = oldRandom();
 		}
-		min = _helper0(min, 0);
-		max = _helper0(max, 1);
-		if (min > max) {
-			if (larger == null) {
-				returnValue = 0;
-			} else {
-				returnValue = larger;
-			}
-			return returnValue;
-		} else if (min === max) {
-			if (equal == null) {
-				returnValue = min;
-			} else {
-				returnValue = equal;
-			}
-			return returnValue;
-		}
+		
 		if (round) {
 			min = oldCeil(min);
 			max = oldFloor(max);
@@ -4560,14 +4557,14 @@
 	 *
 	 * Check if a point inside the triangle
 	 *
-	 * @param {number} a_x - x position of the first vertex
-	 * @param {number} a_y - y position of the first vertex
-	 * @param {number} b_x - x position of the second vertex
-	 * @param {number} b_y - y position of the second vertex
-	 * @param {number} c_x - x position of the third vertex
-	 * @param {number} c_y - y position of the third vertex
-	 * @param {number} o_x - x position of the point
-	 * @param {number} o_y - y position of the point
+	 * @param {number} x_1 - x position of the first vertex
+	 * @param {number} y_1 - y position of the first vertex
+	 * @param {number} x_2 - x position of the second vertex
+	 * @param {number} y_2 - y position of the second vertex
+	 * @param {number} x_3 - x position of the third vertex
+	 * @param {number} y_3 - y position of the third vertex
+	 * @param {number} x - x position of the point
+	 * @param {number} y - y position of the point
 	 * @return {boolean}
 	 *
 	 * @example
@@ -4577,17 +4574,17 @@
 	 * @function colliTriPnt
 	 * @memberof Geometry
 	 **/
-	function Geometry_colliTriPnt(a_x, a_y, b_x, b_y, c_x, c_y, o_x, o_y) {
-		let s = a_y * c_x - a_x * c_y + (c_y - a_y) * o_x + (a_x - c_x) * o_y,
-			t = a_x * b_y - a_y * b_x + (a_y - b_y) * o_x + (b_x - a_x) * o_y;
+	function Geometry_colliTriPnt(x_1, y_1, x_2, y_2, x_3, y_3, x, y) {
+		let s = y_1 * x_3 - x_1 * y_3 + (y_3 - y_1) * x + (x_1 - x_3) * y,
+			t = x_1 * y_2 - y_1 * x_2 + (y_1 - y_2) * x + (x_2 - x_1) * y;
 
 		if ((s < 0) !== (t < 0)) return false;
 
-		let area = -b_y * c_x + a_y * (c_x - b_x) + a_x * (b_y - c_y) + b_x * c_y;
+		let area = -y_2 * x_3 + y_1 * (x_3 - x_2) + x_1 * (y_2 - y_3) + x_2 * y_3;
 		if (area < 0) {
-			s = -s;
-			t = -t;
-			area = -area;
+			s *= -1;
+			t *= -1;
+			area *= -1;
 		}
 		return s > 0 && t > 0 && (s + t) <= area;
 	}
@@ -4619,12 +4616,12 @@
 	 *
 	 * Generate random point in the triangle
 	 *
-	 * @param {number} a_x - x position of the first vertex
-	 * @param {number} a_y - y position of the first vertex
-	 * @param {number} b_x - x position of the second vertex
-	 * @param {number} b_y - y position of the second vertex
-	 * @param {number} c_x - x position of the third vertex
-	 * @param {number} c_y - y position of the third vertex
+	 * @param {number} x_1 - x position of the first vertex
+	 * @param {number} y_1 - y position of the first vertex
+	 * @param {number} x_2 - x position of the second vertex
+	 * @param {number} y_2 - y position of the second vertex
+	 * @param {number} x_3 - x position of the third vertex
+	 * @param {number} y_3 - y position of the third vertex
 	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number}}
 	 *
@@ -4635,14 +4632,14 @@
 	 * @function randomTri
 	 * @memberof Geometry
 	 **/
-	function Geometry_randomTri(a_x, a_y, b_x, b_y, c_x, c_y, returnData) {
+	function Geometry_randomTri(x_1, y_1, x_2, y_2, x_3, y_3, returnData) {
 		let r1 = Math.sqrt(oldRandom()),
 			r2 = oldRandom(),
 			temp1 = 1 - r1,
 			temp2 = r1 * (1 - r2),
 			temp3 = r1 * r2;
-		returnData.x = temp1 * a_x + temp2 * b_x + temp3 * c_x;
-		returnData.y = temp1 * a_y + temp2 * b_y + temp3 * c_y;
+		returnData.x = temp1 * x_1 + temp2 * x_2 + temp3 * x_3;
+		returnData.y = temp1 * y_1 + temp2 * y_2 + temp3 * y_3;
 		return returnData;
 	}
 
@@ -5329,14 +5326,15 @@
 		return returnData;
 	}
 
-	//Accel
+	//Accel, decel
 	/**
 	 *
-	 * Calculates the time required to move with acceleration [a] from speed [u] to speed [v]
+	 * Calculates the time required to move with acceleration [a] from speed [u] to speed [v] or
+	 * Calculates the acceleration needed to move from speed [u] to speed [v] in time [t]
 	 *
 	 * @param {number} u - current speed
 	 * @param {number} v - target speed
-	 * @param {number} a - acceleration
+	 * @param {number} a - acceleration or time
 	 * @return {number}
 	 *
 	 * @example
@@ -5348,26 +5346,6 @@
 	 **/
 	function Geometry_timeAccel(u, v, a) {
 		return (v - u) / a;
-	}
-
-	/**
-	 *
-	 * Calculates the acceleration needed to move from speed [u] to speed [v] in time [t]
-	 *
-	 * @param {number} u - current speed
-	 * @param {number} v - target speed
-	 * @param {number} t - time
-	 * @return {number}
-	 *
-	 * @example
-	 * Geometry.accelAccel(1, 5, 40);
-	 * //0.1
-	 *
-	 * @function accelAccel
-	 * @memberof Geometry
-	 **/
-	function Geometry_accelAccel(u, v, t) {
-		return (v - u) / t;
 	}
 
 	/**
@@ -5413,6 +5391,26 @@
 		}
 		let temp = Math.sqrt(discr);
 		return Math.abs(Math.max((temp - u) / a, (-u - temp) / a));
+	}
+
+	/**
+	 *
+	 * Calculate distance travelled given base speed [s] and friction [f]
+	 *
+	 * @param {number} u - current speed
+	 * @param {number} f - friction
+	 * @return {number}
+	 *
+	 * @example
+	 * Geometry.distDecel(1, 5, 0.1);
+	 * //40
+	 *
+	 * @function distDecel
+	 * @memberof Geometry
+	 **/
+	function Geometry_distDecel(u, f) {
+		if (u === 0) return -1;
+		return (u * (u - f)) / (2 * f);
 	}
 
 	/**
@@ -6814,9 +6812,8 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inOutPow(time, pow) {
-		let temp = Math_pow(2, pow - 1),
-			check = Number_isEven(pow - 1) ? 1 : -1;
-		return time < 0.5 ? temp * Math_pow(time, pow) : 1 + temp * Math_pow(time - 1, pow) * check;
+		let temp = 0.5 * Math_pow(2 * ((time < 0.5) ? time : 1 - time), pow);
+		return (time < 0.5) ? temp : 1 - temp;
 	}
 	
 	/**
@@ -7252,6 +7249,47 @@
 
 	/**
 	 *
+	 * Bias
+	 *
+	 * @param {number} time
+	 * @param {number} bias
+	 * @return {number}
+	 *
+	 * @example
+	 * Tween.bias(0.5, 2);
+	 * //0.3333333333333333
+	 *
+	 * @function bias
+	 * @memberof Tween
+	 **/
+	function Tween_bias(time, bias) {
+		return -time / (bias * (time - 1) - time);
+	}
+
+	/**
+	 *
+	 * In Out Bias
+	 *
+	 * @param {number} time
+	 * @param {number} bias
+	 * @return {number}
+	 *
+	 * @example
+	 * Tween.inOutBias(0.5, 2);
+	 * //0.3333333333333333
+	 *
+	 * @function inOutBias
+	 * @memberof Tween
+	 **/
+	function Tween_inOutBias(time, bias) {
+		if (time < 0.5) {
+			return -time /  (2 * (bias - 1) * time - bias);
+		}
+		return ((2 * bias - 1) * time - bias + 1) / (2 * (bias - 1) * time - bias + 2);
+	}
+
+	/**
+	 *
 	 * Spring
 	 *
 	 * @param {number} time
@@ -7668,31 +7706,33 @@
 	 * @memberof Tween
 	 **/
 	function Tween_spline(continuty, bias, tension, density, points, loop, returnData) {
-		let tangent = [],
-			tempA, tempB, tempC, tempD, tempX, tempY, tempX2, tempY2, count, iteration, lines;
+		_helper2();
+		let tempA, tempB, tempC, tempD, tempX, tempY, tempX2, tempY2, count, iteration, lines;
 		//Control points
+		_memory_2_.push.apply(_memory_2_, points);
+		_memory_2_.unshift.call(_memory_2_, points[points.length - 2], points[points.length - 1]);
 		if (loop) {
-			points = [].concat(points[points.length - 2], points[points.length - 1], points, points[0], points[1], points[2], points[3]);
+			_memory_2_.push.call(_memory_2_, points[0], points[1], points[2], points[3]);
 		} else {
-			points = [].concat(points[points.length - 2], points[points.length - 1], points, points[0], points[1]);
+			_memory_2_.push.call(_memory_2_, points[0], points[1]);
 		}
 		tempA = (1 - tension) * (1 + bias) * (1 - continuty) * 0.5;
 		tempB = (1 - tension) * (1 - bias) * (1 + continuty) * 0.5;
 		tempC = (1 - tension) * (1 + bias) * (1 + continuty) * 0.5;
 		tempD = (1 - tension) * (1 - bias) * (1 - continuty) * 0.5;
 		count = 2;
-		while (count < points.length - 2) {
-			tempX = points[count] - points[count - 2];
-			tempY = points[count + 1] - points[count - 1];
-			tempX2 = points[count + 2] - points[count];
-			tempY2 = points[count + 3] - points[count + 1];
-			tangent.push(tempA * tempX + tempB * tempX2, tempA * tempY + tempB * tempY2, tempC * tempX + tempD * tempX2, tempC * tempY + tempD * tempY2);
+		while (count < _memory_2_.length - 2) {
+			tempX = _memory_2_[count] - _memory_2_[count - 2];
+			tempY = _memory_2_[count + 1] - _memory_2_[count - 1];
+			tempX2 = _memory_2_[count + 2] - _memory_2_[count];
+			tempY2 = _memory_2_[count + 3] - _memory_2_[count + 1];
+			_memory_1_.push(tempA * tempX + tempB * tempX2, tempA * tempY + tempB * tempY2, tempC * tempX + tempD * tempX2, tempC * tempY + tempD * tempY2);
 			count += 2;
 		}
 		count = 2;
 		lines = _helper1(returnData, false);
-		while (count < points.length - 4) {
-			lines.push(points[count], points[count + 1]);
+		while (count < _memory_2_.length - 4) {
+			lines.push(_memory_2_[count], _memory_2_[count + 1]);
 			iteration = density;
 			while (iteration < 1.0) {
 				tempX2 = iteration * iteration;
@@ -7702,13 +7742,13 @@
 				tempY2 = iteration - 1;
 				tempB = tempY2 * tempY2 * iteration;
 				tempD = tempY2 * tempX2;
-				tempX = tempA * points[count] + tempB * tangent[2 * count - 2] + tempC * points[count + 2] + tempD * tangent[2 * count];
-				tempY = tempA * points[count + 1] + tempB * tangent[2 * count - 1] + tempC * points[count + 3] + tempD * tangent[2 * count + 1];
+				tempX = tempA * _memory_2_[count] + tempB * _memory_1_[2 * count - 2] + tempC * _memory_2_[count + 2] + tempD * _memory_1_[2 * count];
+				tempY = tempA * _memory_2_[count + 1] + tempB * _memory_1_[2 * count - 1] + tempC * _memory_2_[count + 3] + tempD * _memory_1_[2 * count + 1];
 				lines.push(tempX, tempY);
 				iteration += density;
 			}
 			//Not sure if we could remove this...
-			lines.push(points[count + 2], points[count + 3]);
+			lines.push(_memory_2_[count + 2], _memory_2_[count + 3]);
 			count += 2;
 		}
 		return lines;
@@ -8108,303 +8148,497 @@
 		return false;
 	}
 
+	/**
+	 *
+	 * All of functions that related to Bitwise operation
+	 *
+	 * @namespace Bit
+	 *
+	 **/
+
+	/**
+	 *
+	 * Get bit size of a number
+	 *
+	 * @param {number} num
+	 * @param {boolean=} [accuracy=false] - `true` if extend up to 53 bits
+	 * @return {number}
+	 *
+	 * @example
+	 * Bit.size(446);
+	 * //9
+	 *
+	 * @function size
+	 * @memberof Bit
+	 **/
+	function Bit_size(num, accurate) {
+		if (accurate) {
+			return num.toString(2).length;
+		}
+		return 32 - Math.clz32(Math.abs(num));
+	}
+
+	/**
+	 *
+	 * Set a specific bit to 0
+	 *
+	 * @param {number} num
+	 * @param {number} bit - bit index
+	 * @return {number}
+	 *
+	 * @example
+	 * Bit.clear(446, 3);
+	 * //423
+	 *
+	 * @function clear
+	 * @memberof Bit
+	 **/
+	function Bit_clear(num, bit) {
+		return num & ~(1 << bit);
+	}
+
+	/**
+	 *
+	 * Set a specific bit to 1
+	 *
+	 * @param {number} num
+	 * @param {number} bit - bit index
+	 * @return {number}
+	 *
+	 * @example
+	 * Bit.set(423, 3);
+	 * //446
+	 *
+	 * @function set
+	 * @memberof Bit
+	 **/
+	function Bit_set(num, bit) {
+		return num | (1 << bit);
+	}
+
+	/**
+	 *
+	 * Find the state of a bit
+	 *
+	 * @param {number} num
+	 * @param {number} bit - bit index
+	 * @return {number}
+	 *
+	 * @example
+	 * Bit.find(438, 3);
+	 * //0
+	 *
+	 * @function find
+	 * @memberof Bit
+	 **/
+	function Bit_find(num, bit) {
+		return 1 & (num >> bit);
+	}
+
+	/**
+	 *
+	 * Flip the state of a bit
+	 *
+	 * @param {number} num
+	 * @param {number} bit - bit index
+	 * @return {number}
+	 *
+	 * @example
+	 * Bit.find(438, 3);
+	 * //446
+	 *
+	 * @function find
+	 * @memberof Bit
+	 **/
+	function Bit_flip(num, bit) {
+		return num ^ (1 << bit);
+	}
+
+	/**
+	 *
+	 * Reverse order of bit
+	 *
+	 * @param {number} num
+	 * @param {number} full - if full int32
+	 * @return {number}
+	 *
+	 * @example
+	 * Bit.reverse(446, 3);
+	 * //251
+	 *
+	 * @function reverse
+	 * @memberof Bit
+	 **/
+	function Bit_reverse(num, full) {
+		if (full) {
+			num = ((num & 0x0000ffff) << 16) | ((num & 0xffff0000) >>> 16);
+			num = ((num & 0x55555555) << 1) | ((num & 0xAAAAAAAA) >>> 1);
+			num = ((num & 0x33333333) << 2) | ((num & 0xCCCCCCCC) >>> 2);
+			num = ((num & 0x0F0F0F0F) << 4) | ((num & 0xF0F0F0F0) >>> 4);
+			num = ((num & 0x00FF00FF) << 8) | ((num & 0xFF00FF00) >>> 8);
+			return num;
+		}
+		let result = 0, temp = 0, prev = num;
+		num = Math.abs(num);
+		while (num > 0) {
+			temp = num & 1;
+			num >>= 1;
+			result += temp & 1;
+			result <<= 1;
+		}
+		result >>= 1;
+		return Math_copy(result, prev);
+	}
+
+	/**
+	 *
+	 * Rotate order of bit to the left
+	 *
+	 * @param {number} num
+	 * @param {number} count
+	 * @param {number=} size - default is size of num
+	 * @return {number}
+	 *
+	 * @example
+	 * Bit.rol(446, 3);
+	 * //502
+	 *
+	 * @function rol
+	 * @memberof Bit
+	 **/
+	function Bit_rol(num, count, size) {
+		size = _helper0(size, Bit_size(num));
+		return ((num << count) & (1 << size) - 1) | (num >> (size - count));
+	}
+
+	/**
+	 *
+	 * Rotate order of bit to the right
+	 *
+	 * @param {number} num
+	 * @param {number} count
+	 * @param {number=} size - default is size of num
+	 * @return {number}
+	 *
+	 * @example
+	 * Bit.ror(446, 3);
+	 * //439
+	 *
+	 * @function ror
+	 * @memberof Bit
+	 **/
+	function Bit_ror(num, count, size) {
+		size = _helper0(size, Bit_size(num));
+		return (num >> count) | ((num << (size - count)) & (1 << size) - 1);
+	}
+
 	//Export
 	//This is a very terrible way to export these functions because Closure advanced mode :(
 	//If you have any ideas to improve this I'm really appreciated :D
 	module([
-		["M", "HALF_PI", Math_HALF_PI],
-		["M", "TAU", Math_TAU],
-		["M", "SQRT_PI", Math_SQRT_PI],
-		["M", "SQRT_TAU", Math_SQRT_TAU],
-		["M", "PHI", Math_PHI],
-		["M", "SILVER", Math_SILVER],
-		["M", "UPC", Math_UPC],
+		"M", "HALF_PI", Math_HALF_PI,
+		"M", "TAU", Math_TAU,
+		"M", "SQRT_PI", Math_SQRT_PI,
+		"M", "SQRT_TAU", Math_SQRT_TAU,
+		"M", "PHI", Math_PHI,
+		"M", "SILVER", Math_SILVER,
+		"M", "UPC", Math_UPC,
 
-		["M", "ln", Math_ln],
-		["M", "log", Math_log],
-		["M", "mod", Math_mod],
-		["M", "rem", Math_rem],
-		["M", "cycle", Math_cycle],
-		["M", "gamma", Math_gamma],
-		["M", "lnGamma", Math_lnGamma],
-		["M", "factorial", Math_factorial],
-		["M", "nCr", Math_nCr],
-		["M", "nPr", Math_nPr],
-		["M", "pow", Math_pow],
-		["M", "of", Math_of],
-		["M", "sigmoid", Math_sigmoid],
-		["M", "pair", Math_pair],
-		["M", "integral", Math_integral],
-		["M", "derivative", Math_derivative],
-		["M", "limit", Math_limit],
-		["M", "solve", Math_solve],
-		["M", "rational", Math_rational],
-		["M", "pdf", Math_pdf],
-		["M", "cdf", Math_cdf],
-		["M", "ppf", Math_ppf],
-		["M", "erf", Math_erf],
-		["M", "erfc", Math_erfc],
-		["M", "ierf", Math_ierf],
-		["M", "ierfc", Math_ierfc],
-		["M", "erfcx", Math_erfcx],
-		["M", "invNorm", Math_invNorm],
-		["M", "kelly", Math_kelly],
-		["M", "bernstein", Math_bernstein],
-		["M", "smooth", Math_smooth],
-		["M", "adjust", Math_adjust],
-		["M", "adjust2", Math_adjust2],
-		["M", "round", Math_round],
-		["M", "floor", Math_floor],
-		["M", "ceil", Math_ceil],
-		["M", "trunc", Math_trunc],
-		["M", "away", Math_away],
-		["M", "round2", Math_round2],
-		["M", "floor2", Math_floor2],
-		["M", "ceil2", Math_ceil2],
-		["M", "trunc2", Math_trunc2],
-		["M", "away2", Math_away2],
-		["M", "correct", Math_correct],
-		["M", "snap", Math_snap],
-		["M", "discrete", Math_discrete],
-		["M", "shear", Math_shear],
-		["M", "precision", Math_precision],
-		["M", "order", Math_order],
-		["M", "ramp", Math_ramp],
-		["M", "heaviside", Math_heaviside],
-		["M", "haar", Math_haar],
-		["M", "rect", Math_rect],
-		["M", "tri", Math_tri],
-		["M", "fold", Math_fold],
-		["M", "one", Math_one],
-		["M", "copy", Math_copy],
-		["M", "flip", Math_flip],
-		["M", "range", Math_range],
-		["M", "compare", Math_compare],
-		["M", "clamp", Math_clamp],
-		["M", "wrap", Math_wrap],
-		["M", "bounce", Math_bounce],
-		["M", "approach", Math_approach],
-		["M", "map", Math_map],
-		["M", "norm", Math_norm],
-		["M", "lerp", Math_lerp],
-		["M", "change", Math_change],
-		["M", "gcd", Math_gcd],
-		["M", "lcm", Math_lcm],
-		["M", "factor", Math_factor],
-		["M", "divisor", Math_divisor],
-		["M", "random", Math_random],
-		["M", "randomTri", Math_randomTri],
-		["M", "randomCirc", Math_randomCirc],
-		["M", "noise", Math_noise],
-		["M", "worley", Math_worley],
+		"M", "ln", Math_ln,
+		"M", "log", Math_log,
+		"M", "mod", Math_mod,
+		"M", "rem", Math_rem,
+		"M", "cycle", Math_cycle,
+		"M", "gamma", Math_gamma,
+		"M", "lnGamma", Math_lnGamma,
+		"M", "factorial", Math_factorial,
+		"M", "nCr", Math_nCr,
+		"M", "nPr", Math_nPr,
+		"M", "pow", Math_pow,
+		"M", "of", Math_of,
+		"M", "sigmoid", Math_sigmoid,
+		"M", "pair", Math_pair,
+		"M", "integral", Math_integral,
+		"M", "derivative", Math_derivative,
+		"M", "limit", Math_limit,
+		"M", "solve", Math_solve,
+		"M", "rational", Math_rational,
+		"M", "pdf", Math_pdf,
+		"M", "cdf", Math_cdf,
+		"M", "ppf", Math_ppf,
+		"M", "erf", Math_erf,
+		"M", "erfc", Math_erfc,
+		"M", "ierf", Math_ierf,
+		"M", "ierfc", Math_ierfc,
+		"M", "erfcx", Math_erfcx,
+		"M", "invNorm", Math_invNorm,
+		"M", "kelly", Math_kelly,
+		"M", "bernstein", Math_bernstein,
+		"M", "smooth", Math_smooth,
+		"M", "adjust", Math_adjust,
+		"M", "adjust2", Math_adjust2,
+		"M", "round", Math_round,
+		"M", "floor", Math_floor,
+		"M", "ceil", Math_ceil,
+		"M", "trunc", Math_trunc,
+		"M", "away", Math_away,
+		"M", "round2", Math_round2,
+		"M", "floor2", Math_floor2,
+		"M", "ceil2", Math_ceil2,
+		"M", "trunc2", Math_trunc2,
+		"M", "away2", Math_away2,
+		"M", "correct", Math_correct,
+		"M", "snap", Math_snap,
+		"M", "discrete", Math_discrete,
+		"M", "shear", Math_shear,
+		"M", "precision", Math_precision,
+		"M", "order", Math_order,
+		"M", "ramp", Math_ramp,
+		"M", "heaviside", Math_heaviside,
+		"M", "haar", Math_haar,
+		"M", "rect", Math_rect,
+		"M", "tri", Math_tri,
+		"M", "fold", Math_fold,
+		"M", "one", Math_one,
+		"M", "copy", Math_copy,
+		"M", "flip", Math_flip,
+		"M", "range", Math_range,
+		"M", "compare", Math_compare,
+		"M", "clamp", Math_clamp,
+		"M", "wrap", Math_wrap,
+		"M", "bounce", Math_bounce,
+		"M", "approach", Math_approach,
+		"M", "map", Math_map,
+		"M", "norm", Math_norm,
+		"M", "lerp", Math_lerp,
+		"M", "change", Math_change,
+		"M", "gcd", Math_gcd,
+		"M", "lcm", Math_lcm,
+		"M", "factor", Math_factor,
+		"M", "divisor", Math_divisor,
+		"M", "random", Math_random,
+		"M", "randomTri", Math_randomTri,
+		"M", "randomCirc", Math_randomCirc,
+		"M", "noise", Math_noise,
+		"M", "worley", Math_worley,
 
-		["G", "normRad", Geometry_normRad],
-		["G", "toRad", Geometry_toRad],
-		["G", "fullRad", Geometry_fullRad],
-		["G", "normDeg", Geometry_normDeg],
-		["G", "toDeg", Geometry_toDeg],
-		["G", "fullDeg", Geometry_fullDeg],
-		["G", "cssnAngle", Geometry_cssnAngle],
-		["G", "scaleAngle", Geometry_scaleAngle],
-		["G", "getAngle", Geometry_getAngle],
-		["G", "relfAngle", Geometry_relfAngle],
-		["G", "diffAngle", Geometry_diffAngle],
-		["G", "isBetwAngle", Geometry_isBetwAngle],
-		["G", "colliAnglePnt", Geometry_colliAnglePnt],
-		["G", "distPnt", Geometry_distPnt],
-		["G", "polarDistPnt", Geometry_polarDistPnt],
-		["G", "manDistPnt", Geometry_manDistPnt],
-		["G", "chevDistPnt", Geometry_chevDistPnt],
-		["G", "rotPnt", Geometry_rotPnt],
-		["G", "anglePnt", Geometry_anglePnt],
-		["G", "cntrPnt", Geometry_cntrPnt],
-		["G", "cmpPnt", Geometry_cmpPnt],
-		["G", "slopeLine", Geometry_slopeLine],
-		["G", "stdLine", Geometry_stdLine],
-		["G", "distLinePnt", Geometry_distLinePnt],
-		["G", "distLine", Geometry_distLine],
-		["G", "intrLine", Geometry_intrLine],
-		["G", "intrLineCirc", Geometry_intrLineCirc],
-		["G", "sideLine", Geometry_sideLine],
-		["G", "onLine", Geometry_onLine],
-		["G", "colliLinePnt", Geometry_colliLinePnt],
-		["G", "getXLine", Geometry_getXLine],
-		["G", "getYLine", Geometry_getYLine],
-		["G", "colliRayRect", Geometry_colliRayRect],
-		["G", "colliArcCircPnt", Geometry_colliArcCircPnt],
-		["G", "colliCircPnt", Geometry_colliCircPnt],
-		["G", "colliCirc", Geometry_colliCirc],
-		["G", "colliCircRect", Geometry_colliCircRect],
-		["G", "intrCirc", Geometry_intrCirc],
-		["G", "randomCirc", Geometry_randomCirc],
-		["G", "onElli", Geometry_onElli],
-		["G", "colliElliPnt", Geometry_colliElliPnt],
-		["G", "intrElli", Geometry_intrElli],
-		["G", "intrElliLine", Geometry_intrElliLine],
-		["G", "boundElli", Geometry_boundElli],
-		["G", "randomElli", Geometry_randomElli],
-		["G", "distElliPnt", Geometry_distElliPnt],
-		["G", "centroidTri", Geometry_centroidTri],
-		["G", "equilTri", Geometry_equilTri],
-		["G", "rightTri", Geometry_rightTri],
-		["G", "crcmCntrTri", Geometry_crcmCntrTri],
-		["G", "crcmCircTri", Geometry_crcmCircTri],
-		["G", "inCircTri", Geometry_inCircTri],
-		["G", "colliTriPnt", Geometry_colliTriPnt],
-		["G", "areaTri", Geometry_areaTri],
-		["G", "randomTri", Geometry_randomTri],
-		["G", "colliRectPnt", Geometry_colliRectPnt],
-		["G", "colliRect", Geometry_colliRect],
-		["G", "intrRect", Geometry_intrRect],
-		["G", "randomRect", Geometry_randomRect],
-		["G", "colliPolyPnt", Geometry_colliPolyPnt],
-		["G", "colliPolyCirc", Geometry_colliPolyCirc],
-		["G", "colliPoly", Geometry_colliPoly],
-		["G", "isSimplePoly", Geometry_isSimplePoly],
-		["G", "isConvexPoly", Geometry_isConvexPoly],
-		["G", "isClockWisePoly", Geometry_isClockWisePoly],
-		["G", "boundPoly", Geometry_boundPoly],
-		["G", "triPoly", Geometry_triPoly],
+		"G", "normRad", Geometry_normRad,
+		"G", "toRad", Geometry_toRad,
+		"G", "fullRad", Geometry_fullRad,
+		"G", "normDeg", Geometry_normDeg,
+		"G", "toDeg", Geometry_toDeg,
+		"G", "fullDeg", Geometry_fullDeg,
+		"G", "cssnAngle", Geometry_cssnAngle,
+		"G", "scaleAngle", Geometry_scaleAngle,
+		"G", "getAngle", Geometry_getAngle,
+		"G", "relfAngle", Geometry_relfAngle,
+		"G", "diffAngle", Geometry_diffAngle,
+		"G", "isBetwAngle", Geometry_isBetwAngle,
+		"G", "colliAnglePnt", Geometry_colliAnglePnt,
+		"G", "distPnt", Geometry_distPnt,
+		"G", "polarDistPnt", Geometry_polarDistPnt,
+		"G", "manDistPnt", Geometry_manDistPnt,
+		"G", "chevDistPnt", Geometry_chevDistPnt,
+		"G", "rotPnt", Geometry_rotPnt,
+		"G", "anglePnt", Geometry_anglePnt,
+		"G", "cntrPnt", Geometry_cntrPnt,
+		"G", "cmpPnt", Geometry_cmpPnt,
+		"G", "slopeLine", Geometry_slopeLine,
+		"G", "stdLine", Geometry_stdLine,
+		"G", "distLinePnt", Geometry_distLinePnt,
+		"G", "distLine", Geometry_distLine,
+		"G", "intrLine", Geometry_intrLine,
+		"G", "intrLineCirc", Geometry_intrLineCirc,
+		"G", "sideLine", Geometry_sideLine,
+		"G", "onLine", Geometry_onLine,
+		"G", "colliLinePnt", Geometry_colliLinePnt,
+		"G", "getXLine", Geometry_getXLine,
+		"G", "getYLine", Geometry_getYLine,
+		"G", "colliRayRect", Geometry_colliRayRect,
+		"G", "colliArcCircPnt", Geometry_colliArcCircPnt,
+		"G", "colliCircPnt", Geometry_colliCircPnt,
+		"G", "colliCirc", Geometry_colliCirc,
+		"G", "colliCircRect", Geometry_colliCircRect,
+		"G", "intrCirc", Geometry_intrCirc,
+		"G", "randomCirc", Geometry_randomCirc,
+		"G", "onElli", Geometry_onElli,
+		"G", "colliElliPnt", Geometry_colliElliPnt,
+		"G", "intrElli", Geometry_intrElli,
+		"G", "intrElliLine", Geometry_intrElliLine,
+		"G", "boundElli", Geometry_boundElli,
+		"G", "randomElli", Geometry_randomElli,
+		"G", "distElliPnt", Geometry_distElliPnt,
+		"G", "centroidTri", Geometry_centroidTri,
+		"G", "equilTri", Geometry_equilTri,
+		"G", "rightTri", Geometry_rightTri,
+		"G", "crcmCntrTri", Geometry_crcmCntrTri,
+		"G", "crcmCircTri", Geometry_crcmCircTri,
+		"G", "inCircTri", Geometry_inCircTri,
+		"G", "colliTriPnt", Geometry_colliTriPnt,
+		"G", "areaTri", Geometry_areaTri,
+		"G", "randomTri", Geometry_randomTri,
+		"G", "colliRectPnt", Geometry_colliRectPnt,
+		"G", "colliRect", Geometry_colliRect,
+		"G", "intrRect", Geometry_intrRect,
+		"G", "randomRect", Geometry_randomRect,
+		"G", "colliPolyPnt", Geometry_colliPolyPnt,
+		"G", "colliPolyCirc", Geometry_colliPolyCirc,
+		"G", "colliPoly", Geometry_colliPoly,
+		"G", "isSimplePoly", Geometry_isSimplePoly,
+		"G", "isConvexPoly", Geometry_isConvexPoly,
+		"G", "isClockWisePoly", Geometry_isClockWisePoly,
+		"G", "boundPoly", Geometry_boundPoly,
+		"G", "triPoly", Geometry_triPoly,
 		//["G", "slicePoly", Geometry_slicePoly],
-		["G", "areaPoly", Geometry_areaPoly],
-		["G", "centroidPoly", Geometry_centroidPoly],
-		["G", "convexHullPoly", Geometry_convexHullPoly],
-		["G", "distPolyRay", Geometry_distPolyRay],
-		["G", "intrPolyPnt", Geometry_intrPolyPnt],
-		["G", "reversePoly", Geometry_reversePoly],
-		["G", "timeAccel", Geometry_timeAccel],
-		["G", "accelAccel", Geometry_accelAccel],
-		["G", "distAccel", Geometry_distAccel],
-		["G", "timeDistAccel", Geometry_timeDistAccel],
+		"G", "areaPoly", Geometry_areaPoly,
+		"G", "centroidPoly", Geometry_centroidPoly,
+		"G", "convexHullPoly", Geometry_convexHullPoly,
+		"G", "distPolyRay", Geometry_distPolyRay,
+		"G", "intrPolyPnt", Geometry_intrPolyPnt,
+		"G", "reversePoly", Geometry_reversePoly,
+		"G", "timeAccel", Geometry_timeAccel,
+		"G", "distAccel", Geometry_distAccel,
+		"G", "timeDistAccel", Geometry_timeDistAccel,
+		"G", "distDecel", Geometry_distDecel,
 
-		["M", "pol", Math_pol],
-		["M", "rec", Math_rec],
-		["M", "normVec", Math_normVec],
-		["M", "scaleVec", Math_scaleVec],
-		["M", "truncVec", Math_truncVec],
-		["M", "magVec", Math_magVec],
-		["M", "dotVec", Math_dotVec],
-		["M", "crossVec", Math_crossVec],
-		["M", "projVec", Math_projVec],
-		["M", "rejVec", Math_rejVec],
-		["M", "perVec", Math_perVec],
-		["M", "lerpVec", Math_lerpVec],
-		["M", "headVec", Math_headVec],
-		["M", "revVec", Math_revVec],
-		["M", "clockWiseVec", Math_clockWiseVec],
+		"M", "pol", Math_pol,
+		"M", "rec", Math_rec,
+		"M", "normVec", Math_normVec,
+		"M", "scaleVec", Math_scaleVec,
+		"M", "truncVec", Math_truncVec,
+		"M", "magVec", Math_magVec,
+		"M", "dotVec", Math_dotVec,
+		"M", "crossVec", Math_crossVec,
+		"M", "projVec", Math_projVec,
+		"M", "rejVec", Math_rejVec,
+		"M", "perVec", Math_perVec,
+		"M", "lerpVec", Math_lerpVec,
+		"M", "headVec", Math_headVec,
+		"M", "revVec", Math_revVec,
+		"M", "clockWiseVec", Math_clockWiseVec,
 
-		["M", "sinc", Math_sinc],
-		["M", "crd", Math_crd],
-		["M", "exsec", Math_exsec],
-		["M", "excsc", Math_excsc],
-		["M", "aexsec", Math_aexsec],
-		["M", "aexcsc", Math_aexcsc],
-		["M", "vsin", Math_vsin],
-		["M", "vcos", Math_vcos],
-		["M", "cvsin", Math_cvsin],
-		["M", "cvcos", Math_cvcos],
-		["M", "hvsin", Math_hvsin],
-		["M", "hvcos", Math_hvcos],
-		["M", "hcvsin", Math_hcvsin],
-		["M", "hcvcos", Math_hcvcos],
-		["M", "avsin", Math_avsin],
-		["M", "avcos", Math_avcos],
-		["M", "acvsin", Math_acvsin],
-		["M", "acvcos", Math_acvcos],
-		["M", "ahvsin", Math_ahvsin],
-		["M", "ahvcos", Math_ahvcos],
-		["M", "csc", Math_csc],
-		["M", "csch", Math_csch],
-		["M", "sec", Math_sec],
-		["M", "sech", Math_sech],
-		["M", "cot", Math_cot],
-		["M", "coth", Math_coth],
-		["M", "acsc", Math_acsc],
-		["M", "acsch", Math_acsch],
-		["M", "asec", Math_asec],
-		["M", "asech", Math_asech],
-		["M", "acot", Math_acot],
-		["M", "acoth", Math_acoth],
-		["M", "cssn", Math_cssn],
+		"M", "sinc", Math_sinc,
+		"M", "crd", Math_crd,
+		"M", "exsec", Math_exsec,
+		"M", "excsc", Math_excsc,
+		"M", "aexsec", Math_aexsec,
+		"M", "aexcsc", Math_aexcsc,
+		"M", "vsin", Math_vsin,
+		"M", "vcos", Math_vcos,
+		"M", "cvsin", Math_cvsin,
+		"M", "cvcos", Math_cvcos,
+		"M", "hvsin", Math_hvsin,
+		"M", "hvcos", Math_hvcos,
+		"M", "hcvsin", Math_hcvsin,
+		"M", "hcvcos", Math_hcvcos,
+		"M", "avsin", Math_avsin,
+		"M", "avcos", Math_avcos,
+		"M", "acvsin", Math_acvsin,
+		"M", "acvcos", Math_acvcos,
+		"M", "ahvsin", Math_ahvsin,
+		"M", "ahvcos", Math_ahvcos,
+		"M", "csc", Math_csc,
+		"M", "csch", Math_csch,
+		"M", "sec", Math_sec,
+		"M", "sech", Math_sech,
+		"M", "cot", Math_cot,
+		"M", "coth", Math_coth,
+		"M", "acsc", Math_acsc,
+		"M", "acsch", Math_acsch,
+		"M", "asec", Math_asec,
+		"M", "asech", Math_asech,
+		"M", "acot", Math_acot,
+		"M", "acoth", Math_acoth,
+		"M", "cssn", Math_cssn,
 
-		["N", "isPrime", Number_isPrime],
-		["N", "isMinusZero", Number_isMinusZero],
-		["N", "isEven", Number_isEven],
-		["N", "isNumeric", Number_isNumeric],
-		["N", "epsilon", Number_epsilon],
-		["N", "isPOT", Number_isPOT],
-		["N", "isSameSign", Number_isSameSign],
+		"N", "isPrime", Number_isPrime,
+		"N", "isMinusZero", Number_isMinusZero,
+		"N", "isEven", Number_isEven,
+		"N", "isNumeric", Number_isNumeric,
+		"N", "epsilon", Number_epsilon,
+		"N", "isPOT", Number_isPOT,
+		"N", "isSameSign", Number_isSameSign,
 
-		["T", "inQuad", Tween_inQuad],
-		["T", "outQuad", Tween_outQuad],
-		["T", "inOutQuad", Tween_inOutQuad],
-		["T", "inCubic", Tween_inCubic],
-		["T", "outCubic", Tween_outCubic],
-		["T", "inOutCubic", Tween_inOutCubic],
-		["T", "inQuart", Tween_inQuart],
-		["T", "outQuart", Tween_outQuart],
-		["T", "inOutQuart", Tween_inOutQuart],
-		["T", "inQuint", Tween_inQuint],
-		["T", "outQuint", Tween_outQuint],
-		["T", "inOutQuint", Tween_inOutQuint],
-		["T", "inPow", Tween_inPow],
-		["T", "outPow", Tween_outPow],
-		["T", "inOutPow", Tween_inOutPow],
-		["T", "inLog", Tween_inLog],
-		["T", "outLog", Tween_outLog],
-		["T", "inOutLog", Tween_inOutLog],
-		["T", "inSine", Tween_inSine],
-		["T", "outSine", Tween_outSine],
-		["T", "inOutSine", Tween_inOutSine],
-		["T", "inExpo", Tween_inExpo],
-		["T", "outExpo", Tween_outExpo],
-		["T", "inOutExpo", Tween_inOutExpo],
-		["T", "inCirc", Tween_inCirc],
-		["T", "outCirc", Tween_outCirc],
-		["T", "inOutCirc", Tween_inOutCirc],
-		["T", "inElastic", Tween_inElastic],
-		["T", "outElastic", Tween_outElastic],
-		["T", "inOutElastic", Tween_inOutElastic],
-		["T", "inBack", Tween_inBack],
-		["T", "outBack", Tween_outBack],
-		["T", "inOutBack", Tween_inOutBack],
-		["T", "inBounce", Tween_inBounce],
-		["T", "outBounce", Tween_outBounce],
-		["T", "inOutBounce", Tween_inOutBounce],
-		["T", "spring", Tween_spring],
-		["T", "bounce", Tween_bounce],
-		["T", "slow", Tween_slow],
-		["T", "scale", Tween_scale],
-		["T", "smoothStep", Tween_smoothStep],
-		["T", "overShoot", Tween_overShoot],
-		["T", "berp", Tween_berp],
-		["T", "envelope", Tween_envelope],
-		["T", "shift", Tween_shift],
-		["T", "poly", Tween_poly],
-		["T", "bezier", Tween_bezier],
-		["T", "spline", Tween_spline],
-		["T", "count", Tween_count],
+		"T", "inQuad", Tween_inQuad,
+		"T", "outQuad", Tween_outQuad,
+		"T", "inOutQuad", Tween_inOutQuad,
+		"T", "inCubic", Tween_inCubic,
+		"T", "outCubic", Tween_outCubic,
+		"T", "inOutCubic", Tween_inOutCubic,
+		"T", "inQuart", Tween_inQuart,
+		"T", "outQuart", Tween_outQuart,
+		"T", "inOutQuart", Tween_inOutQuart,
+		"T", "inQuint", Tween_inQuint,
+		"T", "outQuint", Tween_outQuint,
+		"T", "inOutQuint", Tween_inOutQuint,
+		"T", "inPow", Tween_inPow,
+		"T", "outPow", Tween_outPow,
+		"T", "inOutPow", Tween_inOutPow,
+		"T", "inLog", Tween_inLog,
+		"T", "outLog", Tween_outLog,
+		"T", "inOutLog", Tween_inOutLog,
+		"T", "inSine", Tween_inSine,
+		"T", "outSine", Tween_outSine,
+		"T", "inOutSine", Tween_inOutSine,
+		"T", "inExpo", Tween_inExpo,
+		"T", "outExpo", Tween_outExpo,
+		"T", "inOutExpo", Tween_inOutExpo,
+		"T", "inCirc", Tween_inCirc,
+		"T", "outCirc", Tween_outCirc,
+		"T", "inOutCirc", Tween_inOutCirc,
+		"T", "inElastic", Tween_inElastic,
+		"T", "outElastic", Tween_outElastic,
+		"T", "inOutElastic", Tween_inOutElastic,
+		"T", "inBack", Tween_inBack,
+		"T", "outBack", Tween_outBack,
+		"T", "inOutBack", Tween_inOutBack,
+		"T", "inBounce", Tween_inBounce,
+		"T", "outBounce", Tween_outBounce,
+		"T", "inOutBounce", Tween_inOutBounce,
+		"T", "bias", Tween_bias,
+		"T", "inOutBias", Tween_inOutBias,
+		"T", "spring", Tween_spring,
+		"T", "bounce", Tween_bounce,
+		"T", "slow", Tween_slow,
+		"T", "scale", Tween_scale,
+		"T", "smoothStep", Tween_smoothStep,
+		"T", "overShoot", Tween_overShoot,
+		"T", "berp", Tween_berp,
+		"T", "envelope", Tween_envelope,
+		"T", "shift", Tween_shift,
+		"T", "poly", Tween_poly,
+		"T", "bezier", Tween_bezier,
+		"T", "spline", Tween_spline,
+		"T", "count", Tween_count,
 
-		["B", "andNot", Boolean_andNot],
-		["B", "notAnd", Boolean_notAnd],
-		["B", "nand", Boolean_nand],
-		["B", "orNot", Boolean_orNot],
-		["B", "notOr", Boolean_notOr],
-		["B", "nor", Boolean_nor],
-		["B", "xor", Boolean_xor],
-		["B", "xnor", Boolean_xnor],
-		["B", "all", Boolean_all],
-		["B", "nall", Boolean_nall],
+		"B", "andNot", Boolean_andNot,
+		"B", "notAnd", Boolean_notAnd,
+		"B", "nand", Boolean_nand,
+		"B", "orNot", Boolean_orNot,
+		"B", "notOr", Boolean_notOr,
+		"B", "nor", Boolean_nor,
+		"B", "xor", Boolean_xor,
+		"B", "xnor", Boolean_xnor,
+		"B", "all", Boolean_all,
+		"B", "nall", Boolean_nall,
+
+		"I", "size", Bit_size,
+		"I", "clear", Bit_clear,
+		"I", "set", Bit_set,
+		"I", "find", Bit_find,
+		"I", "flip", Bit_flip,
+		"I", "reverse", Bit_reverse,
+		"I", "rol", Bit_rol,
+		"I", "ror", Bit_ror,
 	], global);
 })(
 	function(module, global) {
 		//You can change this export function to suit your needs
-		let Geometry = {},
-			Tween = {};
+		let Geometry = {}, Tween = {}, Bit = {};
 
-		for (let i = 0; i < module.length; i++) {
-			let temp, temp2 = module[i];
-			switch (temp2[0]) {
+		for (let i = 0; i < module.length; i += 3) {
+			let temp;
+			switch (module[i]) {
 				case "M":
 					temp = global.Math;
 					break;
@@ -8420,8 +8654,10 @@
 				case "B":
 					temp = global.Boolean;
 					break;
+				case "I":
+					temp = Bit;
 			}
-			temp[temp2[1]] = temp2[2];
+			temp[module[i + 1]] = module[i + 2];
 		}
 
 		let root = {
@@ -8429,7 +8665,8 @@
 			Geometry: Geometry,
 			Tween: Tween,
 			Boolean: global.Boolean,
-			Number: global.Number
+			Number: global.Number,
+			Bit: Bit
 		};
 
 		if (typeof define === "function" && define.amd) {
@@ -8443,6 +8680,7 @@
 		}
 		global.Geometry = Geometry;
 		global.Tween = Tween;
+		global.Bit = Bit;
 	},
 	typeof self !== "undefined" ? self :
 	typeof window !== "undefined" ? window :
