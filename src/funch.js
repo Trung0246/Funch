@@ -1,7 +1,7 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.14a
+	Funch.js, v0.15a
 
 	MIT License
 
@@ -232,7 +232,7 @@
 	//Xorshift-128
 	let _helper12 = (function() {
 		let s1U, s1L, s0U, s0L, sumL, tU, tL;
-		function _helper_helper7_1(a, sU, sL) {
+		function _helper_helper12(a, sU, sL) {
 			tU ^= sU >>> a;
 			tL ^= sL >>> a | (sU & 0xFFFFFFFF >>> 32 - a) << 32 - a;
 		}
@@ -256,8 +256,8 @@
 			tU = s1U ^ s0U;
 			tL = s1L ^ s0L;
 
-			_helper_helper7_1(18, s1U, s1L);
-			_helper_helper7_1(5, s0U, s0L);
+			_helper_helper12(18, s1U, s1L);
+			_helper_helper12(5, s0U, s0L);
 
 			_memory_1_[2] = tU;
 			_memory_1_[3] = tL;
@@ -465,7 +465,6 @@
 		let k, verySmallNumber = 1e-10,
 			allEqual = true,
 			flip = (type === 2 ? 1 : -1);
-		_helper2();
 		if (typeof places != "number" && !(places instanceof Number)) {
 			places = 10;
 		}
@@ -2528,7 +2527,8 @@
 		for (let r = 1; r < temp; r++) {
 			_helper10(_memory_1_[0], arguments[r]);
 		}
-		return returnData.concat(_memory_1_);
+		returnData.push.apply(returnData, _memory_1_);
+		return returnData;
 	}
 
 	/**
@@ -5029,10 +5029,11 @@
 	 **/
 	function Geometry_triPoly(points, returnData) {
 		returnData = _helper1(returnData, false);
-		let n, i, al, i0, i1, i2, ax, ay, bx, by, cx, cy, eF, vi;
+		let n, i, j, al, i0, i1, i2, ax, ay, bx, by, cx, cy, eF, vi, tempLength, tempVal;
 		n = points.length >> 1;
 		if (n < 3) {
-			return returnData.concat(points);
+			returnData.push.apply(returnData, points);
+			return returnData;
 		}
 		_helper2();
 		for (i = 0; i < n; i++) {
@@ -5056,7 +5057,7 @@
 			eF = false;
 			if (Geometry_sideLine(ax, ay, bx, by, cx, cy) >= 0) {
 				eF = true;
-				for (let j = 0; j < al; j++) {
+				for (j = 0; j < al; j++) {
 					vi = _memory_2_[j];
 					if (vi == i0 || vi == i1 || vi == i2) {
 						continue;
@@ -5069,7 +5070,15 @@
 			}
 			if (eF) {
 				_memory_1_.push(i0, i1, i2);
-				_memory_2_.splice((i + 1) % al, 1);
+				tempLength = 0;
+				tempVal = (i + 1) % al;
+				for (j = 0; j < _memory_2_.length; j++) {
+					if (j !== tempVal) {
+						_memory_2_[tempLength++] = _memory_2_[j];
+					}
+				}
+				_memory_2_.length = tempLength;
+
 				al--;
 				i = 0;
 			} else if (i++ > 3 * al) {
@@ -5077,7 +5086,8 @@
 			}
 		}
 		_memory_1_.push(_memory_2_[0], _memory_2_[1], _memory_2_[2]);
-		return returnData.concat(_memory_1_);
+		returnData.push.apply(returnData, _memory_1_);
+		return returnData;
 	}
 
 	/**
@@ -5191,7 +5201,8 @@
 		}
 		_memory_2_.pop();
 		_memory_1_.pop();
-		return returnData.concat(_memory_1_, _memory_2_);
+		returnData.push.apply(returnData, _memory_1_, _memory_2_);
+		return returnData;
 	}
 
 	/**
