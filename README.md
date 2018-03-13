@@ -4,9 +4,9 @@
 
 An all-in-one library that dedicated to improve Javascript default functions and provide more functions mostly focus on game development.
 
-Version 0.15a (Alpha version)
+Version 0.16a (Alpha version)
 
-[Download](https://cdn.rawgit.com/Trung0246/Funch/8b8713b1/src/funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/8b8713b1/src/funch.min.js))
+[Download](https://cdn.rawgit.com/Trung0246/Funch/ac069b5d/src/funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/ac069b5d/src/funch.min.js))
 
 [Documentation](https://cdn.rawgit.com/Trung0246/Funch/6ac5420e/docs/index.html) (old, may not update to lastest version) (0.6a ?)
 
@@ -19,7 +19,7 @@ You can generate document yourself by using [JSDoc](http://usejsdoc.org/).
 
 - Simple to add by copy `<script type="text/javascript" src="funch.js"></script>` or `require("./funch.js");`
 
-- Medium-sized ? (**37.8 KB** compressed using [Babel](https://babeljs.io) -> [Closure Complier](https://closure-compiler.appspot.com/home) -> [JSCompress](https://jscompress.com/))
+- Medium-sized ? (**40.5 KB** compressed using [Babel](https://babeljs.io) -> [Closure Complier](https://closure-compiler.appspot.com/home) -> [JSCompress](https://jscompress.com/))
 
 - Easy to copy and paste any function you like to use without include whole library *(I'm sad :( )*
 
@@ -29,9 +29,9 @@ You can generate document yourself by using [JSDoc](http://usejsdoc.org/).
 
 ### Changelog
 
-- Fixed some bugs
+- Quick patch to fix compilation error and optimization
 
-- Added new functions
+- Changed documentation
 
 ##### Notes
     
