@@ -1,7 +1,7 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.15a
+	Funch.js, v0.16a
 
 	MIT License
 
@@ -175,7 +175,7 @@
 	}
 
 	function _helper8(num1, num2) {
-		return ((((num1 & 0xffff) * num2) + ((((num1 >>> 16) * num2) & 0xffff) << 16))) & 0xffffffff;
+		return (num1 & 0xffff) * num2 + (((num1 >>> 16) * num2 & 0xffff) << 16) & 0xffffffff;
 	}
 
 	//Factorial
@@ -223,10 +223,9 @@
 
 	//Xorshift
 	function _helper11(seed) {
-		var x = seed ^ (seed >> 12);
-		x = x ^ (x << 25);
-		x = x ^ (x >> 27);
-		return x * 2;
+		seed ^= seed >> 12;
+		seed ^= seed << 25;
+		return 2 * (seed ^ seed >> 27)
 	}
 
 	//Xorshift-128
@@ -268,24 +267,21 @@
 	function _helper13() {
 		let h1 = arguments[2],
 			numargs = arguments.length - 1,
-			h1b, k1, i;
+			i;
 		for (i = 0; i < numargs; i++) {
-			k1 = arguments[i] | 0;
+			let k1 = arguments[i] | 0;
 			k1 = _helper8(k1, 0xcc9e2d51);
-			k1 = (k1 << 15) | (k1 >>> 17);
+			k1 = k1 << 15 | k1 >>> 17;
 			k1 = _helper8(k1, 0x1b873593);
 			h1 ^= k1;
-			h1 = (h1 << 13) | (h1 >>> 19);
-			h1b = ((((h1 & 0xffff) * 5) + ((((h1 >>> 16) * 5) & 0xffff) << 16))) & 0xffffffff;
-			h1 = (((h1b & 0xffff) + 0x6b64) + ((((h1b >>> 16) + 0xe654) & 0xffff) << 16));
+			h1 = h1 << 13 | h1 >>> 19;
+			h1 = 5 * (h1 & 0xffff) + ((5 * (h1 >>> 16) & 0xffff) << 16) & 0xffffffff;
+			h1 = (h1 & 0xffff) + 0x6b64 + (((h1 >>> 16) + 0xe654 & 0xffff) << 16);
 		}
 		h1 ^= numargs;
-		h1 ^= h1 >>> 16;
-		h1 = _helper8(h1, 0x85ebca6b);
-		h1 ^= h1 >>> 13;
-		h1 = _helper8(h1, 0xc2b2ae35);
-		h1 ^= h1 >>> 16;
-		return h1 >>> 0;
+		h1 = _helper8(h1 ^ h1 >>> 16, 0x85ebca6b);
+		h1 = _helper8(h1 ^ h1 >>> 13, 0xc2b2ae35);
+		return (h1 ^ h1 >>> 16) >>> 0;
 	}
 
 	function _helper14(num) {
@@ -403,14 +399,12 @@
 		if (RSquare === 0) {
 			frontPart = a334 - a22;
 			backPart = 2 * Math.sqrt(y1 * y1 - a04);
-			DSquare = frontPart + backPart;
-			ESquare = frontPart - backPart;
 		} else {
 			frontPart = a334 - RSquare - a22;
 			backPart = (4 * a3 * a2 - 8 * a1 - a3a3 * a3) / (4 * R);
-			DSquare = frontPart + backPart;
-			ESquare = frontPart - backPart;
 		}
+		DSquare = frontPart + backPart;
+		ESquare = frontPart - backPart;
 		frontPart = a34 + R2;
 		if (DSquare >= 0) {
 			backPart = Math.sqrt(DSquare) / 2;
@@ -426,7 +420,7 @@
 		return length;
 	}
 
-	function _helper21(a, b, c) {
+	function _helper21(a, b, c, epsilon) {
 		let minx = Math.min(b.x, c.x),
 			maxx = Math.max(b.x, c.x),
 			miny = Math.min(b.y, c.y),
@@ -435,10 +429,10 @@
 		if (minx === maxx) return (miny <= a.y && a.y <= maxy);
 		if (miny === maxy) return (minx <= a.x && a.x <= maxx);
 
-		return (minx <= a.x + 1e-10 && a.x - 1e-10 <= maxx && miny <= a.y + 1e-10 && a.y - 1e-10 <= maxy);
+		return (minx <= a.x + epsilon && a.x - epsilon <= maxx && miny <= a.y + epsilon && a.y - epsilon <= maxy);
 	}
 
-	function _helper22(a1, a2, b1, b2, c) {
+	function _helper22(a1, a2, b1, b2, c, epsilon) {
 		let dax = (a1.x - a2.x),
 			dbx = (b1.x - b2.x),
 			day = (a1.y - a2.y),
@@ -454,15 +448,15 @@
 		c.x = (A * dbx - dax * B) * iDen;
 		c.y = (A * dby - day * B) * iDen;
 
-		if (!_helper21(c, b1, b2)) return null;
+		if (!_helper21(c, b1, b2, epsilon)) return null;
 		if ((day > 0 && c.y > a1.y) || (day < 0 && c.y < a1.y)) return null;
 		if ((dax > 0 && c.x > a1.x) || (dax < 0 && c.x < a1.x)) return null;
 		return c;
 	}
 
-	function _helper23(num, func, places, type) {
+	function _helper23(num, func, places, type, epsilon) {
 		_helper2();
-		let k, verySmallNumber = 1e-10,
+		let k,
 			allEqual = true,
 			flip = (type === 2 ? 1 : -1);
 		if (typeof places != "number" && !(places instanceof Number)) {
@@ -476,11 +470,11 @@
 		}
 
 		if (places > 10) {
-			verySmallNumber = oldPow(1e-32, places / 32);
+			epsilon = oldPow(1e-32, places / 32);
 		}
 
 		for (k = 0; k < 5; k++) {
-			num += flip * verySmallNumber;
+			num += flip * epsilon;
 			_memory_1_.push(num);
 			_memory_2_.push(func(num));
 		}
@@ -766,15 +760,14 @@
 		accuracy = _helper0(accuracy, 7);
 		if (num < 0.5) {
 			return Math.PI / (Math.sin(num * Math.PI) * Math_gamma(1 - num));
-		} else {
-			num--;
-			let temp = _gamma_1_[0];
-			for (let i = 1; i < accuracy + 2; i++) {
-				temp += _gamma_1_[i] / (num + i);
-			}
-			let temp2 = num + accuracy + 0.5;
-			return Math_SQRT_TAU * Math_pow(temp2, num + 0.5) * Math.exp(-temp2) * temp;
 		}
+		num--;
+		let temp = _gamma_1_[0];
+		for (let i = 1; i < accuracy + 2; i++) {
+			temp += _gamma_1_[i] / (num + i);
+		}
+		let temp2 = num + accuracy + 0.5;
+		return Math_SQRT_TAU * Math_pow(temp2, num + 0.5) * Math.exp(-temp2) * temp;
 	}
 
 	/**
@@ -1017,7 +1010,7 @@
 	 **/
 	function Math_integral(a, b, func, epsilon, iteration) {
 		_helper2();
-		epsilon = _helper0(epsilon, 1e-17);
+		epsilon = _helper0(epsilon, 1e-15);
 		iteration = _helper0(iteration, 11);
 		let h = oldPow(2, -iteration),
 			k, t, sinht, i;
@@ -1100,6 +1093,7 @@
 	 * @param {number} num - The number to calculate
 	 * @param {function} func - The function to calculate
 	 * @param {number=} [places=10]
+	 * @param {number=} [epsilon=1e-10]
 	 * @return {number}
 	 *
 	 * @example
@@ -1109,20 +1103,19 @@
 	 * @function limit
 	 * @memberof Math
 	 **/
-	function Math_limit(type, num, func, places) {
-		if (typeof places != "number" && !(places instanceof Number)) {
-			places = 10;
-		}
+	function Math_limit(type, num, func, places, epsilon) {
+		places = _helper0(places, 10);
+		epsilon = _helper0(epsilon, 1e-10);
 		let atX = func(num);
 		switch (type) {
 			case 1:
 				{
-					return _helper23(num, func, places, 1);
+					return _helper23(num, func, places, 1, epsilon);
 				}
 				break;
 			case 2:
 				{
-					return _helper23(num, func, places, 2);
+					return _helper23(num, func, places, 2, epsilon);
 				}
 				break;
 			default:
@@ -1131,12 +1124,12 @@
 						return atX;
 					} else if (!Number.isNaN(num)) {
 						if (num === Infinity) {
-							return _helper23(num, func, places, 1);
+							return _helper23(num, func, places, 1, epsilon);
 						} else if (num === -Infinity) {
-							return _helper23(num, func, places, 2);
+							return _helper23(num, func, places, 2, epsilon);
 						} else {
-							let left = _helper23(num, func, places, 1),
-								right = _helper23(num, func, places, 2);
+							let left = _helper23(num, func, places, 1, epsilon),
+								right = _helper23(num, func, places, 2, epsilon);
 							if (left === right) {
 								return left;
 							}
@@ -3179,13 +3172,13 @@
 	 * @return {number} Angle in radians
 	 *
 	 * @example
-	 * Geometry.relfAngle(Math.PI, Math.PI / 4);
+	 * Geometry.reflAngle(Math.PI, Math.PI / 4);
 	 * //-1.5707963267948966
 	 *
-	 * @function relfAngle
+	 * @function reflAngle
 	 * @memberof Geometry
 	 **/
-	function Geometry_relfAngle(num, mirror) {
+	function Geometry_reflAngle(num, mirror) {
 		return 2 * mirror - num;
 	}
 
@@ -4179,7 +4172,6 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_intrElli(x_1, y_1, radius1_1, radius2_1, angle_1, x_2, y_2, radius1_2, radius2_2, angle_2, returnData) {
-		_helper2();
 		let tempAngle1_1 = Math.cos(angle_1),
 			tempAngle1_2 = Math.sin(angle_1),
 			tempAngle2_1 = Math.cos(angle_2),
@@ -4469,16 +4461,17 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_crcmCntrTri(x_1, y_1, x_2, y_2, x_3, y_3, returnData) {
-		let p, q, r, s, dataOne, dataTwo, dataThree;
-		p = x_1 - x_3;
-		q = y_1 - y_3;
-		r = x_2 - x_3;
-		s = y_2 - y_3;
-		dataOne = p * p + q * q;
-		dataTwo = r * r + s * s;
-		dataThree = 2 * Math_crossVec(p, q, r, s);
-		returnData.x = x_3 - Math_crossVec(q, dataOne, r, dataTwo) / dataThree;
-		returnData.y = y_3 + Math_crossVec(p, dataOne, r, dataTwo) / dataThree;
+		returnData = _helper1(returnData, true);
+		x_1 -= x_3;
+		y_1 -= y_3;
+		x_2 -= x_3;
+		let k = y_2 - y_3;
+		y_2 = x_1 * x_1 + y_1 * y_1;
+		let q = x_2 * x_2 + k * k;
+		k = 2 * (x_1 * k - y_1 * x_2);
+		y_2 *= x_2;
+		returnData.x = x_3 - (y_1 * q - y_2) / k;
+		returnData.y = y_3 + (x_1 * q - y_2) / k;
 		return returnData;
 	}
 
@@ -5214,19 +5207,21 @@
 	 * @param {number} a_y - y position of vertex point of the ray
 	 * @param {number} b_x - x position of direction point of the ray
 	 * @param {number} b_y - y position of direction point of the ray
+	 * @param {number=} [epsilon=1e-10]
 	 * @param {object=} returnData - Object to put data
 	 * @return {{dist: number, edge: number, norm_x: number, norm_y: number, refl_x: number, refl_y: number}}
 	 *
 	 * "dist" is the distance of the polygon point, "edge" is the number of the edge, on which intersection occurs, "norm" is the normal in that place, "refl" is reflected direction
 	 *
 	 * @example
-	 * Geometry.distPolyRay([0, 0, 50, 0, 100, 50, 50, 100, 0, 100], 25, -10, 25, -9);
-	 * //{dist: 26.570660511172846, edge: 1, norm_x: -0.7071067811865476, norm_y: 0.7071067811865476, refl_x: -9.000000000000007, refl_y: 25.000000000000007}
+	 * Geometry.distPolyRay([0, 0, 50, 0, 100, 50, 50, 100, 0, 100], -25, 0, 25, 50);
+	 * //{dist: 55.90169943749474, edge: 4, norm_x: 1, norm_y: 0, refl_x: -25, refl_y: 50}
 	 *
 	 * @function distPolyRay
 	 * @memberof Geometry
 	 **/
-	function Geometry_distPolyRay(points, a_x, a_y, b_x, b_y, returnData) {
+	function Geometry_distPolyRay(points, a_x, a_y, b_x, b_y, epsilon, returnData) {
+		epsilon = _helper0(epsilon, 1e-10);
 		let len = points.length - 2,
 			a1 = _poly_stack_[0],
 			a2 = _poly_stack_[1],
@@ -5252,14 +5247,14 @@
 			b1.y = points[i + 1];
 			b2.x = points[i + 2];
 			b2.y = points[i + 3];
-			nisc = _helper22(a1, a2, b1, b2, c);
+			nisc = _helper22(a1, a2, b1, b2, c, epsilon);
 			if (nisc) _helper17(b_x, b_y, a1, b1, b2, c, i / 2, returnData);
 		}
 		b1.x = b2.x;
 		b1.y = b2.y;
 		b2.x = points[0];
 		b2.y = points[1];
-		nisc = _helper22(a1, a2, b1, b2, c);
+		nisc = _helper22(a1, a2, b1, b2, c, epsilon);
 		if (nisc) _helper17(b_x, b_y, a1, b1, b2, c, (points.length / 2) - 1, returnData);
 
 		return returnData;
@@ -8130,10 +8125,9 @@
 		for (let loopCount = 0; loopCount < x.length; loopCount++) {
 			if (x[loopCount] != true) {
 				return false;
-			} else if (loopCount >= x.length - 1) {
-				return true;
 			}
 		}
+		return true;
 	}
 
 	/**
@@ -8442,7 +8436,7 @@
 		"G", "cssnAngle", Geometry_cssnAngle,
 		"G", "scaleAngle", Geometry_scaleAngle,
 		"G", "getAngle", Geometry_getAngle,
-		"G", "relfAngle", Geometry_relfAngle,
+		"G", "reflAngle", Geometry_reflAngle,
 		"G", "diffAngle", Geometry_diffAngle,
 		"G", "isBetwAngle", Geometry_isBetwAngle,
 		"G", "colliAnglePnt", Geometry_colliAnglePnt,
