@@ -1,6 +1,39 @@
 //This file contains junk code that may or may not useful or serve other purposes
 
 /*
+function approach(num, min, max) {
+	//https://www.youtube.com/watch?v=qJq7I2DLGzI
+	var diff = max - min;
+
+	if (diff > num)
+		return min + num;
+	if (diff < -num)
+		return min - num;
+
+	return max;
+}
+https://stackoverflow.com/questions/1826159
+compile to coffeescript
+change E- to e-
+find "if j == 0 then curve2H > .001 else curve2b < 1 and curve2H > .001" and wrap it to ()
+function Geometry_crcmCntrTri(x_1, y_1, x_2, y_2, x_3, y_3, returnData) {
+	let p, q, r, s, dataOne, dataTwo, dataThree;
+	p = x_1 - x_3;
+	q = y_1 - y_3;
+	r = x_2 - x_3;
+	s = y_2 - y_3;
+	dataOne = p * p + q * q;
+	dataTwo = r * r + s * s;
+	dataThree = 2 * Math_crossVec(p, q, r, s);
+	returnData.x = x_3 - Math_crossVec(q, dataOne, r, dataTwo) / dataThree;
+	returnData.y = y_3 + Math_crossVec(p, dataOne, r, dataTwo) / dataThree;
+	return returnData;
+}
+
+http://www.gmlscripts.com/script/ease_towards_direction
+http://www.gmlscripts.com/script/turn_towards_direction
+http://www.gmlscripts.com/script/instance_closest_approach
+http://www.gmlscripts.com/script/move_to_line
 Logit function inverse of sigmoid
 Inverse pythagon: 1/h^2 = 1/a^2+1/b^2
 //https://www.youtube.com/watch?v=p-0SOWbzUYI
