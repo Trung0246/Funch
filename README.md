@@ -19,7 +19,7 @@ You can generate document yourself by using [JSDoc](http://usejsdoc.org/).
 
 - Simple to add by copy `<script type="text/javascript" src="funch.js"></script>` or `require("./funch.js");`
 
-- Medium-sized ? (**40.5 KB** compressed using [Babel](https://babeljs.io) -> [Closure Complier](https://closure-compiler.appspot.com/home) -> [JSCompress](https://jscompress.com/))
+- Medium-sized ? (**38.6 KB** compressed using [Babel](https://babeljs.io) -> [Closure Complier](https://closure-compiler.appspot.com/home) -> [JSCompress](https://jscompress.com/))
 
 - Easy to copy and paste any function you like to use without include whole library *(I'm sad :( )*
 
