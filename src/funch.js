@@ -1,7 +1,7 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.16a
+	Funch.js, v0.17a
 
 	MIT License
 
@@ -102,6 +102,7 @@
 	_memory_2_ = [],
 	_memory_3_ = [],
 	_memory2_1_ = {},
+	_memory2_2_ = {},
 	_poly_stack_ = [],
 	_bounce_stack_ = [];
 
@@ -142,35 +143,25 @@
 				delete _memory2_1_[key];
 			}
 		}
+		for (let key in _memory2_2_) {
+			if (_memory2_2_.hasOwnProperty(key)) {
+				delete _memory2_2_[key];
+			}
+		}
 	}
 
 	function _helper4(type, num) {
 		switch (type) {
 			case 0:
-				{
-					return oldRound(num);
-				}
-				break;
+				return oldRound(num);
 			case 1:
-				{
-					return oldFloor(num);
-				}
-				break;
+				return oldFloor(num);
 			case 2:
-				{
-					return oldCeil(num);
-				}
-				break;
+				return oldCeil(num);
 			case 3:
-				{
-					return oldTrunc(num);
-				}
-				break;
+				return oldTrunc(num);
 			case 4:
-				{
-					return num > 0 ? oldCeil(num) : oldFloor(num);
-				}
-				break;
+				return num > 0 ? oldCeil(num) : oldFloor(num);
 		}
 	}
 
@@ -522,22 +513,16 @@
 			s = period * Math_acsc(amplitude) / Math_TAU;
 		}
 		switch (type) {
-			case 0: {
-				return amplitude * Math_pow(1024, time - 1) * Math.sin(Math_TAU * (s - time + 1) / period);
-			}
-			break;
-			case 1: {
+			case 0:
+			    return amplitude * Math_pow(1024, time - 1) * Math.sin(Math_TAU * (s - time + 1) / period);
+			case 1:
 				return 1 - amplitude * Math_pow(2, -10 * time) * Math.sin(Math_TAU * (s - time) / period);
-			}
-			break;
-			case 2: {
+			case 2: 
 				s = Math.sin(Math_TAU * (s - 2 * time + 1) / period);
 				if (time < 0.5) {
 					return amplitude * Math_pow(2, 20 * time - 11) * s;
 				}
 				return 1 - amplitude * Math_pow(2, 9 - 20 * time) * s;
-			}
-			break;
 		}
 	}
 
@@ -759,7 +744,7 @@
 	function Math_gamma(num, accuracy) {
 		accuracy = _helper0(accuracy, 7);
 		if (num < 0.5) {
-			return Math.PI / (Math.sin(num * Math.PI) * Math_gamma(1 - num));
+			return Math.PI / (Math.sin(num * Math.PI) * Math_gamma(1 - num, accuracy));
 		}
 		num--;
 		let temp = _gamma_1_[0];
@@ -800,6 +785,7 @@
 	 * Calculate factorial of number
 	 *
 	 * @param {number} num - The number to calculate
+     * @param {number=} accuracy
 	 * @return {number}
 	 *
 	 * @example
@@ -809,9 +795,9 @@
 	 * @function factorial
 	 * @memberof Math
 	 **/
-	function Math_factorial(num) {
+	function Math_factorial(num, accuracy) {
 		num++;
-		return num === oldFloor(num) ? _helper9(num - 1) : num < 0 ? Math.PI / (Math.sin(Math.PI * num) * Math_gamma(1 - num)) : Math.exp(Math_lnGamma(num));
+		return num === oldFloor(num) ? _helper9(num - 1) : num < 0 ? Math.PI / (Math.sin(Math.PI * num) * Math_gamma(1 - num, accuracy)) : Math.exp(Math_lnGamma(num));
 	}
 
 	/**
@@ -882,14 +868,10 @@
 		let result = oldPow(base, exponent);
 		if (Number.isNaN(result)) {
 			switch (exponent) {
-				case 0.5: {
+				case 0.5:
 					return Math.sqrt(base);
-				}
-				break;
-				case _helper9_1_: {
+				case _helper9_1_: 
 					return Math.cbrt(base);
-				}
-				break;
 				default: {
 					let tempExponent = 1 / exponent;
 					if (base < 0 && !Number_isEven(tempExponent)) {
@@ -997,7 +979,7 @@
 	 * @param {number} a - The begin of interval
 	 * @param {number} b - The end of interval
 	 * @param {function} func - The function to calculate
-	 * @param {number=} [epsilon=1e-17]
+	 * @param {number=} [epsilon=1e-15]
 	 * @param {number=} [iteration=11]
 	 * @return {number}
 	 *
@@ -1109,15 +1091,9 @@
 		let atX = func(num);
 		switch (type) {
 			case 1:
-				{
 					return _helper23(num, func, places, 1, epsilon);
-				}
-				break;
 			case 2:
-				{
 					return _helper23(num, func, places, 2, epsilon);
-				}
-				break;
 			default:
 				{
 					if (!Number.isNaN(atX)) {
@@ -1303,6 +1279,7 @@
 	 * @param {number} mean - [Mean]{@link https://en.wikipedia.org/wiki/Mean} or [Expected value]{@link https://en.wikipedia.org/wiki/Expected_value}
 	 * @param {number} std - [Standard deviation]{@link https://en.wikipedia.org/wiki/Standard_deviation}
 	 * @param {number} num
+	 * @param {number=} [accuracy=50]
 	 * @return {number}
 	 *
 	 * @example
@@ -1312,8 +1289,8 @@
 	 * @function cdf
 	 * @memberof Math
 	 **/
-	function Math_cdf(mean, std, num) {
-		return Math_erfc((mean - num) / (std * Math.SQRT2)) / 2;
+	function Math_cdf(mean, std, num, accuracy) {
+		return Math_erfc((mean - num) / (std * Math.SQRT2), accuracy) / 2;
 	}
 
 	/**
@@ -2055,20 +2032,11 @@
 		if (num === 0) {
 			switch (type) {
 				case 1:
-					{
-						return 0;
-					}
-					break;
+					return 0;
 				case 2:
-					{
-						return 1;
-					}
-					break;
+					return 1;
 				default:
-					{
-						return 0.5;
-					}
-					break;
+					return 0.5;
 			}
 		}
 		return 0;
@@ -2384,28 +2352,28 @@
 	 *
 	 * Not sure, but definitely useful and may act as same as bounce, wrap,...
 	 *
-	 * @param {number} num1
-	 * @param {number} num2
-	 * @param {number} num3
+	 * @param {number} num
+	 * @param {number} min
+	 * @param {number} max
 	 * @return {number}
 	 *
 	 * @example
 	 * Math.approach(-1, 0, 5);
-	 * //0
+	 * //-1
 	 *
 	 * @function approach
 	 * @memberof Math
 	 **/
-	function Math_approach(num1, num2, num3) {
-		//v,t,d
-		if (num1 < num2) {
-			num1 += num3;
-			if (num1 > num2) return num2;
-		} else if (num1 > num2) {
-			num1 -= num3;
-			if (num1 < num2) return num2;
+	function Math_approach(num, min, max) {
+		//d,v,t
+		if (min < max) {
+			min += num;
+			if (min > max) return max;
+		} else if (min > max) {
+			min -= num;
+			if (min < max) return max;
 		}
-		return num1;
+		return min;
 	}
 
 	/**
@@ -2516,7 +2484,7 @@
 			returnData = [];
 		}
 		_memory_1_[0] = arguments[0];
-		let temp = arguments.length - (typeof arguments[arguments.length - 1] === "object" ? 1 : 0);
+		let temp = arguments.length - (arguments[arguments.length - 1] === returnData ? 1 : 0);
 		for (let r = 1; r < temp; r++) {
 			_helper10(_memory_1_[0], arguments[r]);
 		}
@@ -3613,6 +3581,7 @@
 	 * @param {number} c_y - y position of first point of the second segment
 	 * @param {number} d_x - x position of second point of the second segment
 	 * @param {number} d_y - y position of second point of the second segment
+	 * @param {number=} accuracy - accuracy to compare line vs points
 	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number, onLine1: boolean, onLine2: boolean}} returnData.onLine1 will true if intersection point is on line a_x a_y b_x b_y and otherwise
 	 *
@@ -3623,7 +3592,7 @@
 	 * @function intrLine
 	 * @memberof Geometry
 	 **/
-	function Geometry_intrLine(a_x, a_y, b_x, b_y, c_x, c_y, d_x, d_y, returnData) {
+	function Geometry_intrLine(a_x, a_y, b_x, b_y, c_x, c_y, d_x, d_y, accuracy, returnData) {
 		let denominator, a, b, s1_x, s1_y, s2_x, s2_y, numerator1, numerator2, result = _helper1(returnData, true);
 
 		result.x = null;
@@ -3645,7 +3614,7 @@
 				Number.isNaN(Geometry_slopeLine(s2_x * s1_y, s1_x * a, s1_x * s2_y, s1_y * b)) &&
 				Number.isNaN(Geometry_slopeLine(s1_x * s2_y, s2_y * b, s2_x * s1_y, s2_x * a))
 			) {
-				result.onLine1 = (Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, c_x, c_y) || Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, d_x, d_y));
+				result.onLine1 = (Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, c_x, c_y, accuracy) || Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, d_x, d_y, accuracy));
 				result.onLine2 = result.onLine1;
 			}
 			return result;
@@ -3676,6 +3645,7 @@
 	 * @param {number} o_x - x position of circle center
 	 * @param {number} o_y - y position of circle center
 	 * @param {number} radius - radius of circle center
+	 * @param {number=} accuracy - accuracy to compare line vs points
 	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number, x1: number, y1: number, x2: number, y2: number, onLine: boolean, onLine1: boolean, onLine2: boolean}}
 	 *
@@ -3690,7 +3660,7 @@
 	 * @function intrLineCirc
 	 * @memberof Geometry
 	 **/
-	function Geometry_intrLineCirc(a_x, a_y, b_x, b_y, o_x, o_y, radius, returnData) {
+	function Geometry_intrLineCirc(a_x, a_y, b_x, b_y, o_x, o_y, radius, accuracy, returnData) {
 		//xy is perpendicular intersection
 		let dist1, dist2, d_x, d_y, t, dt;
 
@@ -3716,10 +3686,10 @@
 			dt = Math.sqrt(radius * radius - dist2 * dist2);
 			returnData.x1 = (t - dt) * d_x + a_x;
 			returnData.y1 = (t - dt) * d_y + a_y;
-			returnData.onLine1 = Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, returnData.x1, returnData.y1);
+			returnData.onLine1 = Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, returnData.x1, returnData.y1, accuracy);
 			returnData.x2 = (t + dt) * d_x + a_x;
 			returnData.y2 = (t + dt) * d_y + a_y;
-			returnData.onLine2 = Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, returnData.x2, returnData.y2);
+			returnData.onLine2 = Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, returnData.x2, returnData.y2, accuracy);
 		} else if (dist2 === radius) {
 			//One intersection
 			returnData.onLine = true;
@@ -4828,8 +4798,9 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_colliPoly(points1, points2) {
-		let t1 = Geometry_boundPoly(points1),
-			t2 = Geometry_boundPoly(points2),
+		_helper3();
+		let t1 = Geometry_boundPoly(points1, _memory2_1_),
+			t2 = Geometry_boundPoly(points2, _memory2_2_),
 			i;
 		if (Geometry_colliRect(t1.xMin, t1.yMin, t1.xMax, t1.yMax, t2.xMin, t2.yMin, t2.xMax, t2.yMax)) {
 			let len = points1.length > points2.length ? points1.length : points2.length;
@@ -5022,7 +4993,7 @@
 	 **/
 	function Geometry_triPoly(points, returnData) {
 		returnData = _helper1(returnData, false);
-		let n, i, j, al, i0, i1, i2, ax, ay, bx, by, cx, cy, eF, vi, tempLength, tempVal;
+		let n, i, j, al, i0, i1, i2, a_x, a_y, b_x, b_y, c_x, c_y, eF, vi, tempLength, tempVal;
 		n = points.length >> 1;
 		if (n < 3) {
 			returnData.push.apply(returnData, points);
@@ -5040,22 +5011,22 @@
 			i1 = _memory_2_[(i + 1) % al];
 			i2 = _memory_2_[(i + 2) % al];
 
-			ax = points[2 * i0];
-			ay = points[2 * i0 + 1];
-			bx = points[2 * i1];
-			by = points[2 * i1 + 1];
-			cx = points[2 * i2];
-			cy = points[2 * i2 + 1];
+			a_x = points[2 * i0];
+			a_y = points[2 * i0 + 1];
+			b_x = points[2 * i1];
+			b_y = points[2 * i1 + 1];
+			c_x = points[2 * i2];
+			c_y = points[2 * i2 + 1];
 
 			eF = false;
-			if (Geometry_sideLine(ax, ay, bx, by, cx, cy) >= 0) {
+			if (Geometry_sideLine(a_x, a_y, b_x, b_y, c_x, c_y) >= 0) {
 				eF = true;
 				for (j = 0; j < al; j++) {
 					vi = _memory_2_[j];
 					if (vi == i0 || vi == i1 || vi == i2) {
 						continue;
 					}
-					if (Geometry_colliTriPnt(ax, ay, bx, by, cx, cy, points[2 * vi], points[2 * vi + 1])) {
+					if (Geometry_colliTriPnt(a_x, a_y, b_x, b_y, c_x, c_y, points[2 * vi], points[2 * vi + 1])) {
 						eF = false;
 						break;
 					}
@@ -5541,7 +5512,7 @@
 	 * @memberof Vector
 	 **/
 	function Math_truncVec(x, y, num, returnData) {
-		let scale = num / Math_magVec(x, y);
+		let scale = num / Math_magVec(x, y, false);
 		scale = scale < 1.0 ? scale : 1.0;
 		return Math_scaleVec(x, y, scale, returnData);
 	}
@@ -7493,43 +7464,23 @@
 		}
 		switch (order) {
 			case 1:
-				{
-					return time * time * (3 - 2 * time);
-				}
-				break;
+				return time * time * (3 - 2 * time);
 			case 2:
-				{
-					return oldPow(time, 3) * (time * (time * 6 - 15) + 10);
-				}
-				break;
+				return oldPow(time, 3) * (time * (time * 6 - 15) + 10);
 			case 3:
-				{
-					return oldPow(time, 4) * (35 + time * (-84 + (70 - 20 * time) * time));
-				}
-				break;
+				return oldPow(time, 4) * (35 + time * (-84 + (70 - 20 * time) * time));
 			case 4:
-				{
-					return oldPow(time, 5) * (126 + 5 * time * (-84 + time * (108 + 7 * time * (-9 + 2 * time))));
-				}
-				break;
+				return oldPow(time, 5) * (126 + 5 * time * (-84 + time * (108 + 7 * time * (-9 + 2 * time))));
 			case 5:
-				{
-					return oldPow(time, 6) * (462 + time * (-1980 - 7 * time * (-495 + 2 * time * (220 + 9 * time * (-11 + 2 * time)))));
-				}
-				break;
+				return oldPow(time, 6) * (462 + time * (-1980 - 7 * time * (-495 + 2 * time * (220 + 9 * time * (-11 + 2 * time)))));
 			case 6:
-				{
-					return oldPow(time, 7) * (1716 + 7 * time * (-1287 + 2 * time * (1430 + 3 * time * (-572 + time * (390 + 11 * time * (-13 + 2 * time))))));
-				}
-				break;
+				return oldPow(time, 7) * (1716 + 7 * time * (-1287 + 2 * time * (1430 + 3 * time * (-572 + time * (390 + 11 * time * (-13 + 2 * time))))));
 			default:
-				{
-					let result = 0;
-					for (let n = 0; n <= order; n++) {
-						result += (Math_nCr(-order - 1, n) * Math_nCr(2 * order + 1, order - n) * Math_pow(time, order + n + 1));
-					}
-					return result;
+				let result = 0;
+				for (let n = 0; n <= order; n++) {
+					result += (Math_nCr(-order - 1, n) * Math_nCr(2 * order + 1, order - n) * Math_pow(time, order + n + 1));
 				}
+				return result;
 		}
 	}
 
@@ -7698,7 +7649,7 @@
 	 * @param {number} tension
 	 * @param {number} density - like time
 	 * @param {number[]} points - control points [x1, y1, x2, y2, ...]
-	 * @param {boolean=} loop - `true` is looped
+	 * @param {boolean=} isLoop - `true` is looped
 	 * @param {array=} returnData - Array to put data
 	 * @return {number[]}
 	 *
@@ -7711,13 +7662,13 @@
 	 * @function spline
 	 * @memberof Tween
 	 **/
-	function Tween_spline(continuty, bias, tension, density, points, loop, returnData) {
+	function Tween_spline(continuty, bias, tension, density, points, isLoop, returnData) {
 		_helper2();
 		let tempA, tempB, tempC, tempD, tempX, tempY, tempX2, tempY2, count, iteration, lines;
 		//Control points
 		_memory_2_.push.apply(_memory_2_, points);
 		_memory_2_.unshift.call(_memory_2_, points[points.length - 2], points[points.length - 1]);
-		if (loop) {
+		if (isLoop) {
 			_memory_2_.push.call(_memory_2_, points[0], points[1], points[2], points[3]);
 		} else {
 			_memory_2_.push.call(_memory_2_, points[0], points[1]);
@@ -8661,6 +8612,7 @@
 					break;
 				case "I":
 					temp = Bit;
+					break;
 			}
 			temp[module[i + 1]] = module[i + 2];
 		}
