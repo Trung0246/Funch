@@ -1,11 +1,11 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.17a
+	Funch.js, v0.18a
 
 	MIT License
 
-	Copyright (c) 2017 Trung Tran
+	Copyright (c) 2017-2018 Trung Tran
 
 	Permission is hereby granted, free of charge, to any person obtaining a copy
 	of this software and associated documentation files (the "Software"), to deal
@@ -31,18 +31,24 @@
 	<https://opensource.org/licenses/Apache-2.0>
 	
 	For a copy, see:
-	- numbers.js    (Steve Kaliski, Apache-2.0)      <github.com/numbers/numbers.js/>
-	- mathplus.js   (Peter Robinett, MIT)            <github.com/pr1001/MathPlus/>
-	- xorshift.js   (Andreas Madsen & Emil Bay, MIT) <github.com/AndreasMadsen/xorshift/>
+	- numbers.js    (Steve Kaliski, Apache-2.0)      <github.com/numbers/numbers.js>
+	- mathplus.js   (Peter Robinett, MIT)            <github.com/pr1001/MathPlus>
+	- xorshift.js   (Andreas Madsen & Emil Bay, MIT) <github.com/AndreasMadsen/xorshift>
 	- Geometry.js   (Tan Sia How, MIT)               <github.com/tsh96/Geometry>
-	- polyk.js      (Ivan Kuckir, MIT)               <polyk.ivank.net/>
-	- kiwi.js       (Gamelab, MIT)                   <github.com/gamelab/kiwi.js/>
-	- phaser.js     (Photon Storm Ltd, MIT)          <github.com/photonstorm/phaser/>
-	- jmat.js       (Lode Vandevenne, BSD-3)         <github.com/lvandeve/jmat/>
+	- polyk.js      (Ivan Kuckir, MIT)               <polyk.ivank.net>
+	- kiwi.js       (Gamelab, MIT)                   <github.com/gamelab/kiwi.js>
+	- phaser.js     (Photon Storm Ltd, MIT)          <github.com/photonstorm/phaser>
+	- jmat.js       (Lode Vandevenne, BSD-3)         <github.com/lvandeve/jmat>
 	- game-math     (Nick Pruehs, MIT)               <github.com/npruehs/game-math>
 	- angles.js     (Robert Eisele, MIT)             <github.com/infusion/Angles.js>
 	- uniroot.js    (Borgar Thorsteinsson, MIT)      <gist.github.com/borgar/3317728>
+	- bspline.js    (Thibaut Séguy, MIT)             <github.com/thibauts/b-spline>
 	- StackOverflow (many authors)                   <stackoverflow.com>
+	*/
+
+	/*
+	TODO:
+	- Shape morphing from flubber
 	*/
 
 	//Namespace
@@ -91,13 +97,14 @@
 	_toRad_1_ = Math.PI / 180,
 	_toDeg_1_ = 180 / Math.PI,
 	_triEquil_1_ = Math.sqrt(3) / 2,
-	_epsilon_1_ = 4 / 3 - 1,
 	oldRound = Math.round,
 	oldFloor = Math.floor,
 	oldCeil = Math.ceil,
 	oldTrunc = Math.trunc,
 	oldPow = Math.pow,
 	oldRandom = Math.random,
+
+	//Holding data as a way to prevent creating new objects...
 	_memory_1_ = [],
 	_memory_2_ = [],
 	_memory_3_ = [],
@@ -112,6 +119,10 @@
 			y: 0,
 			flag: false
 		});
+	}
+
+	if (!Number.EPSILON) {
+		Number.EPSILON = 1 - (4 / 3 - 1) * 3;
 	}
 
 	function _helper0(current, type) {
@@ -216,7 +227,7 @@
 	function _helper11(seed) {
 		seed ^= seed >> 12;
 		seed ^= seed << 25;
-		return 2 * (seed ^ seed >> 27)
+		return 2 * (seed ^ seed >> 27);
 	}
 
 	//Xorshift-128
@@ -483,8 +494,8 @@
 		return NaN;
 	}
 
-	function _helper24(time, size, strength) {
-		return strength * time * (0.002 - 0.002 / size) + 1;
+	function _helper24(time, size, strength, scale) {
+		return 1 - (time * (size - 1) * (scale - 1) * strength) / (100 * size);
 	}
 
 	function _helper25(i, curve2a, curve2b, curve2H) {
@@ -599,6 +610,24 @@
 	 * @memberof Math
 	 */
 	let Math_UPC = Math.log(1 + Math.SQRT2) + Math.SQRT2;
+
+	/**
+	 * @constant {number} KAPPA
+	 * 
+	 * [Kappa constant]{@link http://www.whizkidtech.redprince.net/bezier/circle/kappa/}, specific value is `0.5522847498307936`
+	 *
+	 * @memberof Math
+	 */
+	let Math_KAPPA = 4 * (Math.SQRT2 - 1) / 3;
+
+	/**
+	 * @constant {number} PLASTIC
+	 * 
+	 * [Plastic constant]{@link https://en.wikipedia.org/wiki/Plastic_number}, specific value is `1.324717957244746`
+	 *
+	 * @memberof Math
+	 */
+	let Math_PLASTIC = (Math.cbrt(108 + 12 * Math.sqrt(69)) + Math.cbrt(108 - 12 * Math.sqrt(69))) / 6;
 
 	/**
 	 *
@@ -865,19 +894,17 @@
 	 **/
 	function Math_pow(base, exponent) {
 		//antilog ?
+		switch (exponent) {
+			case 0.5:
+				return Math.sqrt(base);
+			case _helper9_1_: 
+				return Math.cbrt(base);
+		}
 		let result = oldPow(base, exponent);
 		if (Number.isNaN(result)) {
-			switch (exponent) {
-				case 0.5:
-					return Math.sqrt(base);
-				case _helper9_1_: 
-					return Math.cbrt(base);
-				default: {
-					let tempExponent = 1 / exponent;
-					if (base < 0 && !Number_isEven(tempExponent)) {
-						return -oldPow(Math.abs(base), exponent);
-					}
-				}
+			let tempExponent = 1 / exponent;
+			if (base < 0 && !Number_isEven(tempExponent)) {
+				return -oldPow(Math.abs(base), exponent);
 			}
 		}
 		return result;
@@ -1863,6 +1890,29 @@
 			return Math_round(num, epsilon);
 		}
 		return num;
+	}
+
+	/**
+	 *
+	 * Nearest increment
+	 *
+	 * @param {number} num
+	 * @param {number} epsilon 
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.near(Math.sin(Math.PI), 0.01);
+	 * //0
+	 *
+	 * @function near
+	 * @memberof Math
+	 **/
+	function Math_near (num, epsilon) {
+		if (!epsilon) {
+			return num;
+		}
+		return epsilon * oldRound(num / epsilon);
+		//oldRound(num * (1 / epsilon)) / (1 / epsilon);
 	}
 
 	/**
@@ -3636,73 +3686,6 @@
 
 	/**
 	 *
-	 * Find intersections of a circle and a line
-	 *
-	 * @param {number} a_x - x position of first point of the segment
-	 * @param {number} a_y - y position of first point of the segment
-	 * @param {number} b_x - x position of second point of the segment
-	 * @param {number} b_y - y position of second point of the segment
-	 * @param {number} o_x - x position of circle center
-	 * @param {number} o_y - y position of circle center
-	 * @param {number} radius - radius of circle center
-	 * @param {number=} accuracy - accuracy to compare line vs points
-	 * @param {object=} returnData - Object to put data
-	 * @return {{x: number, y: number, x1: number, y1: number, x2: number, y2: number, onLine: boolean, onLine1: boolean, onLine2: boolean}}
-	 *
-	 * returnData.onLine will true if perpendicular intersection point is on line a_x a_y b_x b_y.
-	 *
-	 * returnData.onLine1 will true if returnData.x1 and returnData.y1 is on line segment, and so on...
-	 *
-	 * @example
-	 * Geometry.intrLineCirc(-6, -2, -2, -2, 0, 0, 4);
-	 * //{x: 0, y: -2, x1: -3.4641016151377544, y1: -2, x2: 3.4641016151377535, y2: -2, onLine: false, onLine1: true, onLine2: false}
-	 *
-	 * @function intrLineCirc
-	 * @memberof Geometry
-	 **/
-	function Geometry_intrLineCirc(a_x, a_y, b_x, b_y, o_x, o_y, radius, accuracy, returnData) {
-		//xy is perpendicular intersection
-		let dist1, dist2, d_x, d_y, t, dt;
-
-		returnData = _helper1(returnData, true);
-		returnData.x = null;
-		returnData.y = null;
-		returnData.x1 = null;
-		returnData.y1 = null;
-		returnData.x2 = null;
-		returnData.y2 = null;
-		returnData.onLine = false;
-		returnData.onLine1 = false;
-		returnData.onLine2 = false;
-		
-		dist1 = Geometry_distPnt(a_x, a_y, b_x, b_y, true);
-		d_x = (b_x - a_x) / dist1;
-		d_y = (b_y - a_y) / dist1;
-		t = d_x * (o_x - a_x) + d_y * (o_y - a_y);
-		returnData.x = t * d_x + a_x;
-		returnData.y = t * d_y + a_y;
-		dist2 = Geometry_distPnt(returnData.x, returnData.y, o_x, o_y, true);
-		if (dist2 < radius) {
-			dt = Math.sqrt(radius * radius - dist2 * dist2);
-			returnData.x1 = (t - dt) * d_x + a_x;
-			returnData.y1 = (t - dt) * d_y + a_y;
-			returnData.onLine1 = Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, returnData.x1, returnData.y1, accuracy);
-			returnData.x2 = (t + dt) * d_x + a_x;
-			returnData.y2 = (t + dt) * d_y + a_y;
-			returnData.onLine2 = Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, returnData.x2, returnData.y2, accuracy);
-		} else if (dist2 === radius) {
-			//One intersection
-			returnData.onLine = true;
-		} else {
-			//No intersection
-			returnData.x = null;
-			returnData.y = null;
-		}
-		return returnData;
-	}
-
-	/**
-	 *
 	 * Calculate cross product of a line with a point
 	 *
 	 * To check if point is left side of the line, check if returnData > 0
@@ -4025,6 +4008,73 @@
 		returnData[1] = tempP_y + b * temp2;
 		returnData[2] = tempP_x + b * temp1;
 		returnData[3] = tempP_y - b * temp2;
+		return returnData;
+	}
+
+	/**
+	 *
+	 * Find intersections of a circle and a line
+	 *
+	 * @param {number} o_x - x position of circle center
+	 * @param {number} o_y - y position of circle center
+	 * @param {number} radius - radius of circle center
+	 * @param {number} a_x - x position of first point of the segment
+	 * @param {number} a_y - y position of first point of the segment
+	 * @param {number} b_x - x position of second point of the segment
+	 * @param {number} b_y - y position of second point of the segment
+	 * @param {number=} accuracy - accuracy to compare line vs points
+	 * @param {object=} returnData - Object to put data
+	 * @return {{x: number, y: number, x1: number, y1: number, x2: number, y2: number, onLine: boolean, onLine1: boolean, onLine2: boolean}}
+	 *
+	 * returnData.onLine will true if perpendicular intersection point is on line a_x a_y b_x b_y.
+	 *
+	 * returnData.onLine1 will true if returnData.x1 and returnData.y1 is on line segment, and so on...
+	 *
+	 * @example
+	 * Geometry.intrCircLine(0, 0, 4, -6, -2, -2, -2);
+	 * //{x: 0, y: -2, x1: -3.4641016151377544, y1: -2, x2: 3.4641016151377535, y2: -2, onLine: false, onLine1: true, onLine2: false}
+	 *
+	 * @function intrCircLine
+	 * @memberof Geometry
+	 **/
+	function Geometry_intrCircLine(o_x, o_y, radius, a_x, a_y, b_x, b_y, accuracy, returnData) {
+		//xy is perpendicular intersection
+		let dist1, dist2, d_x, d_y, t, dt;
+
+		returnData = _helper1(returnData, true);
+		returnData.x = null;
+		returnData.y = null;
+		returnData.x1 = null;
+		returnData.y1 = null;
+		returnData.x2 = null;
+		returnData.y2 = null;
+		returnData.onLine = false;
+		returnData.onLine1 = false;
+		returnData.onLine2 = false;
+		
+		dist1 = Geometry_distPnt(a_x, a_y, b_x, b_y, true);
+		d_x = (b_x - a_x) / dist1;
+		d_y = (b_y - a_y) / dist1;
+		t = d_x * (o_x - a_x) + d_y * (o_y - a_y);
+		returnData.x = t * d_x + a_x;
+		returnData.y = t * d_y + a_y;
+		dist2 = Geometry_distPnt(returnData.x, returnData.y, o_x, o_y, true);
+		if (dist2 < radius) {
+			dt = Math.sqrt(radius * radius - dist2 * dist2);
+			returnData.x1 = (t - dt) * d_x + a_x;
+			returnData.y1 = (t - dt) * d_y + a_y;
+			returnData.onLine1 = Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, returnData.x1, returnData.y1, accuracy);
+			returnData.x2 = (t + dt) * d_x + a_x;
+			returnData.y2 = (t + dt) * d_y + a_y;
+			returnData.onLine2 = Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, returnData.x2, returnData.y2, accuracy);
+		} else if (dist2 === radius) {
+			//One intersection
+			returnData.onLine = true;
+		} else {
+			//No intersection
+			returnData.x = null;
+			returnData.y = null;
+		}
 		return returnData;
 	}
 
@@ -4596,6 +4646,7 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_randomTri(x_1, y_1, x_2, y_2, x_3, y_3, returnData) {
+		returnData = _helper1(returnData, true);
 		let r1 = Math.sqrt(oldRandom()),
 			r2 = oldRandom(),
 			temp1 = 1 - r1,
@@ -5583,8 +5634,29 @@
 	 **/
 	function Math_crossVec(a_x, a_y, b_x, b_y) {
 		//Heavily related to sine
-		//Also called wedge ? And determinant ?
 		return a_x * b_y - a_y * b_x;
+	}
+
+	/**
+	 *
+	 * Calculate wedge product of two vectors
+	 *
+	 * @param {number} a_x - x position of first vector
+	 * @param {number} a_y - y position of first vector
+	 * @param {number} b_x - x position of second vector
+	 * @param {number} b_y - y position of second vector
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.wedgeVec(5, 0, 5, 5);
+	 * //25
+	 *
+	 * @function wedgeVec
+	 * @memberof Vector
+	 **/
+	function Math_wedgeVec(a_x, a_y, b_x, b_y) {
+		//Cross vs Wedge ?
+		return a_x * b_y + a_y * b_x;
 	}
 
 	/**
@@ -6492,26 +6564,6 @@
 
 	/**
 	 *
-	 * Calculate epsilon of current machine (may equal to Number.EPSILON)
-	 *
-	 * @return {number}
-	 *
-	 * @example
-	 * Number.epsilon();
-	 * //2.220446049250313e-16
-	 *
-	 * @function epsilon
-	 * @memberof Number
-	 **/
-	function Number_epsilon() {
-		if (Number.EPSILON) {
-			return Number.EPSILON;
-		}
-		return Math.abs(1 - _epsilon_1_ * 3);
-	}
-
-	/**
-	 *
 	 * All of functions that related to Tween (see [here]{@link http://easings.net/} for more infos)
 	 *
 	 * @namespace Tween
@@ -7274,6 +7326,7 @@
 	 * @param {number=} [friction=200]
 	 * @param {number=} [size=0]
 	 * @param {number=} [strength=0]
+	 * @param {number=} [scale=0.8]
 	 * @return {number}
 	 *
 	 * @example
@@ -7283,17 +7336,18 @@
 	 * @function spring
 	 * @memberof Tween
 	 **/
-	function Tween_spring(time, frequency, friction, size, strength) {
+	function Tween_spring(time, frequency, friction, size, strength, scale) {
 		frequency = Math.max(1, _helper0(frequency, 300) / 20);
 		friction = Math_pow(20, _helper0(friction, 200) / 100);
 		size = _helper0(size, 0) / 1000;
 		strength = _helper0(strength, 0);
+		scale = _helper0(scale, 0.8);
 
 		let temp1, temp2,
 			time2 = (size - time) / (size - 1);
 		if (time < size) {
-			temp1 = _helper24(time2, size, strength);
-			temp2 = -Math_asec(_helper24(size / (size - 1), size, strength)) / (frequency * size);
+			temp1 = _helper24(time2, size, strength, scale);
+			temp2 = -Math_asec(_helper24(size / (size - 1), size, strength, scale)) / (frequency * size);
 		} else {
 			temp1 = Math_pow(friction / 10, -time2) * (1 - time2);
 			temp2 = 1;
@@ -7579,6 +7633,44 @@
 
 	/**
 	 *
+	 * [RK4 Method]{@link https://en.wikipedia.org/wiki/Runge–Kutta_methods}
+	 *
+	 * @param {number} x - initial position
+	 * @param {number} v - initial velocity
+	 * @param {function} func - acceleration function (x, v, dt)
+	 * @param {number} step - timestep
+	 * @param {number[]=} returnData - Array to put data
+	 * @return {number}
+	 *
+	 * @example
+	 * Tween.rk4(1, 0, function(x, v, dt) {
+	 *   //This is the acceleration function
+	 *   //This particular one models a spring with a 1kg mass
+	 *   var stiffness = 400, damping = 0.25;
+	 *   return -stiffness * x - damping * v;
+	 * });
+	 * //[0.9211998333333333, -7.767233291666667]
+	 *
+	 * @function rk4
+	 * @memberof Tween
+	 **/
+	function Tween_rk4(x, v, func, step, returnData) {
+		returnData = _helper1(returnData, false);
+		let dt2 = step / 2,
+			dt6 = step / 6;
+		let a1 = func(x, v, 0);
+		let v2 = v + a1 * dt2;
+		let a2 = func(x + v * dt2, v2, dt2);
+		let v3 = v + a2 * dt2;
+		let a3 = func(x + v2 * dt2, v3, dt2);
+		let v4 = v + a3 * step;
+		returnData[0] = x + dt6 * (v + 2 * v2 + 2 * v3 + v4);
+		returnData[1] = v + dt6 * (a1 + 2 * a2 + 2 * a3 + func(x + v3 * step, v4, step));
+		return returnData;
+	}
+
+	/**
+	 *
 	 * Customizable tween
 	 *
 	 * @param {number} time
@@ -7625,6 +7717,8 @@
 	 * @function bezier
 	 * @memberof Tween
 	 **/
+
+	//TODO: fix bezier
 	function Tween_bezier(time, points, weight) {
 		let temp1 = 0,
 			temp2 = 0,
@@ -7642,6 +7736,98 @@
 
 	/**
 	 *
+	 * [B-spline]{@link https://en.wikipedia.org/wiki/B-spline} tween using [De Boor's algorithm]{@link https://en.wikipedia.org/wiki/De_Boor%27s_algorithm}
+	 *
+	 * @param {number} time
+	 * @param {number} degree - must be at least 1 and less than or equal to total points - 1
+	 * @param {number} dimension - dimension of control points
+	 * @param {number[]} points - control points [a, b, ...]
+	 * @param {number[]=} knot - must be non-decreasing and equal to total points + degree + 1
+	 * @param {number[]=} weight - weight [a, b, ...], length is total points
+	 * @param {number[]=} returnData - Array to put data
+	 * @return {number|number[]}
+	 *
+	 * @example
+	 * Tween.bspline(0.5, 2, 2, [0, 0, 1, 0, 2, 1]);
+	 * //[1, 0.125]
+	 *
+	 * @function bspline
+	 * @memberof Tween
+	 **/
+	function Tween_bspline(time, degree, dimension, points, knots, weights, returnData) {
+		_helper2();
+		if (!dimension) {
+			return;
+		}
+
+		let i, j, s, l, temp, temp2,
+			length = points.length / dimension;
+
+		if (degree < 1) return;
+		if (degree > length - 1) return;
+
+		if (!weights) {
+			weights = _memory_2_;
+			for (i = 0; i < length; i++) {
+				weights[i] = 1;
+			}
+		}
+
+		temp = length + degree + 1;
+
+		if (!knots) {
+			knots = _memory_3_;
+			for (i = 0; i < temp; i++) {
+				knots[i] = i;
+			}
+		} else {
+			if (knots.length !== temp) return;
+		}
+
+		temp = knots.length - 1 - degree;
+
+		let low = knots[degree],
+			high = knots[temp];
+		time = time * (high - low) + low;
+
+		if (time < low || time > high) return; //throw new Error('out of bounds');
+
+		for (s = degree; s < temp; s++) {
+			if (time >= knots[s] && time <= knots[s + 1]) {
+				break;
+			}
+		}
+
+		for (i = 0; i < length; i++) {
+			for (j = 0; j < dimension; j++) {
+				_memory_1_.push(points[i * dimension + j] * weights[i]);
+			}
+			_memory_1_.push(weights[i]);
+		}
+
+		let alpha;
+		temp = dimension + 1;
+		for (l = 1; l <= degree + 1; l++) {
+			for (i = s; i > s - degree - 1 + l; i--) {
+				alpha = (time - knots[i]) / (knots[i + degree + 1 - l] - knots[i]);
+				for (j = 0; j < temp; j++) {
+					temp2 = i * temp + j;
+					_memory_1_[temp2] = (1 - alpha) * _memory_1_[(i - 1) * temp + j] + alpha * _memory_1_[temp2];
+				}
+			}
+		}
+
+		returnData = _helper1(returnData, false);
+		temp *= s;
+		for (i = 0; i < dimension; i++) {
+			returnData[i] = _memory_1_[temp + i] / _memory_1_[temp + dimension];
+		}
+
+		return returnData;
+	}
+
+	/**
+	 *
 	 * [Cubic Hermite spline]{@link https://en.wikipedia.org/wiki/Cubic_Hermite_spline} tween using [Kochanek–Bartels spline]{@link https://en.wikipedia.org/wiki/Kochanek%E2%80%93Bartels_spline} version
 	 *
 	 * @param {number} continuty
@@ -7649,22 +7835,23 @@
 	 * @param {number} tension
 	 * @param {number} density - like time
 	 * @param {number[]} points - control points [x1, y1, x2, y2, ...]
-	 * @param {boolean=} isLoop - `true` is looped
+	 * @param {boolean=} [isLoop=false] - `true` if looped
+	 * @param {boolean=} [isStart=false] - `true` if include start points
 	 * @param {array=} returnData - Array to put data
 	 * @return {number[]}
 	 *
 	 * Return array of points [x1, y1, x2, y2, ...]
 	 *
 	 * @example
-	 * Tween.spline(1, 1, 1, 0.5, [1, 1, 3, 2], false);
+	 * Tween.hspline(1, 1, 1, 0.5, [1, 1, 3, 2]);
 	 * //[1, 1, 2, 1.5, 3, 2]
 	 *
-	 * @function spline
+	 * @function hspline
 	 * @memberof Tween
 	 **/
-	function Tween_spline(continuty, bias, tension, density, points, isLoop, returnData) {
+	function Tween_hspline(continuty, bias, tension, density, points, isLoop, isStart, returnData) {
 		_helper2();
-		let tempA, tempB, tempC, tempD, tempX, tempY, tempX2, tempY2, count, iteration, lines;
+		let tempA, tempB, tempC, tempD, tempX, tempY, tempX2, tempY2, count, iteration;
 		//Control points
 		_memory_2_.push.apply(_memory_2_, points);
 		_memory_2_.unshift.call(_memory_2_, points[points.length - 2], points[points.length - 1]);
@@ -7687,9 +7874,9 @@
 			count += 2;
 		}
 		count = 2;
-		lines = _helper1(returnData, false);
+		returnData = _helper1(returnData, false);
 		while (count < _memory_2_.length - 4) {
-			lines.push(_memory_2_[count], _memory_2_[count + 1]);
+			returnData.push(_memory_2_[count], _memory_2_[count + 1]);
 			iteration = density;
 			while (iteration < 1.0) {
 				tempX2 = iteration * iteration;
@@ -7701,14 +7888,16 @@
 				tempD = tempY2 * tempX2;
 				tempX = tempA * _memory_2_[count] + tempB * _memory_1_[2 * count - 2] + tempC * _memory_2_[count + 2] + tempD * _memory_1_[2 * count];
 				tempY = tempA * _memory_2_[count + 1] + tempB * _memory_1_[2 * count - 1] + tempC * _memory_2_[count + 3] + tempD * _memory_1_[2 * count + 1];
-				lines.push(tempX, tempY);
+				returnData.push(tempX, tempY);
 				iteration += density;
 			}
 			//Not sure if we could remove this...
-			lines.push(_memory_2_[count + 2], _memory_2_[count + 3]);
+			if (isStart) {
+				returnData.push(_memory_2_[count + 2], _memory_2_[count + 3]);
+			}
 			count += 2;
 		}
-		return lines;
+		return returnData;
 	}
 
 	/**
@@ -8299,6 +8488,8 @@
 		"M", "PHI", Math_PHI,
 		"M", "SILVER", Math_SILVER,
 		"M", "UPC", Math_UPC,
+		"M", "KAPPA", Math_KAPPA,
+		"M", "PLASTIC", Math_PLASTIC,
 
 		"M", "ln", Math_ln,
 		"M", "log", Math_log,
@@ -8344,6 +8535,7 @@
 		"M", "trunc2", Math_trunc2,
 		"M", "away2", Math_away2,
 		"M", "correct", Math_correct,
+		"M", "near", Math_near,
 		"M", "snap", Math_snap,
 		"M", "discrete", Math_discrete,
 		"M", "shear", Math_shear,
@@ -8404,7 +8596,6 @@
 		"G", "distLinePnt", Geometry_distLinePnt,
 		"G", "distLine", Geometry_distLine,
 		"G", "intrLine", Geometry_intrLine,
-		"G", "intrLineCirc", Geometry_intrLineCirc,
 		"G", "sideLine", Geometry_sideLine,
 		"G", "onLine", Geometry_onLine,
 		"G", "colliLinePnt", Geometry_colliLinePnt,
@@ -8416,6 +8607,7 @@
 		"G", "colliCirc", Geometry_colliCirc,
 		"G", "colliCircRect", Geometry_colliCircRect,
 		"G", "intrCirc", Geometry_intrCirc,
+		"G", "intrCircLine", Geometry_intrCircLine,
 		"G", "randomCirc", Geometry_randomCirc,
 		"G", "onElli", Geometry_onElli,
 		"G", "colliElliPnt", Geometry_colliElliPnt,
@@ -8465,6 +8657,7 @@
 		"M", "magVec", Math_magVec,
 		"M", "dotVec", Math_dotVec,
 		"M", "crossVec", Math_crossVec,
+		"M", "wedgeVec", Math_wedgeVec,
 		"M", "projVec", Math_projVec,
 		"M", "rejVec", Math_rejVec,
 		"M", "perVec", Math_perVec,
@@ -8511,7 +8704,6 @@
 		"N", "isMinusZero", Number_isMinusZero,
 		"N", "isEven", Number_isEven,
 		"N", "isNumeric", Number_isNumeric,
-		"N", "epsilon", Number_epsilon,
 		"N", "isPOT", Number_isPOT,
 		"N", "isSameSign", Number_isSameSign,
 
@@ -8562,9 +8754,11 @@
 		"T", "berp", Tween_berp,
 		"T", "envelope", Tween_envelope,
 		"T", "shift", Tween_shift,
+		"T", "rk4", Tween_rk4,
 		"T", "poly", Tween_poly,
 		"T", "bezier", Tween_bezier,
-		"T", "spline", Tween_spline,
+		"T", "bspline", Tween_bspline,
+		"T", "hspline", Tween_hspline,
 		"T", "count", Tween_count,
 
 		"B", "andNot", Boolean_andNot,
