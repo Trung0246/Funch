@@ -1,6 +1,10 @@
 //This file contains junk code that may or may not useful or serve other purposes
 
 /*
+function det (m){ return m[0]*m[4] - m[3]*m[1];}
+https://stackoverflow.com/questions/22571740/
+https://hackernoon.com/the-spring-factory-4c3d988e7129
+http://mtdevans.com/2013/05/fourth-order-runge-kutta-algorithm-in-javascript-with-demo/
 function approach(num, min, max) {
 	//https://www.youtube.com/watch?v=qJq7I2DLGzI
 	var diff = max - min;
