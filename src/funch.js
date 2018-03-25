@@ -46,11 +46,6 @@
 	- StackOverflow (many authors)                   <stackoverflow.com>
 	*/
 
-	/*
-	TODO:
-	- Shape morphing from flubber
-	*/
-
 	//Namespace
 	let Math = global.Math, Number = global.Number,
 
