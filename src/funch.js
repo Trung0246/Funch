@@ -1,7 +1,7 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.18a
+	Funch.js, v0.19a
 
 	MIT License
 
@@ -3842,16 +3842,14 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_colliRayRect(a_x, a_y, b_x, b_y, x_min, y_min, x_max, y_max) {
-		b_x = 1 / b_x;
-		b_y = 1 / b_y;
-		let t1 = (x_min - a_x) * b_x,
-			t2 = (x_max - a_x) * b_x;
+		let t1 = -(a_x - x_min) / b_x,
+			t2 = -(a_x - x_max) / b_x;
 
 		let tmin = Math.min(t1, t2),
 			tmax = Math.max(t1, t2);
 
-		t1 = (y_min - a_y) * b_y;
-		t2 = (y_max - a_y) * b_y;
+		t1 = -(a_y - y_min) / b_y;
+		t2 = -(a_y - y_max) / b_y;
 
 		tmin = Math.max(tmin, Math.min(t1, t2));
 		tmax = Math.min(tmax, Math.max(t1, t2));
@@ -4200,25 +4198,19 @@
 			e = -radius1_1 * radius1_2 * tempAngle3_2,
 			f = radius1_1 * radius2_2 * tempAngle3_1,
 			r = radius1_1 * radius2_1;
-		let aa = a * a,
-			bb = b * b,
-			dd = d * d,
-			ee = e * e,
-			rr = r * r;
-		let ac4 = 4 * a * c,
-			ef4 = 4 * e * f,
-			bc4 = 4 * b * c,
-			df4 = 4 * d * f,
-			ab2 = 2 * a * b,
-			de2 = 2 * d * e;
+		let rr = r * r;
+		let ab = a + b,
+			de = d + e,
+			ab_ = a - b,
+			de_ = d - e;
 		let result = _helper1(returnData, false),
 			l, t2, t2_1, t2_2;
 		l = _helper20(
-			aa + ab2 + bb + dd + de2 + ee - rr,
-			ac4 + bc4 + df4 + ef4,
-			2 * aa - 2 * bb + 4 * c * c + 2 * dd - 2 * ee + 4 * f * f - 2 * rr,
-			ac4 - bc4 + df4 - ef4,
-			aa - ab2 + bb + dd - de2 + ee - rr
+			ab * ab + (de - r) * (de + r),
+			4 * (c * ab + f * de),
+			2 * (a * a - b * b + 2 * c * c + d * d - e * e + 2 * f * f - rr),
+			4 * (c * ab_ + f * de_),
+			ab_ * ab_ + de_ * de_ - rr
 		);
 		for (let n = 0; n < l; ++n) {
 			t2 = 2 * Math.atan(_memory_1_[n]);
@@ -4261,13 +4253,11 @@
 			x2_ = radius2 * ((-x + b_x) * angle + (-y + b_y) * c2),
 			y2_ = radius1 * ((-y + b_y) * angle + (x - b_x) * c2),
 			r = radius1 * radius2;
-		let x1_x1_ = x1_ * x1_,
-			x1_x2_ = x1_ * x2_,
-			y1_y1_ = y1_ * y1_,
-			y1_y2_ = y1_ * y2_;
-		let tempA = x1_x1_ - 2 * x1_x2_ + x2_ * x2_ + y1_y1_ - 2 * y1_y2_ + y2_ * y2_,
-			tempB = -2 * x1_x1_ + 2 * x1_x2_ - 2 * y1_y1_ + 2 * y1_y2_,
-			tempC = -r * r + x1_x1_ + y1_y1_;
+		let x1_x2_ = x1_ - x2_,
+			y1_y2_ = y1_ - y2_;
+		let tempA = x1_x2_ * x1_x2_ + y1_y2_ * y1_y2_,
+			tempB = -2 * (x1_ * x1_x2_ + y1_* y1_y2_),
+			tempC = -r * r + x1_ * x1_ + y1_ * y1_;
 		let D = tempB * tempB - 4 * tempA * tempC,
 			t, result = _helper1(returnData, false);
 		if (D === 0) {
@@ -4365,8 +4355,7 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_distElliPnt(radius1, radius2, angle) {
-		let temp = 1 / Math.sqrt(oldPow(Math.sin(angle) / radius2, 2) + oldPow(Math.cos(angle) / radius1, 2));
-		return Number.isFinite(temp) ? temp : 0;
+		return 1 / Math.sqrt(oldPow(Math.sin(angle) / radius2, 2) + oldPow(Math.cos(angle) / radius1, 2));
 	}
 
 	//Triangle
@@ -4588,13 +4577,13 @@
 
 		if ((s < 0) !== (t < 0)) return false;
 
-		let area = -y_2 * x_3 + y_1 * (x_3 - x_2) + x_1 * (y_2 - y_3) + x_2 * y_3;
-		if (area < 0) {
+		let area = Geometry.areaTri(x_1, y_1, x_2, y_2, x_3, y_3, true);
+		if (area > 0) {
 			s *= -1;
 			t *= -1;
 			area *= -1;
 		}
-		return s > 0 && t > 0 && (s + t) <= area;
+		return s > 0 && t > 0 && (s + t) >= area;
 	}
 
 	/**
@@ -4607,6 +4596,7 @@
 	 * @param {number} y_2 - y position of the second vertex
 	 * @param {number} x_3 - x position of the third vertex
 	 * @param {number} y_3 - y position of the third vertex
+	 * @param {boolean=} [accurate=false] - `true` if not accurate
 	 * @return {number}
 	 *
 	 * @example
@@ -4616,8 +4606,12 @@
 	 * @function areaTri
 	 * @memberof Geometry
 	 **/
-	function Geometry_areaTri(x_1, y_1, x_2, y_2, x_3, y_3) {
-		return Math.abs(((x_3 - x_1) * (y_2 - y_1) - (x_2 - x_1) * (y_3 - y_1)) / 2);
+	function Geometry_areaTri(x_1, y_1, x_2, y_2, x_3, y_3, accurate) {
+		let temp = (x_3 - x_1) * (y_2 - y_1) - (x_2 - x_1) * (y_3 - y_1);
+		if (!accurate) {
+			return Math.abs(temp / 2)
+		}
+		return temp;
 	}
 
 	/**
@@ -4786,8 +4780,7 @@
 	function Geometry_colliPolyPnt(points, x, y) {
 		let inside = false,
 			ix, iy, jx, jy;
-		for (let i = -2, j = points.length - 2;
-			(i += 2) < points.length; j = i) {
+		for (let i = -2, j = points.length - 2; (i += 2) < points.length; j = i) {
 			ix = points[i];
 			iy = points[i + 1];
 			jx = points[j];
@@ -4878,7 +4871,7 @@
 	 **/
 	function Geometry_isSimplePoly(points) {
 		_helper3();
-		let n = points.length >> 1;
+		let n = points.length / 2;//>> 1;
 		if (n < 4) {
 			return true;
 		}
@@ -4890,7 +4883,7 @@
 		for (let i = 0; i < n; i++) {
 			a1_x = points[2 * i];
 			a1_y = points[2 * i + 1];
-			if (i == n - 1) {
+			if (i === n - 1) {
 				a2_x = points[0];
 				a2_y = points[1];
 			} else {
@@ -4905,7 +4898,7 @@
 
 				b1_x = points[2 * j];
 				b1_y = points[2 * j + 1];
-				if (j == n - 1) {
+				if (j === n - 1) {
 					b2_x = points[0];
 					b2_y = points[1];
 				} else {
@@ -4950,39 +4943,6 @@
 			}
 		}
 		return false;
-	}
-
-	/**
-	 *
-	 * Check if a polygon is clockwise (point location sequence)
-	 *
-	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
-	 * @return {boolean}
-	 *
-	 * @example
-	 * Geometry.isClockWisePoly([0, 0, 50, 0, 100, 50, 50, 100, 0, 100]);
-	 * //true
-	 *
-	 * @function isClockWisePoly
-	 * @memberof Geometry
-	 **/
-	function Geometry_isClockWisePoly(points) {
-		let pdir = 0,
-			s = 0,
-			fdir, n, dir;
-		for (let i = 0; i < points.length; i += 2) {
-			n = (i + 2) % points.length;
-			dir = Math.atan2(points[n + 1] - points[i + 1], points[n] - points[i]);
-			if (i === 0) {
-				fdir = dir;
-			} else {
-				dir -= fdir;
-				s += Geometry_normRad(dir - pdir);
-				pdir = dir;
-			}
-		}
-		s += Geometry_normRad(-pdir);
-		return s >= 0;
 	}
 
 	/**
@@ -5040,7 +5000,7 @@
 	function Geometry_triPoly(points, returnData) {
 		returnData = _helper1(returnData, false);
 		let n, i, j, al, i0, i1, i2, a_x, a_y, b_x, b_y, c_x, c_y, eF, vi, tempLength, tempVal;
-		n = points.length >> 1;
+		n = points.length / 2;//>> 1;
 		if (n < 3) {
 			returnData.push.apply(returnData, points);
 			return returnData;
@@ -5069,7 +5029,7 @@
 				eF = true;
 				for (j = 0; j < al; j++) {
 					vi = _memory_2_[j];
-					if (vi == i0 || vi == i1 || vi == i2) {
+					if (vi === i0 || vi === i1 || vi === i2) {
 						continue;
 					}
 					if (Geometry_colliTriPnt(a_x, a_y, b_x, b_y, c_x, c_y, points[2 * vi], points[2 * vi + 1])) {
@@ -5104,6 +5064,8 @@
 	 *
 	 * Calculate area of a polygon (convex, concave, complex)
 	 *
+	 * You can check if polygon is clockwise by check if result > 0
+	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
 	 * @return {number}
 	 *
@@ -5115,21 +5077,13 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_areaPoly(points) {
-		let area = 0,
-			len = points.length,
-			nexti;
-		for (let i = 0; i < len; i += 2) {
-			if (len <= 0) {
-				nexti = 0;
-			} else {
-				nexti = (i + 2) % len;
-				if (nexti < 0) {
-					nexti += len;
-				}
-			}
-			area += points[i] * points[nexti + 1] - points[i + 1] * points[nexti];
+		if (points.length < 6) return 0;
+		let length = points.length - 2, sum = 0;
+		for (let i = 0; i < length; i += 2) {
+			sum += (points[i + 2] - points[i]) * (points[i + 1] + points[i + 3]);
 		}
-		return Math.abs(area / 2);
+		sum += (points[0] - points[length]) * (points[length + 1] + points[1]);
+		return sum / 2;
 	}
 
 	/**
@@ -5149,8 +5103,8 @@
 	 **/
 	function Geometry_centroidPoly(points, returnData) {
 		returnData = _helper1(returnData, true);
-		returnData.x = 0.0;
-		returnData.y = 0.0;
+		returnData.x = 0;
+		returnData.y = 0;
 		let	x1, x2, y1, y2, f, area;
 		for (let i = 0; i < points.length - 2; i += 2) {
 			x1 = points[i];
@@ -5169,9 +5123,9 @@
 		f = x1 * y2 - x2 * y1;
 		returnData.x += (x1 + x2) * f;
 		returnData.y += (y1 + y2) * f;
-		area = Geometry_areaPoly(points);
-		returnData.x /= 6.0 * area;
-		returnData.y /= 6.0 * area;
+		area = Geometry_areaPoly(points) * 6;
+		returnData.x /= area;
+		returnData.y /= area;
 		return returnData;
 	}
 
@@ -5195,7 +5149,7 @@
 		let i;
 
 		points.sort(function(a, b) {
-			return a[0] == b[0] ? a[1] - b[1] : a[0] - b[0];
+			return a[0] === b[0] ? a[1] - b[1] : a[0] - b[0];
 		});
 		for (i = 0; i < points.length; i++) {
 			while (_memory_1_.length >= 2 && Geometry_sideLine(_memory_1_[_memory_1_.length - 2][0], _memory_1_[_memory_1_.length - 2][1], _memory_1_[_memory_1_.length - 1][0], _memory_1_[_memory_1_.length - 1][1], points[i][0], points[i][1]) <= 0) {
@@ -6460,7 +6414,7 @@
 	 **/
 	function Number_isPrime(num) {
 		if (Number.isNaN(num) || !Number.isFinite(num) || num < 2) return false;
-		if (num == _helper14(num)) return true;
+		if (num === _helper14(num)) return true;
 		return false;
 	}
 
@@ -6497,7 +6451,7 @@
 	 * @memberof Number
 	 **/
 	function Number_isEven(num) {
-		return Number.isInteger(num) && (num & 1) === 0; //!(num % 2);
+		return Number.isInteger(num) && (num & 1) === 0; //!(num % 2)
 	}
 
 	/**
@@ -8629,7 +8583,6 @@
 		"G", "colliPoly", Geometry_colliPoly,
 		"G", "isSimplePoly", Geometry_isSimplePoly,
 		"G", "isConvexPoly", Geometry_isConvexPoly,
-		"G", "isClockWisePoly", Geometry_isClockWisePoly,
 		"G", "boundPoly", Geometry_boundPoly,
 		"G", "triPoly", Geometry_triPoly,
 		//["G", "slicePoly", Geometry_slicePoly],
