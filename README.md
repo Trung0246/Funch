@@ -4,7 +4,7 @@
 
 An all-in-one library that dedicated to provide more functions mostly focus on game development (and dumb things).
 
-This library is mostly used for personal stuff, and I updated this library very frequently. I constantly added many functions and deleted many things without warning during Alpha version. Basically this library is a collections of functions.
+This library is mostly used for my personal stuffs, and I updated this library very frequently. I constantly added many functions and deleted many things without warning during Alpha version. Basically this library is a collections of functions.
 
 #### TODO:
 - Test coverage? (Too lazy... There are too many functions...)
