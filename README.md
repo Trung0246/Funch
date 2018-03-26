@@ -2,7 +2,13 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/426b8adb46464fcfb618dc22d4c7d73d)](https://www.codacy.com/app/Trung0246/Funch?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Trung0246/Funch&amp;utm_campaign=Badge_Grade)
 ![Shields Badge](https://img.shields.io/badge/license-MIT-blue.svg)
 
-An all-in-one library that dedicated to improve Javascript default functions and provide more functions mostly focus on game development.
+An all-in-one library that dedicated to provide more functions mostly focus on game development (and dumb things).
+
+This library is mostly used for personal stuff, and I updated this library very frequently. I constantly added many functions and deleted many things without warning during Alpha version. Basically this library is a collections of functions.
+
+#### TODO:
+- Test coverage? (Too lazy... There are too many functions...)
+- A website to introduce this library and other things like geting started, documentation, example,...
 
 Version 0.19a (Alpha version)
 
