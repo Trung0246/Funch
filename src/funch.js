@@ -7472,7 +7472,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_scale(time, start, end) {
-		return (start * (Math.pow(end / start, time) - 1)) / (end - start);
+		return (start * (Math_pow(end / start, time) - 1)) / (end - start);
 	}
 
 	/**
@@ -7606,7 +7606,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_shift(time, left, right) {
-		return Math.pow(left, -left) * Math.pow(right, -right) * Math.pow(left + right, left + right) * Math.pow(1 - time, left) * Math.pow(time, right);
+		return Math_pow(left, -left) * Math_pow(right, -right) * Math_pow(left + right, left + right) * Math_pow(1 - time, left) * Math_pow(time, right);
 	}
 
 	/**
