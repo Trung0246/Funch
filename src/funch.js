@@ -1,7 +1,7 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.19a
+	Funch.js, v0.20a
 
 	MIT License
 
@@ -78,15 +78,16 @@
 		1 / 2.75, 2 / 2.75, 1.5 / 2.75,
 		2.5 / 2.75, 2.25 / 2.75, 2.625 / 2.75,
 	],
-	_noise_1_ = [
+	_snoise_1_ = [
 		[1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
 		[1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
 		[0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]
 	],
-	_helper7_1_ = Math.pow(2, 32),
-	_noise_4_ = 0.5 * (Math.sqrt(3) - 1),
-	_noise_5_ = (3 - Math.sqrt(3)) / 6,
-	_noise_6_ = 1 / 6,
+	_helper7_1_ = Math.pow(2, 32) - 1,
+	_snoise_4_ = 0.5 * (Math.sqrt(3) - 1),
+	_snoise_5_ = (3 - Math.sqrt(3)) / 6,
+	_snoise_6_ = 1 / 6,
+	_vnoise_1_ = _helper7_1_ / 2 - 0.5,
 	_helper9_1_ = 1 / 3,
 	_helper10_1_ = 80 * Math.sqrt(10),
 	_toRad_1_ = Math.PI / 180,
@@ -520,7 +521,7 @@
 		}
 		switch (type) {
 			case 0:
-			    return amplitude * Math_pow(1024, time - 1) * Math.sin(Math_TAU * (s - time + 1) / period);
+				return amplitude * Math_pow(1024, time - 1) * Math.sin(Math_TAU * (s - time + 1) / period);
 			case 1:
 				return 1 - amplitude * Math_pow(2, -10 * time) * Math.sin(Math_TAU * (s - time) / period);
 			case 2: 
@@ -2741,6 +2742,30 @@
 
 	/**
 	 *
+	 * Value noise
+	 *
+	 * @param {number} seed
+	 * @param {number} x
+	 * @param {number} y
+	 * @param {number} z
+	 *
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.vnoise(100, 0, 0, 0);
+	 * //0.42069244404355643
+	 *
+	 * @function vnoise
+	 * @memberof Math
+	 **/
+	function Math_vnoise(seed, x, y, z) {		
+		let n = (1619 * x + 31337 * y + 6971 * z + 1013 * seed) & 0x7fffffff;
+		n = (n >> 13) ^ n;
+		return ((n * (n * n * 60493 + 19990303) + 1376312589) & 0x7fffffff) / _vnoise_1_;
+	}
+
+	/**
+	 *
 	 * Simplex noise
 	 *
 	 * @param {number[]} seed - array of numbers, must have length = 512, every number must be between 0 <= x <= 11,...
@@ -2755,19 +2780,19 @@
 	 * for (let i = 0; i < 512; i ++) {
 	 *   arraySeed.push(11);
 	 * }
-	 * Math.noise(arraySeed, 100, 100);
+	 * Math.snoise(arraySeed, 100, 100);
 	 * //-0.4099981169018467
 	 *
-	 * @function noise
+	 * @function snoise
 	 * @memberof Math
 	 **/
-	let Math_noise = (function() {
+	let Math_snoise = (function() {
 		let tempI, tempI2, tempI3, tempJ, tempJ2, tempJ3, tempK, tempK2, tempK3, tempX, tempY, tempZ, tempX2, tempY2, tempZ2, tempG, tempM, sum;
 		function _helperNoise(seed, i, j, k, a) {
 			if (a) {
-				tempX2 = tempX - i + a * _noise_6_;
-				tempY2 = tempY - j + a * _noise_6_;
-				tempZ2 = tempZ - k + a * _noise_6_;
+				tempX2 = tempX - i + a * _snoise_6_;
+				tempY2 = tempY - j + a * _snoise_6_;
+				tempZ2 = tempZ - k + a * _snoise_6_;
 			} else {
 				tempX2 = tempX;
 				tempY2 = tempY;
@@ -2779,8 +2804,8 @@
 		}
 		function _helperNoise2(seed, i, j, a) {
 			if (a) {
-				tempX2 = tempX - i + a * _noise_5_;
-				tempY2 = tempY - j + a * _noise_5_;
+				tempX2 = tempX - i + a * _snoise_5_;
+				tempY2 = tempY - j + a * _snoise_5_;
 			} else {
 				tempX2 = tempX;
 				tempY2 = tempY;
@@ -2792,7 +2817,7 @@
 		function _helperNoise3() {
 			if (tempM >= 0) {
 				tempM *= tempM;
-				sum += tempM * tempM * Math_dotVec(_noise_1_[tempG][0], _noise_1_[tempG][1], tempX2, tempY2);
+				sum += tempM * tempM * Math_dotVec(_snoise_1_[tempG][0], _snoise_1_[tempG][1], tempX2, tempY2);
 			}
 		}
 		return function(seed, x, y, z) {
@@ -2802,7 +2827,7 @@
 				tempI = oldFloor(x + tempM);
 				tempJ = oldFloor(y + tempM);
 				tempK = oldFloor(z + tempM);
-				tempM = (tempI + tempJ + tempK) * _noise_6_;
+				tempM = (tempI + tempJ + tempK) * _snoise_6_;
 				tempX = x - (tempI - tempM);
 				tempY = y - (tempJ - tempM);
 				tempZ = z - (tempK - tempM);
@@ -2862,10 +2887,10 @@
 				_helperNoise(seed, 1, 1, 1, 3);
 				return 32.0 * sum;
 			}
-			tempI2 = (x + y) * _noise_4_;
+			tempI2 = (x + y) * _snoise_4_;
 			tempI = oldFloor(x + tempI2);
 			tempJ = oldFloor(y + tempI2);
-			tempJ2 = (tempI + tempJ) * _noise_5_;
+			tempJ2 = (tempI + tempJ) * _snoise_5_;
 			tempX = x - (tempI - tempJ2);
 			tempY = y - (tempJ - tempJ2);
 			if (tempX > tempY) {
@@ -5067,6 +5092,7 @@
 	 * You can check if polygon is clockwise by check if result > 0
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
+	 * @param {boolean=} [accurate=false] - `true` if not accurate
 	 * @return {number}
 	 *
 	 * @example
@@ -5076,14 +5102,17 @@
 	 * @function areaPoly
 	 * @memberof Geometry
 	 **/
-	function Geometry_areaPoly(points) {
+	function Geometry_areaPoly(points, accurate) {
 		if (points.length < 6) return 0;
 		let length = points.length - 2, sum = 0;
 		for (let i = 0; i < length; i += 2) {
 			sum += (points[i + 2] - points[i]) * (points[i + 1] + points[i + 3]);
 		}
 		sum += (points[0] - points[length]) * (points[length + 1] + points[1]);
-		return sum / 2;
+		if (!accurate) {
+			return Math.abs(sum / 2);
+		}
+		return sum;
 	}
 
 	/**
@@ -5123,7 +5152,7 @@
 		f = x1 * y2 - x2 * y1;
 		returnData.x += (x1 + x2) * f;
 		returnData.y += (y1 + y2) * f;
-		area = Geometry_areaPoly(points) * 6;
+		area = -Geometry_areaPoly(points, true) * 3;
 		returnData.x /= area;
 		returnData.y /= area;
 		return returnData;
@@ -7582,6 +7611,47 @@
 
 	/**
 	 *
+	 * Reverse
+	 *
+	 * @param {number} time
+	 * @param {function} func (x)
+	 * @return {number}
+	 *
+	 * @example
+	 * Tween.reverse(0.25, Tween.inQuad);
+	 * //0.4375
+	 *
+	 * @function reverse
+	 * @memberof Tween
+	 **/
+	function Tween_reverse(time, func) {
+		return 1 - func(1 - time);
+	}
+
+	/**
+	 *
+	 * Mirror
+	 *
+	 * @param {number} time
+	 * @param {function} func (x)
+	 * @return {number}
+	 *
+	 * @example
+	 * Tween.mirror(0.25, Tween.inQuad);
+	 * //0.125
+	 *
+	 * @function mirror
+	 * @memberof Tween
+	 **/
+	function Tween_mirror(time, func) {
+		if (time <= 0.5) {
+			return func(2 * time) / 2;
+		}
+		return (2 - func(2 * (1 - time))) / 2;
+	}
+
+	/**
+	 *
 	 * [RK4 Method]{@link https://en.wikipedia.org/wiki/Runge–Kutta_methods}
 	 *
 	 * @param {number} x - initial position
@@ -7616,6 +7686,104 @@
 		returnData[0] = x + dt6 * (v + 2 * v2 + 2 * v3 + v4);
 		returnData[1] = v + dt6 * (a1 + 2 * a2 + 2 * a3 + func(x + v3 * step, v4, step));
 		return returnData;
+	}
+
+	/**
+	 *
+	 * [Wave equation]{@link https://en.wikipedia.org/wiki/Wave_equation}
+	 *
+	 * @param {number} frequency 
+	 * @param {number} dampen
+	 * @param {number} size - size
+	 * @param {number[]} data - array of number (if first call then all must be 0), length must be 3 * size * size if 2D, else size
+	 * @param {number} value - update value
+	 * @param {number} count - put increment++ here if 1D, else x position when 2D
+	 * @param {number} [count2=undefined] - y position when 2D
+	 * @param {number=} [gain=100] - gain
+	 * @param {number=} [max=10] - max value when 2D
+	 * @return {number}
+	 *
+	 * To get value for 1D: data[i + return], 2D: data[x * size + y]
+	 *
+	 * @example
+	 * let data = Array(100).fill(0);
+	 * Tween.wave(1, 1, 100, data, 1, 0);
+	 * //0
+	 * //data: [1, 2, 0, 0, 1, 0, 0, 0, 0, ...]
+	 *
+	 * @function wave
+	 * @memberof Tween
+	 **/
+	function Tween_wave(frequency, dampen, size, data, value, count, count2, gain, max) {
+		let i, j;
+		if (count2) {
+			max = _helper0(max, 10);
+			if (value) {
+				gain = _helper0(gain, 100);
+				for (i = 1; i < size - 1; i++) {
+					for (j = 1; j < size - 1; j++) {
+						data[i * tempSize + j] += gain * Math.exp(-value * (i - count) * (i - count)) * Math.exp(-value * (j - count2) * (j - count2));
+					}
+				}
+			}
+
+			let tempCount, tempCount2,
+				temp1 = 1,
+				temp2 = size - 2,
+				tempSize = size * size;
+			for (i = temp1; i < temp2; i++) {
+				tempCount = i * size;
+				for (j = temp1; j < temp2; j++) {
+					tempCount2 = tempCount + j;
+					data[2 * tempSize + tempCount2] = (
+						2 * data[2 * tempSize + tempCount2] -
+						data[tempSize + tempCount2]) * dampen +
+						frequency * (
+							data[(i - 1) * size + j] +
+							data[(i + 1) * size + j] +
+							data[tempCount2 - 1] +
+							data[tempCount2 + 1] -
+							4 * data[tempCount2]
+						);
+				}
+			}
+			for (i = temp1; i < temp2; i++) {
+				tempCount = i * size;
+				for (j = temp1; j < temp2; j++) {
+					data[tempSize + tempCount + j] = data[tempCount + j];
+				}
+			}
+			for (i = temp1; i < temp2; i++) {
+				tempCount = i * size;
+				for (j = temp1; j < temp2; j++) {
+					tempCount2 = tempCount + j;
+					data[tempCount2] = data[2 * tempSize + tempCount2];
+					max = Math.max(Math.abs(data[tempCount2]), max);
+				}
+			}
+
+			return 0;
+		}
+		let now, next, previous, dhdx,
+			length = size / 3;
+		//frequency = _helper0(frequency, 0.1);
+		//dampen = _helper0(dampen, 0.97); //0.995
+		now = count % 3,
+		next = (count + 1) % 3,
+		previous = (count + 2) % 3;
+
+		data[now] += value;
+
+		for (i = 0; i < length; i += 3) {
+			dhdx = 0;
+			if (i !== 0 && i !== length - 3) {
+				dhdx = data[i - 3 + now] + data[i + 3 + now] - 2 * data[i + now];
+			}
+			data[i + next] = 2 * data[i + now] + frequency * dhdx - data[i + previous];
+			data[i + next] *= dampen;
+		}
+
+		return now;
 	}
 
 	/**
@@ -8516,7 +8684,8 @@
 		"M", "random", Math_random,
 		"M", "randomTri", Math_randomTri,
 		"M", "randomCirc", Math_randomCirc,
-		"M", "noise", Math_noise,
+		"M", "vnoise", Math_vnoise,
+		"M", "snoise", Math_snoise,
 		"M", "worley", Math_worley,
 
 		"G", "normRad", Geometry_normRad,
@@ -8702,7 +8871,10 @@
 		"T", "berp", Tween_berp,
 		"T", "envelope", Tween_envelope,
 		"T", "shift", Tween_shift,
+		"T", "reverse", Tween_reverse,
+		"T", "mirror", Tween_mirror,
 		"T", "rk4", Tween_rk4,
+		"T", "wave", Tween_wave,
 		"T", "poly", Tween_poly,
 		"T", "bezier", Tween_bezier,
 		"T", "bspline", Tween_bspline,
