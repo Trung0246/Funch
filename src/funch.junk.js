@@ -1,6 +1,61 @@
 //This file contains junk code that may or may not useful or serve other purposes
 
 /*
+/*
+- Shape morphing (abandoned)
+- remove isClockWisePoly ?
+- improving areaPoly ? (https://stackoverflow.com/questions/14505565) (http://polyk.ivank.net/polyk.js)
+- Add helper functions to Math.noise
+***
+
+function Math_frac(num) {
+	return (num + Math.sqrt(num * num + 4)) / 2;
+}
+
+//https://stackoverflow.com/questions/29022438/ (16 is safe iterations)
+//https://stackoverflow.com/questions/13932704/
+//https://math.stackexchange.com/questions/116369/
+/**
+ * Return true if q is between p and r(inclusive)
+ *
+ * @param {Number} px
+ * @param {Number} py
+ * @param {Number} qx
+ * @param {Number} qy
+ * @param {Number} rx
+ * @param {Number} ry
+ * @return {Boolean}
+ ***
+function $within(px, py, qx, qy, rx, ry) {
+    return ((px <= qx && qx <= rx) || (rx <= qx && qx <= px)) &&
+          ((py <= qy && qy <= ry) || (ry <= qy && qy <= py));
+}
+
+return Math.min(Math.max(val, min), max);
+
+function Tween_reverse(func, time) {
+	let _len = arguments.length, data;
+	for (data = Array(_len > 2 ? _len - 2 : 0), _key = 2; _key < _len; _key++) {
+		data[_key - 2] = arguments[_key];
+	}
+
+	return 1 - func.bind(this, 1 - time).apply(this, data);
+	/*if (time <= 0.5) {
+		return func.bind(this, 2 * time).apply(this, data) / 2;
+	}
+	return (2 - func.bind(this, 2 * (1 - time)).apply(this, data)) / 2;***
+}
+
+function Tween_inOut(func, time, ...data) {
+
+	if (time <= 0.5) {
+		return func.bind(this, 2 * time).apply(this, data) / 2;
+	}
+	return (2 - func.bind(this, 2 * (1 - time)).apply(this, data)) / 2;
+}
+
+https://github.com/bpostlethwaite/pde-engine/blob/master/index.js
+
 function det (m){ return m[0]*m[4] - m[3]*m[1];}
 https://stackoverflow.com/questions/22571740/
 https://hackernoon.com/the-spring-factory-4c3d988e7129
