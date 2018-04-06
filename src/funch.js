@@ -1,7 +1,7 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.20a
+	Funch.js, v0.21a
 
 	MIT License
 
@@ -139,9 +139,15 @@
 	}
 
 	function _helper2() {
-		_memory_1_.length = 0;
-		_memory_2_.length = 0;
-		_memory_3_.length = 0;
+		if (_memory_1_.length > 0) {
+			_memory_1_.length = 0;
+		}
+		if (_memory_2_.length > 0) {
+			_memory_2_.length = 0;
+		}
+		if (_memory_3_.length > 0) {
+			_memory_3_.length = 0;
+		}
 	}
 
 	function _helper3() {
@@ -545,7 +551,7 @@
 	}
 
 	/**
-	 * @constant {number} HALFPI
+	 * @constant {number} HALF_PI
 	 * 
 	 * Equal to half of `Math.PI`, specific value is `1.5707963267948966`
 	 *
@@ -563,7 +569,7 @@
 	let Math_TAU = Math.PI * 2;
 
 	/**
-	 * @constant {number} SQRTPI
+	 * @constant {number} SQRT_PI
 	 * 
 	 * Square root of `Math.PI`, specific value is `1.7724538509055159`
 	 *
@@ -572,7 +578,7 @@
 	let Math_SQRT_PI = Math.sqrt(Math.PI);
 
 	/**
-	 * @constant {number} SQRTTAU
+	 * @constant {number} SQRT_TAU
 	 * 
 	 * Square root of `Math_TAU`, specific value is `2.5066282746310002`
 	 *
@@ -590,13 +596,13 @@
 	let Math_PHI = (1 + Math.sqrt(5)) / 2;
 
 	/**
-	 * @constant {number} SILVER
+	 * @constant {number} EM
 	 * 
-	 * [Silver ratio]{@link https://en.wikipedia.org/wiki/Silver_ratio}, specific value is `2.414213562373095`
+	 * [Euler–Mascheroni constant]{@link https://en.wikipedia.org/wiki/Euler–Mascheroni_constant}, specific value is `0.5772156649015329`
 	 *
 	 * @memberof Math
 	 */
-	let Math_SILVER = 1 + Math.SQRT2;
+	let Math_EM = 0.5772156649015329;
 
 	/**
 	 * @constant {number} UPC
@@ -608,15 +614,6 @@
 	let Math_UPC = Math.log(1 + Math.SQRT2) + Math.SQRT2;
 
 	/**
-	 * @constant {number} KAPPA
-	 * 
-	 * [Kappa constant]{@link http://www.whizkidtech.redprince.net/bezier/circle/kappa/}, specific value is `0.5522847498307936`
-	 *
-	 * @memberof Math
-	 */
-	let Math_KAPPA = 4 * (Math.SQRT2 - 1) / 3;
-
-	/**
 	 * @constant {number} PLASTIC
 	 * 
 	 * [Plastic constant]{@link https://en.wikipedia.org/wiki/Plastic_number}, specific value is `1.324717957244746`
@@ -624,6 +621,43 @@
 	 * @memberof Math
 	 */
 	let Math_PLASTIC = (Math.cbrt(108 + 12 * Math.sqrt(69)) + Math.cbrt(108 - 12 * Math.sqrt(69))) / 6;
+
+	/**
+	 * @constant {{}} KAPPA
+	 * 
+	 * [Kappa constant], specific value is 
+	 * Many values: [arc]{@link http://www.whizkidtech.redprince.net/bezier/circle/kappa/}: `0.5522847498307936`, [sin](https://stackoverflow.com/questions/29022438/): `0.364212423249794`, and in, out, inOut
+	 *
+	 * @memberof Math
+	 */
+	let Math_KAPPA = {
+		ARC: 4 * (Math.SQRT2 - 1) / 3,
+		SIN: 0.364212423249794, //sin curve, (6 − (3 / 2 * Math.PI − 3) ** 2)/6 also sin ?
+		IN_QUAD: [.55, .085, .68, .53],
+		IN_CUBIC: [.55, .055, .675, .19],
+		IN_QUART: [.895, .03, .685, .22],
+		IN_QUINT: [.755, .05, .855, .06],
+		IN_SINE: [.47, 0, .745, .715],
+		IN_EXPO: [.95, .05, .795, .035],
+		IN_CIRC: [.6, .04, .98, .335],
+		IN_BACK: [.6, -.28, .735, .045],
+		OUT_QUAD: [.25, .46, .45, .94],
+		OUT_CUBIC: [.215, .61, .355, 1],
+		OUT_QUART: [.165, .84, .44, 1],
+		OUT_QUINT: [.23, 1, .32, 1],
+		OUT_SINE: [.39, .575, .565, 1],
+		OUT_EXPO: [.19, 1, .22, 1],
+		OUT_CIRC: [.075, .82, .165, 1],
+		OUT_BACK: [.175, .885, .32, 1.275],
+		IN_OUT_QUAD: [.455, .03, .515, .955],
+		IN_OUT_CUBIC: [.645, .045, .355, 1],
+		IN_OUT_QUART: [.77, 0, .175, 1],
+		IN_OUT_QUINT: [.86, 0, .07, 1],
+		IN_OUT_SINE: [.445, .05, .55, .95],
+		IN_OUT_EXPO: [1, 0, 0, 1],
+		IN_OUT_CIRC: [.785, .135, .15, .86],
+		IN_OUT_BACK: [.68, -.55, .265, 1.55]
+	};
 
 	/**
 	 *
@@ -1903,7 +1937,7 @@
 	 * @function near
 	 * @memberof Math
 	 **/
-	function Math_near (num, epsilon) {
+	function Math_near(num, epsilon) {
 		if (!epsilon) {
 			return num;
 		}
@@ -2503,6 +2537,26 @@
 	 **/
 	function Math_change(num, min, change, duration) {
 		return change * num / duration + min;
+	}
+
+	/**
+	 *
+	 * Reverse
+	 *
+	 * @param {number} num
+	 * @param {number} min
+	 * @param {number} max
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.reverse(4, 5, 10);
+	 * //11
+	 *
+	 * @function reverse
+	 * @memberof Math
+	 **/
+	function Math_reverse(num, min, max) {
+		return max - num + min;
 	}
 
 	/**
@@ -7656,35 +7710,35 @@
 	 *
 	 * @param {number} x - initial position
 	 * @param {number} v - initial velocity
-	 * @param {function} func - acceleration function (x, v, dt)
-	 * @param {number} step - timestep
+	 * @param {number} dt - timestep
+	 * @param {number} hdt - dt / 2
+	 * @param {number} idt - dt * 2
+	 * @param {function} func - acceleration function (x, v)
 	 * @param {number[]=} returnData - Array to put data
-	 * @return {number}
+	 * @return {number[]}
 	 *
 	 * @example
-	 * Tween.rk4(1, 0, function(x, v, dt) {
+	 * Tween.rk4(1, 0, 1 / 50, 0.01, 0.01, function(x, v) {
 	 *   //This is the acceleration function
 	 *   //This particular one models a spring with a 1kg mass
 	 *   var stiffness = 400, damping = 0.25;
-	 *   return -stiffness * x - damping * v;
+	 *   return stiffness * x + damping * v; //may inverse
 	 * });
-	 * //[0.9211998333333333, -7.767233291666667]
+	 * //[1.0827995, 7.979899875]
 	 *
 	 * @function rk4
 	 * @memberof Tween
 	 **/
-	function Tween_rk4(x, v, func, step, returnData) {
+	function Tween_rk4(x, v, dt, hdt, idt, func, returnData) {
 		returnData = _helper1(returnData, false);
-		let dt2 = step / 2,
-			dt6 = step / 6;
-		let a1 = func(x, v, 0);
-		let v2 = v + a1 * dt2;
-		let a2 = func(x + v * dt2, v2, dt2);
-		let v3 = v + a2 * dt2;
-		let a3 = func(x + v2 * dt2, v3, dt2);
-		let v4 = v + a3 * step;
-		returnData[0] = x + dt6 * (v + 2 * v2 + 2 * v3 + v4);
-		returnData[1] = v + dt6 * (a1 + 2 * a2 + 2 * a3 + func(x + v3 * step, v4, step));
+		let a1 = func(x, v);
+		let v2 = v + a1 * hdt;
+		let a2 = -func(x + v * hdt, v2);
+		let v3 = v + a2 * hdt;
+		let a3 = func(x + v2 * hdt, v3);
+		let v4 = v + a3 * dt;
+		returnData[0] = x + idt * (v + 2 * (v2 + v3) + v4);
+		returnData[1] = v + idt * (a1 + 2 * (a2 + a3) + func(x + v3 * dt, v4));
 		return returnData;
 	}
 
@@ -8595,7 +8649,7 @@
 	}
 
 	//Export
-	//This is a very terrible way to export these functions because Closure advanced mode :(
+	//This is a very terrible way to export these functions :(
 	//If you have any ideas to improve this I'm really appreciated :D
 	module([
 		"M", "HALF_PI", Math_HALF_PI,
@@ -8603,10 +8657,10 @@
 		"M", "SQRT_PI", Math_SQRT_PI,
 		"M", "SQRT_TAU", Math_SQRT_TAU,
 		"M", "PHI", Math_PHI,
-		"M", "SILVER", Math_SILVER,
+		"M", "EM", Math_EM,
 		"M", "UPC", Math_UPC,
-		"M", "KAPPA", Math_KAPPA,
 		"M", "PLASTIC", Math_PLASTIC,
+		"M", "KAPPA", Math_KAPPA,
 
 		"M", "ln", Math_ln,
 		"M", "log", Math_log,
@@ -8677,6 +8731,7 @@
 		"M", "norm", Math_norm,
 		"M", "lerp", Math_lerp,
 		"M", "change", Math_change,
+		"M", "reverse", Math_reverse,
 		"M", "gcd", Math_gcd,
 		"M", "lcm", Math_lcm,
 		"M", "factor", Math_factor,
