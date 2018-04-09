@@ -10,11 +10,11 @@ This library is mostly used for my personal stuffs, and I updated this library v
 - Test coverage? (Too lazy... There are too many functions...)
 - A website to introduce this library and other things like geting started, documentation, example,...
 
-Version 0.21a (Alpha version)
+Version 0.22a (Alpha version)
 
-[Download](https://cdn.rawgit.com/Trung0246/Funch/a640441c/src/funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/a640441c/src/funch.min.js))
+[Download](https://cdn.rawgit.com/Trung0246/Funch/c22bd68a/src/funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/c22bd68a/src/funch.min.js))
 
-[Documentation](https://cdn.rawgit.com/Trung0246/Funch/6ac5420e/docs/index.html) (old, may not update to lastest version) (0.6a ?)
+[Documentation](https://cdn.rawgit.com/Trung0246/Funch/c22bd68a/docs/index.html) (old, may not update to lastest version) (0.22a)
 
 You can generate document yourself by using [JSDoc](http://usejsdoc.org/).
 
@@ -25,7 +25,7 @@ You can generate document yourself by using [JSDoc](http://usejsdoc.org/).
 
 - Simple to add by copy `<script type="text/javascript" src="funch.js"></script>` or `require("./funch.js");`
 
-- Medium-sized ? (**40.7 KB** compressed using [UglifyJS2](https://github.com/mishoo/UglifyJS2))
+- Medium-sized ? (**41.3 KB** compressed using [UglifyJS2](https://github.com/mishoo/UglifyJS2))
 
 - Easy to copy and paste any function you like to use without include whole library *(I'm sad :( )*
 
