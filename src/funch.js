@@ -1,7 +1,7 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.21a
+	Funch.js, v0.22a
 
 	MIT License
 
@@ -101,9 +101,7 @@
 	oldRandom = Math.random,
 
 	//Holding data as a way to prevent creating new objects...
-	_memory_1_ = [],
-	_memory_2_ = [],
-	_memory_3_ = [],
+	_memory_ = [],
 	_memory2_1_ = {},
 	_memory2_2_ = {},
 	_poly_stack_ = [],
@@ -138,16 +136,16 @@
 		return [];
 	}
 
-	function _helper2() {
-		if (_memory_1_.length > 0) {
-			_memory_1_.length = 0;
+	function _helper2(data) {
+		if (data) {
+			_memory_.push(data);
+			return;
 		}
-		if (_memory_2_.length > 0) {
-			_memory_2_.length = 0;
+		if (_memory_.length === 0) {
+			return [];
 		}
-		if (_memory_3_.length > 0) {
-			_memory_3_.length = 0;
-		}
+		_memory_[_memory_.length - 1].length = 0;
+		return _memory_.pop();
 	}
 
 	function _helper3() {
@@ -197,7 +195,7 @@
 	}
 
 	//GCD
-	function _helper10(num1, num2) {
+	function _helper10(num1, num2, _memory_1_) {
 		let signX = (num1 < 0) ? -1 : 1,
 			signY = (num2 < 0) ? -1 : 1,
 			x = 0,
@@ -239,7 +237,7 @@
 			tU ^= sU >>> a;
 			tL ^= sL >>> a | (sU & 0xFFFFFFFF >>> 32 - a) << 32 - a;
 		}
-		return function() {
+		return function(_memory_1_) {
 			s1U = _memory_1_[0];
 			s1L = _memory_1_[1];
 			s0U = _memory_1_[2];
@@ -384,8 +382,7 @@
 	}
 
 	//Solve root of x^4
-	function _helper20(a0, a1, a2, a3, a4) {
-		_helper2();
+	function _helper20(a0, a1, a2, a3, a4, _memory_1_) {
 		a3 /= a4;
 		a2 /= a4;
 		a1 /= a4;
@@ -477,6 +474,9 @@
 			epsilon = oldPow(1e-32, places / 32);
 		}
 
+		let _memory_1_ = _helper2(),
+			_memory_2_ = _helper2(),
+			_memory_3_ = _helper2();
 		for (k = 0; k < 5; k++) {
 			num += flip * epsilon;
 			_memory_1_.push(num);
@@ -490,6 +490,9 @@
 		for (k = 1; k < _memory_3_.length; k++) {
 			allEqual = allEqual && (_memory_3_[k - 1] === _memory_3_[k]);
 		}
+		_helper2(_memory_1_);
+		_helper2(_memory_2_);
+		_helper2(_memory_3_);
 		if (allEqual === true) {
 			return _memory_3_[0];
 		}
@@ -540,7 +543,7 @@
 	}
 
 	function _helper27(uniform) {
-		_helper2();
+		let _memory_1_ = _helper2();
 		_memory_1_[0] = oldRandom();
 		_memory_1_[1] = oldRandom();
 		if (uniform && _memory_1_[1] < _memory_1_[0]) {
@@ -548,6 +551,7 @@
 			_memory_1_[1] = _memory_1_[0];
 			_memory_1_[0] = c;
 		}
+		return _memory_1_;
 	}
 
 	/**
@@ -625,8 +629,7 @@
 	/**
 	 * @constant {{}} KAPPA
 	 * 
-	 * [Kappa constant], specific value is 
-	 * Many values: [arc]{@link http://www.whizkidtech.redprince.net/bezier/circle/kappa/}: `0.5522847498307936`, [sin](https://stackoverflow.com/questions/29022438/): `0.364212423249794`, and in, out, inOut
+	 * Kappa constant, specific value is many values: [arc]{@link http://www.whizkidtech.redprince.net/bezier/circle/kappa/}: `0.5522847498307936`, [sin](https://stackoverflow.com/questions/29022438/): `0.364212423249794`, and in, out, inOut
 	 *
 	 * @memberof Math
 	 */
@@ -964,8 +967,8 @@
 		}
 		let temp1 = num2,
 			temp2 = num2,
-			result = 1;
-		_helper2();
+			result = 1,
+			_memory_1_ = _helper2();
 		while (temp1 < num1) {
 			_memory_1_.push(temp2);
 			temp1 *= temp2;
@@ -973,20 +976,21 @@
 			if (temp1 === num1) return result;
 			temp2 *= temp2;
 		}
-		if (temp1 === Infinity) return 0;
+		if (temp1 === Infinity) return Infinity;
 		let temp3;
 		while (_memory_1_.length > 0) {
 			temp3 = _memory_1_.pop();
 			if (temp1 > num1) {
 				temp1 /= temp3;
-				result -= (1 << _memory_1_.length);
+				result -= oldPow(2, _memory_1_.length);
 			} else {
 				temp1 *= temp3;
-				result += (1 << _memory_1_.length);
+				result += oldPow(2, _memory_1_.length);
 			}
 			if (temp1 === num1) return result;
 		}
-		return 0;
+		_helper2(_memory_1_);
+		return result;
 	}
 
 	/**
@@ -1048,11 +1052,11 @@
 	 * @memberof Math
 	 **/
 	function Math_integral(a, b, func, epsilon, iteration) {
-		_helper2();
 		epsilon = _helper0(epsilon, 1e-15);
 		iteration = _helper0(iteration, 11);
 		let h = oldPow(2, -iteration),
-			k, t, sinht, i;
+			k, t, sinht, i,
+			_memory_1_ = _helper2(), _memory_2_ = _helper2();
 		for (k = 0; k < 20 * oldPow(2, iteration); k++) {
 			t = k * h;
 			sinht = Math.sinh(t);
@@ -1078,6 +1082,8 @@
 				}
 			}
 		}
+		_helper2(_memory_1_);
+		_helper2(_memory_2_);
 		return 2 * len * h * sum;
 	}
 
@@ -1100,11 +1106,11 @@
 	 * @memberof Math
 	 **/
 	function Math_derivative(num, func, columns, accuracy1, accuracy2) {
-		_helper2();
 		columns = _helper0(columns, 6);
 		accuracy1 = _helper0(accuracy1, 1e-15); //tol
 		accuracy2 = _helper0(accuracy2, 1);
-		let d1, d2, h2;
+		let d1, d2, h2,
+			_memory_1_ = _helper2();
 		_memory_1_[0] = (func(num + accuracy2) - func(num - accuracy2)) / (accuracy2 * 2);
 		for (let j = 1; j <= columns - 1; j++) {
 			_memory_1_[j] = 0;
@@ -1118,9 +1124,11 @@
 				d1 = d2;
 			}
 			if (Math.abs(_memory_1_[j] - _memory_1_[j - 1]) < accuracy1) {
+				_helper2(_memory_1_);
 				return _memory_1_[j];
 			}
 		}
+		_helper2(_memory_1_);
 		return NaN;
 	}
 
@@ -2230,13 +2238,13 @@
 	 *
 	 * @example
 	 * Math.one(2);
-	 * //-1
+	 * //1
 	 *
 	 * @function one
 	 * @memberof Math
 	 **/
 	function Math_one(num) {
-		return (oldRound(num) % 2) * 2 - 1;
+		return 1 - Math.abs(oldRound(num) % 2) * 2;
 	}
 
 	/**
@@ -2578,17 +2586,18 @@
 		if (0 === arguments.length - 1) {
 			return NaN;
 		}
-		_helper2();
-		let returnData = arguments[arguments.length - 1];
+		let _memory_1_ = _helper2(),
+			returnData = arguments[arguments.length - 1];
 		if (!Array.isArray(returnData)) {
 			returnData = [];
 		}
 		_memory_1_[0] = arguments[0];
 		let temp = arguments.length - (arguments[arguments.length - 1] === returnData ? 1 : 0);
 		for (let r = 1; r < temp; r++) {
-			_helper10(_memory_1_[0], arguments[r]);
+			_helper10(_memory_1_[0], arguments[r], _memory_1_);
 		}
 		returnData.push.apply(returnData, _memory_1_);
+		_helper2(_memory_1_);
 		return returnData;
 	}
 
@@ -2612,12 +2621,14 @@
 		if (0 === arguments.length) {
 			return NaN;
 		}
-		let t = arguments[0];
+		let t = arguments[0],
+			_memory_1_ = _helper2();
 		_memory_1_[0] = t;
 		for (let r = 1; r < arguments.length; r++) {
-			_helper10(t, arguments[r]);
+			_helper10(t, arguments[r], _memory_1_);
 			t = (t * arguments[r]) / _memory_1_[0];
 		}
+		_helper2(_memory_1_);
 		return t;
 	}
 
@@ -2715,7 +2726,7 @@
 		}
 		let returnValue;
 		if (seed) {
-			_helper2();
+			let _memory_1_ = _helper2();
 			if (typeof seed === "number") {
 				_memory_1_[0] = seed;
 			} else {
@@ -2725,8 +2736,9 @@
 			_memory_1_[2] = _helper0(seed[2], 0);
 			_memory_1_[3] = _helper0(seed[3], 0);
 			_memory_1_[4] = _helper0(seed[4], 0);
-			_helper12();
+			_helper12(_memory_1_);
 			returnValue = _helper13(_memory_1_[5], _memory_1_[6], _memory_1_[4]) / _helper7_1_;
+			_helper2(_memory_1_);
 		} else {
 			returnValue = oldRandom();
 		}
@@ -2986,7 +2998,7 @@
 	 * @memberof Math
 	 **/
 	function Math_worley(seed, x, y, z, func, returnData) {
-		_helper2();
+		let _memory_1_ = _helper2();
 		if (typeof seed === "number") {
 			_memory_1_[0] = seed;
 		} else {
@@ -3055,6 +3067,7 @@
 		for (i = 0; i < returnData.length; i ++) {
 			returnData[i] = returnData[i] < 0 ? 0 : returnData[i] > 1 ? 1 : returnData[i];
 		}
+		_helper2(_memory_1_);
 		return returnData;
 	}
 
@@ -4169,7 +4182,8 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_randomCirc(x, y, radius, uniform, returnData) {
-		_helper27(uniform);
+		let _memory_1_ = _helper27(uniform);
+		_helper2(_memory_1_);
 		return Math_rec(x, y, _memory_1_[1] * radius, Math_TAU * _memory_1_[0] / _memory_1_[1], returnData);
 	}
 
@@ -4283,13 +4297,15 @@
 			ab_ = a - b,
 			de_ = d - e;
 		let result = _helper1(returnData, false),
-			l, t2, t2_1, t2_2;
+			l, t2, t2_1, t2_2,
+		_memory_1_ = _helper2();
 		l = _helper20(
 			ab * ab + (de - r) * (de + r),
 			4 * (c * ab + f * de),
 			2 * (a * a - b * b + 2 * c * c + d * d - e * e + 2 * f * f - rr),
 			4 * (c * ab_ + f * de_),
-			ab_ * ab_ + de_ * de_ - rr
+			ab_ * ab_ + de_ * de_ - rr,
+			_memory_1_
 		);
 		for (let n = 0; n < l; ++n) {
 			t2 = 2 * Math.atan(_memory_1_[n]);
@@ -4298,6 +4314,7 @@
 			result[n * 2] = x_2 + t2_1 * tempAngle2_1 - t2_2 * tempAngle2_2;
 			result[n * 2 + 1] = y_2 + t2_1 * tempAngle2_2 + t2_2 * tempAngle2_1;
 		}
+		_helper2(_memory_1_);
 		return result;
 	}
 
@@ -4413,7 +4430,8 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_randomElli(x, y, radius1, radius2, angle, uniform, returnData) {
-		_helper27(uniform);
+		let _memory_1_ = _helper27(uniform);
+		_helper2(_memory_1_);
 		return Geometry_onElli(x, y, _memory_1_[1] * radius1, _memory_1_[1] * radius2, angle, Math_TAU * _memory_1_[0] / _memory_1_[1], returnData);
 	}
 
@@ -5078,13 +5096,14 @@
 	 **/
 	function Geometry_triPoly(points, returnData) {
 		returnData = _helper1(returnData, false);
-		let n, i, j, al, i0, i1, i2, a_x, a_y, b_x, b_y, c_x, c_y, eF, vi, tempLength, tempVal;
-		n = points.length / 2;//>> 1;
+		let n = points.length / 2;//>> 1;
 		if (n < 3) {
 			returnData.push.apply(returnData, points);
 			return returnData;
 		}
-		_helper2();
+		let i, j, al, i0, i1, i2, a_x, a_y, b_x, b_y, c_x, c_y, eF, vi, tempLength, tempVal,
+			_memory_1_ = _helper2(),
+			_memory_2_ = _helper2();
 		for (i = 0; i < n; i++) {
 			_memory_2_.push(i);
 		}
@@ -5136,6 +5155,8 @@
 		}
 		_memory_1_.push(_memory_2_[0], _memory_2_[1], _memory_2_[2]);
 		returnData.push.apply(returnData, _memory_1_);
+		_helper2(_memory_1_);
+		_helper2(_memory_2_);
 		return returnData;
 	}
 
@@ -5228,8 +5249,9 @@
 	 * @memberof Geometry
 	 **/
 	function Geometry_convexHullPoly(points, returnData) {
-		_helper2();
-		let i;
+		let i,
+			_memory_1_ = _helper2(),
+			_memory_2_ = _helper2();
 
 		points.sort(function(a, b) {
 			return a[0] === b[0] ? a[1] - b[1] : a[0] - b[0];
@@ -5249,6 +5271,8 @@
 		_memory_2_.pop();
 		_memory_1_.pop();
 		returnData.push.apply(returnData, _memory_1_, _memory_2_);
+		_helper2(_memory_1_);
+		_helper2(_memory_2_);
 		return returnData;
 	}
 
@@ -6592,6 +6616,7 @@
 		//Handle 0
 		return (num1 >= 0) !== (num2 < 0);
 		//return num1 * num2 >= 0;
+		//(m >= 0 && s >= 0) || (m < 0 && s < 0)
 	}
 
 	/**
@@ -7714,7 +7739,7 @@
 	 * @param {number} hdt - dt / 2
 	 * @param {number} idt - dt * 2
 	 * @param {function} func - acceleration function (x, v)
-	 * @param {number[]=} returnData - Array to put data
+	 * @param {number[]} [returnData=undefined] - Array to put data
 	 * @return {number[]}
 	 *
 	 * @example
@@ -7749,7 +7774,7 @@
 	 * @param {number} frequency 
 	 * @param {number} dampen
 	 * @param {number} size - size
-	 * @param {number[]} data - array of number (if first call then all must be 0), length must be 3 * size * size if 2D, else size
+	 * @param {number[]} data - array of number (if first call then all must be 0), length must be size * size * 3 if 2D, else size * 3
 	 * @param {number} value - update value
 	 * @param {number} count - put increment++ here if 1D, else x position when 2D
 	 * @param {number} [count2=undefined] - y position when 2D
@@ -7757,7 +7782,7 @@
 	 * @param {number=} [max=10] - max value when 2D
 	 * @return {number}
 	 *
-	 * To get value for 1D: data[i + return], 2D: data[x * size + y]
+	 * To get value for 1D: data[i * 3 + return], 2D: data[x * size + y]
 	 *
 	 * @example
 	 * let data = Array(100).fill(0);
@@ -7819,7 +7844,7 @@
 			return 0;
 		}
 		let now, next, previous, dhdx,
-			length = size / 3;
+			length = size * 3;
 		//frequency = _helper0(frequency, 0.1);
 		//dampen = _helper0(dampen, 0.97); //0.995
 		now = count % 3,
@@ -7888,8 +7913,6 @@
 	 * @function bezier
 	 * @memberof Tween
 	 **/
-
-	//TODO: fix bezier
 	function Tween_bezier(time, points, weight) {
 		let temp1 = 0,
 			temp2 = 0,
@@ -7913,9 +7936,9 @@
 	 * @param {number} degree - must be at least 1 and less than or equal to total points - 1
 	 * @param {number} dimension - dimension of control points
 	 * @param {number[]} points - control points [a, b, ...]
-	 * @param {number[]=} knot - must be non-decreasing and equal to total points + degree + 1
-	 * @param {number[]=} weight - weight [a, b, ...], length is total points
-	 * @param {number[]=} returnData - Array to put data
+	 * @param {number[]} [knot=undefined] - must be non-decreasing and equal to total points + degree + 1
+	 * @param {number[]} [weight=undefined] - weight [a, b, ...], length is total points
+	 * @param {number[]} [returnData=undefined] - Array to put data
 	 * @return {number|number[]}
 	 *
 	 * @example
@@ -7925,77 +7948,106 @@
 	 * @function bspline
 	 * @memberof Tween
 	 **/
-	function Tween_bspline(time, degree, dimension, points, knots, weights, returnData) {
-		_helper2();
-		if (!dimension) {
-			return;
+	let Tween_bspline = (function() {
+		let i, j, s, l, temp, temp2, length, low, high, alpha, data, _memory_1_, _memory_2_, _memory_3_;
+		function _helper_bspline_1(flag) {
+			if (flag) {
+				if (_memory_1_) {
+					_helper2(_memory_1_);
+					_memory_1_ = undefined;
+				}
+				if (_memory_2_) {
+					_helper2(_memory_2_);
+					_memory_2_ = undefined;
+				}
+				if (_memory_3_) {
+					_helper2(_memory_3_);
+					_memory_3_ = undefined;
+				}
+				return;
+			}
+			if (!_memory_2_) {
+				_memory_2_ = _helper2();
+				return _memory_2_;
+			}
+			if (!_memory_3_) {
+				_memory_3_ = _helper2();
+				return _memory_3_;
+			}
+			_memory_1_ = _helper2();
+			return _memory_1_;
 		}
+		return function Tween_bspline(time, degree, dimension, points, knots, weights, returnData) {
+			if (!dimension) {
+				return;
+			}
 
-		let i, j, s, l, temp, temp2,
 			length = points.length / dimension;
 
-		if (degree < 1) return;
-		if (degree > length - 1) return;
+			if (degree < 1) return;
+			if (degree > length - 1) return;
 
-		if (!weights) {
-			weights = _memory_2_;
-			for (i = 0; i < length; i++) {
-				weights[i] = 1;
-			}
-		}
-
-		temp = length + degree + 1;
-
-		if (!knots) {
-			knots = _memory_3_;
-			for (i = 0; i < temp; i++) {
-				knots[i] = i;
-			}
-		} else {
-			if (knots.length !== temp) return;
-		}
-
-		temp = knots.length - 1 - degree;
-
-		let low = knots[degree],
-			high = knots[temp];
-		time = time * (high - low) + low;
-
-		if (time < low || time > high) return; //throw new Error('out of bounds');
-
-		for (s = degree; s < temp; s++) {
-			if (time >= knots[s] && time <= knots[s + 1]) {
-				break;
-			}
-		}
-
-		for (i = 0; i < length; i++) {
-			for (j = 0; j < dimension; j++) {
-				_memory_1_.push(points[i * dimension + j] * weights[i]);
-			}
-			_memory_1_.push(weights[i]);
-		}
-
-		let alpha;
-		temp = dimension + 1;
-		for (l = 1; l <= degree + 1; l++) {
-			for (i = s; i > s - degree - 1 + l; i--) {
-				alpha = (time - knots[i]) / (knots[i + degree + 1 - l] - knots[i]);
-				for (j = 0; j < temp; j++) {
-					temp2 = i * temp + j;
-					_memory_1_[temp2] = (1 - alpha) * _memory_1_[(i - 1) * temp + j] + alpha * _memory_1_[temp2];
+			if (!weights) {
+				weights = _helper_bspline_1();
+				for (i = 0; i < length; i++) {
+					weights[i] = 1;
 				}
 			}
-		}
 
-		returnData = _helper1(returnData, false);
-		temp *= s;
-		for (i = 0; i < dimension; i++) {
-			returnData[i] = _memory_1_[temp + i] / _memory_1_[temp + dimension];
-		}
+			temp = length + degree + 1;
 
-		return returnData;
-	}
+			if (!knots) {
+				knots = _helper_bspline_1();
+				for (i = 0; i < temp; i++) {
+					knots[i] = i;
+				}
+			} else {
+				if (knots.length !== temp) return _helper_bspline_1(true);
+			}
+
+			temp = knots.length - 1 - degree;
+
+			low = knots[degree];
+			high = knots[temp];
+			time = time * (high - low) + low;
+
+			if (time < low || time > high) return _helper_bspline_1(true); //throw new Error('out of bounds');
+
+			for (s = degree; s < temp; s++) {
+				if (time >= knots[s] && time <= knots[s + 1]) {
+					break;
+				}
+			}
+
+			data = _helper_bspline_1();
+			for (i = 0; i < length; i++) {
+				for (j = 0; j < dimension; j++) {
+					data.push(points[i * dimension + j] * weights[i]);
+				}
+				data.push(weights[i]);
+			}
+
+			temp = dimension + 1;
+			for (l = 1; l <= degree + 1; l++) {
+				for (i = s; i > s - degree - 1 + l; i--) {
+					alpha = (time - knots[i]) / (knots[i + degree + 1 - l] - knots[i]);
+					for (j = 0; j < temp; j++) {
+						temp2 = i * temp + j;
+						data[temp2] = (1 - alpha) * data[(i - 1) * temp + j] + alpha * data[temp2];
+					}
+				}
+			}
+
+			returnData = _helper1(returnData, false);
+			temp *= s;
+			for (i = 0; i < dimension; i++) {
+				returnData[i] = data[temp + i] / data[temp + dimension];
+			}
+
+			_helper_bspline_1(true);
+			return returnData;
+		}
+	})();
 
 	/**
 	 *
@@ -8022,7 +8074,9 @@
 	 **/
 	function Tween_hspline(continuty, bias, tension, density, points, isLoop, isStart, returnData) {
 		_helper2();
-		let tempA, tempB, tempC, tempD, tempX, tempY, tempX2, tempY2, count, iteration;
+		let tempA, tempB, tempC, tempD, tempX, tempY, tempX2, tempY2, count, iteration,
+			_memory_1_ = _helper2(),
+			_memory_2_ = _helper2();
 		//Control points
 		_memory_2_.push.apply(_memory_2_, points);
 		_memory_2_.unshift.call(_memory_2_, points[points.length - 2], points[points.length - 1]);
@@ -8068,6 +8122,8 @@
 			}
 			count += 2;
 		}
+		_helper2(_memory_1_);
+		_helper2(_memory_2_);
 		return returnData;
 	}
 
