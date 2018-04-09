@@ -456,7 +456,6 @@
 	}
 
 	function _helper23(num, func, places, type, epsilon) {
-		_helper2();
 		let k,
 			allEqual = true,
 			flip = (type === 2 ? 1 : -1);
@@ -2617,7 +2616,6 @@
 	 * @memberof Math
 	 **/
 	function Math_lcm() {
-		_helper2();
 		if (0 === arguments.length) {
 			return NaN;
 		}
@@ -8073,7 +8071,6 @@
 	 * @memberof Tween
 	 **/
 	function Tween_hspline(continuty, bias, tension, density, points, isLoop, isStart, returnData) {
-		_helper2();
 		let tempA, tempB, tempC, tempD, tempX, tempY, tempX2, tempY2, count, iteration,
 			_memory_1_ = _helper2(),
 			_memory_2_ = _helper2();
