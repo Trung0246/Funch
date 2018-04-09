@@ -12,9 +12,9 @@ This library is mostly used for my personal stuffs, and I updated this library v
 
 Version 0.22a (Alpha version)
 
-[Download](https://cdn.rawgit.com/Trung0246/Funch/c22bd68a/src/funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/c22bd68a/src/funch.min.js))
+[Download](https://cdn.rawgit.com/Trung0246/Funch/f5c05ae6/src/funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/f5c05ae6/src/funch.min.js))
 
-[Documentation](https://cdn.rawgit.com/Trung0246/Funch/c22bd68a/docs/index.html) (old, may not update to lastest version) (0.22a)
+[Documentation](https://cdn.rawgit.com/Trung0246/Funch/f5c05ae6/docs/index.html) (old, may not update to lastest version) (0.22a)
 
 You can generate document yourself by using [JSDoc](http://usejsdoc.org/).
 
