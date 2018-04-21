@@ -1,7 +1,7 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.22a
+	Funch.js, v0.23a
 
 	MIT License
 
@@ -93,10 +93,6 @@
 	_toRad_1_ = Math.PI / 180,
 	_toDeg_1_ = 180 / Math.PI,
 	_triEquil_1_ = Math.sqrt(3) / 2,
-	oldRound = Math.round,
-	oldFloor = Math.floor,
-	oldCeil = Math.ceil,
-	oldTrunc = Math.trunc,
 	oldPow = Math.pow,
 	oldRandom = Math.random,
 
@@ -161,28 +157,13 @@
 		}
 	}
 
-	function _helper4(type, num) {
-		switch (type) {
-			case 0:
-				return oldRound(num);
-			case 1:
-				return oldFloor(num);
-			case 2:
-				return oldCeil(num);
-			case 3:
-				return oldTrunc(num);
-			case 4:
-				return num > 0 ? oldCeil(num) : oldFloor(num);
-		}
-	}
-
 	function _helper8(num1, num2) {
 		return (num1 & 0xffff) * num2 + (((num1 >>> 16) * num2 & 0xffff) << 16) & 0xffffffff;
 	}
 
 	//Factorial
 	function _helper9(num) {
-		if (num !== oldFloor(num) || num < 0 || num > 170) {
+		if (num !== Math.floor(num) || num < 0 || num > 170) {
 			return NaN;
 		} else if (0 === num || 1 === num) {
 			return 1;
@@ -207,7 +188,7 @@
 			num2 = Math.abs(num2);
 
 		while (num1 !== 0) {
-			q = oldFloor(num2 / num1);
+			q = Math.floor(num2 / num1);
 			r = num2 % num1;
 			m = x - oldX * q;
 			n = y - oldY * q;
@@ -483,7 +464,7 @@
 		}
 
 		for (k = 0; k < _memory_2_.length; k++) {
-			_memory_3_.push(Math_round(_memory_2_[k], places));
+			_memory_3_.push(Math_round2(_memory_2_[k], places));
 		}
 
 		for (k = 1; k < _memory_3_.length; k++) {
@@ -722,7 +703,7 @@
 	 **/
 	function Math_mod(num1, num2) {
 		//https://math.stackexchange.com/questions/1069751/
-		return num1 - oldFloor(num1 / num2) * num2;
+		return num1 - Math.floor(num1 / num2) * num2;
 		//(num1 % num2 + num2) % num2;
 	}
 
@@ -766,7 +747,7 @@
 
 	/**
 	 *
-	 * Calculate `num1` divided by [remainder]{@link http://en.wikipedia.org/wiki/Remainder} of `num2`. If the remainder is negative, adjust it to a positive number in the range of `0` - `num2`
+	 * Sanitized modulus function that always returns in the range [0, num2) rather than (-num2, 0] if num1 is negative
 	 *
 	 * @param {number} num1
 	 * @param {number} num2
@@ -858,7 +839,7 @@
 	 **/
 	function Math_factorial(num, accuracy) {
 		num++;
-		return num === oldFloor(num) ? _helper9(num - 1) : num < 0 ? Math.PI / (Math.sin(Math.PI * num) * Math_gamma(1 - num, accuracy)) : Math.exp(Math_lnGamma(num));
+		return num === Math.floor(num) ? _helper9(num - 1) : num < 0 ? Math.PI / (Math.sin(Math.PI * num) * Math_gamma(1 - num, accuracy)) : Math.exp(Math_lnGamma(num));
 	}
 
 	/**
@@ -1290,7 +1271,7 @@
 		result[1] = 1;
 
 		do {
-			approx = oldRound(num * i); //x / (1 / i)
+			approx = Math.round(num * i); //x / (1 / i)
 			error = (num - (approx / i));
 			if (i === 1) {
 				best = i;
@@ -1300,7 +1281,7 @@
 				best = i;
 				besterror = error;
 			}
-			result[0] = oldRound(num * best);
+			result[0] = Math.round(num * best);
 			result[1] = best;
 			i++;
 		} while (iteration !== 0 ? i <= iteration : result[0] / result[1] !== num);
@@ -1631,23 +1612,53 @@
 	 *
 	 * @param {number} type - 0: round, 1: floor, 2: ceil, 3: trunc, 4: away
 	 * @param {number} num
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.adjust(0, Math.PI);
+	 * //3 (same as Math.round)
+	 *
+	 * @function adjust
+	 * @memberof Math
+	 **/
+	function Math_adjust(type, num) {
+		switch (type) {
+			case 0:
+				return Math.round(num);
+			case 1:
+				return Math.floor(num);
+			case 2:
+				return Math.ceil(num);
+			case 3:
+				return Math.trunc(num);
+			case 4:
+				return Math_away(num);
+		}
+	}
+
+	/**
+	 *
+	 * Adjust decimal of a number
+	 *
+	 * @param {number} type - 0: round, 1: floor, 2: ceil, 3: trunc, 4: away
+	 * @param {number} num
 	 * @param {number=} [digits=0]
 	 * @param {number=} base
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.adjust(0, Math.PI, 2);
+	 * Math.adjust2(0, Math.PI, 2);
 	 * //3.14 (same as Math.round)
 	 *
-	 * @function adjust
+	 * @function adjust2
 	 * @memberof Math
 	 **/
-	function Math_adjust(type, num, digits, base) {
+	function Math_adjust2(type, num, digits, base) {
 		digits = _helper0(digits, 0);
 		base = _helper0(base, 10);
 		let result, temp;
 		temp = Math_pow(base, digits);
-		result = _helper4(type, num * temp) / temp;
+		result = Math_adjust(type, num * temp) / temp;
 		return result;
 	}
 
@@ -1662,13 +1673,13 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.adjust2(0, Math.PI, 2);
+	 * Math.adjust3(0, Math.PI, 2);
 	 * //3.1 (same as Math.round2)
 	 *
-	 * @function adjust2
+	 * @function adjust3
 	 * @memberof Math
 	 **/
-	function Math_adjust2(type, num, digits, base) {
+	function Math_adjust3(type, num, digits, base) {
 		digits = _helper0(digits, 0);
 		base = _helper0(base, 10);
 		let base2, exp, temp, temp2;
@@ -1681,14 +1692,35 @@
 		} else {
 			exp = Math_log(absX, base2);
 		}
-		exp = oldFloor(exp - digits + 1.0);
+		exp = Math.floor(exp - digits + 1.0);
 		temp = Math_pow(base2, Math.abs(exp));
 		if (exp < 0) {
-			temp2 = _helper4(type, num * temp) / temp;
+			temp2 = Math_adjust(type, num * temp) / temp;
 		} else {
-			temp2 = _helper4(type, num / temp) * temp;
+			temp2 = Math_adjust(type, num / temp) * temp;
 		}
 		return temp2;
+	}
+
+	/**
+	 *
+	 * Away from zero
+	 *
+	 * @param {number} num
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.away(Math.PI, 2);
+	 * //4
+	 *
+	 * Math.away(5, -1, 2);
+	 * //-4
+	 *
+	 * @function away
+	 * @memberof Math
+	 **/
+	function Math_away(num) {
+		return num > 0 ? Math.ceil(num) : Math.floor(num);
 	}
 
 	/**
@@ -1701,17 +1733,16 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.round(Math.PI, 2);
+	 * Math.round2(Math.PI, 2);
 	 * //3.14
 	 *
-	 * Math.round(5, -1, 2);
+	 * Math.round2(5, -1, 2);
 	 * //6
 	 *
-	 *
-	 * @function round
+	 * @function round2
 	 * @memberof Math
 	 **/
-	let Math_round = Math_adjust.bind(this, 0);
+	let Math_round2 = Math_adjust2.bind(this, 0);
 
 	/**
 	 *
@@ -1723,17 +1754,16 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.floor(Math.PI, 2);
+	 * Math.floor2(Math.PI, 2);
 	 * //3.14
 	 *
-	 * Math.floor(5, -1, 2);
+	 * Math.floor2(5, -1, 2);
 	 * //4
 	 *
-	 *
-	 * @function floor
+	 * @function floor2
 	 * @memberof Math
 	 **/
-	let Math_floor = Math_adjust.bind(this, 1);
+	let Math_floor2 = Math_adjust2.bind(this, 1);
 
 	/**
 	 *
@@ -1745,17 +1775,16 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.ceil(Math.PI, 2);
+	 * Math.ceil2(Math.PI, 2);
 	 * //3.15
 	 *
-	 * Math.ceil(5, -1, 2);
+	 * Math.ceil2(5, -1, 2);
 	 * //6
 	 *
-	 *
-	 * @function ceil
+	 * @function ceil2
 	 * @memberof Math
 	 **/
-	let Math_ceil = Math_adjust.bind(this, 2);
+	let Math_ceil2 = Math_adjust2.bind(this, 2);
 
 	/**
 	 *
@@ -1767,17 +1796,16 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.trunc(Math.PI, 2);
+	 * Math.trunc2(Math.PI, 2);
 	 * //3.14
 	 *
-	 * Math.ceil(5, -1, 2);
+	 * Math.trunc2(5, -1, 2);
 	 * //4
 	 *
-	 *
-	 * @function trunc
+	 * @function trunc2
 	 * @memberof Math
 	 **/
-	let Math_trunc = Math_adjust.bind(this, 3);
+	let Math_trunc2 = Math_adjust2.bind(this, 3);
 
 	/**
 	 *
@@ -1789,17 +1817,16 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.away(Math.PI, 2);
+	 * Math.away2(Math.PI, 2);
 	 * //3.15
 	 *
-	 * Math.away(5, -1, 2);
+	 * Math.away2(5, -1, 2);
 	 * //6
 	 *
-	 *
-	 * @function away
+	 * @function away2
 	 * @memberof Math
 	 **/
-	let Math_away = Math_adjust.bind(this, 4);
+	let Math_away2 = Math_adjust2.bind(this, 4);
 
 	/**
 	 *
@@ -1811,16 +1838,16 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.round2(Math.PI, 2);
+	 * Math.round3(Math.PI, 2);
 	 * //3.1
 	 *
-	 * Math.round2(12345, 2, 5);
+	 * Math.round3(12345, 2, 5);
 	 * //12500
 	 *
-	 * @function round2
+	 * @function round3
 	 * @memberof Math
 	 **/
-	let Math_round2 = Math_adjust2.bind(this, 0);
+	let Math_round3 = Math_adjust3.bind(this, 0);
 
 	/**
 	 *
@@ -1832,16 +1859,16 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.floor2(Math.PI, 2);
+	 * Math.floor3(Math.PI, 2);
 	 * //3.1
 	 *
-	 * Math.floor2(12345, 2, 5);
+	 * Math.floor3(12345, 2, 5);
 	 * //11875
 	 *
-	 * @function floor2
+	 * @function floor3
 	 * @memberof Math
 	 **/
-	let Math_floor2 = Math_adjust2.bind(this, 1);
+	let Math_floor3 = Math_adjust3.bind(this, 1);
 
 	/**
 	 *
@@ -1853,16 +1880,16 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.ceil2(Math.PI, 2);
+	 * Math.ceil3(Math.PI, 2);
 	 * //3.2
 	 *
-	 * Math.ceil2(12345, 2, 5);
+	 * Math.ceil3(12345, 2, 5);
 	 * //12500
 	 *
-	 * @function ceil2
+	 * @function ceil3
 	 * @memberof Math
 	 **/
-	let Math_ceil2 = Math_adjust2.bind(this, 2);
+	let Math_ceil3 = Math_adjust3.bind(this, 2);
 
 	/**
 	 *
@@ -1874,16 +1901,16 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.trunc2(Math.PI, 2);
+	 * Math.trunc3(Math.PI, 2);
 	 * //3.1
 	 *
-	 * Math.trunc2(12345, 2, 5);
+	 * Math.trunc3(12345, 2, 5);
 	 * //11875
 	 *
-	 * @function trunc2
+	 * @function trunc3
 	 * @memberof Math
 	 **/
-	let Math_trunc2 = Math_adjust2.bind(this, 3);
+	let Math_trunc3 = Math_adjust3.bind(this, 3);
 
 	/**
 	 *
@@ -1895,16 +1922,16 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.away2(Math.PI, 2);
+	 * Math.away3(Math.PI, 2);
 	 * //3.2
 	 *
-	 * Math.away2(12345, 2, 5);
+	 * Math.away3(12345, 2, 5);
 	 * //12500
 	 *
-	 * @function away2
+	 * @function away3
 	 * @memberof Math
 	 **/
-	let Math_away2 = Math_adjust2.bind(this, 4);
+	let Math_away3 = Math_adjust3.bind(this, 4);
 
 	/**
 	 *
@@ -1923,8 +1950,8 @@
 	 **/
 	function Math_correct(num, epsilon) {
 		epsilon = _helper0(epsilon, 13);
-		if (Math_round(num, epsilon) === Math_round(num, epsilon - 1)) {
-			return Math_round(num, epsilon);
+		if (Math_round2(num, epsilon) === Math_round2(num, epsilon - 1)) {
+			return Math_round2(num, epsilon);
 		}
 		return num;
 	}
@@ -1948,8 +1975,8 @@
 		if (!epsilon) {
 			return num;
 		}
-		return epsilon * oldRound(num / epsilon);
-		//oldRound(num * (1 / epsilon)) / (1 / epsilon);
+		return epsilon * Math.round(num / epsilon);
+		//Math.round(num * (1 / epsilon)) / (1 / epsilon);
 	}
 
 	/**
@@ -1976,7 +2003,7 @@
 		offset = _helper0(offset, 0);
 		if (gap === 0) return num;
 		num -= offset;
-		num = gap * (isLocate ? Math_adjust2(type, num / gap, digits, base) : Math_adjust(type, num / gap, digits, base));
+		num = gap * (isLocate ? Math_adjust3(type, num / gap, digits, base) : Math_adjust2(type, num / gap, digits, base));
 		return offset + num;
 	}
 
@@ -2004,7 +2031,7 @@
 	function Math_discrete(type, num, a, b, gap, isLocate, digits, base) {
 		gap = _helper0(gap, 1);
 		let temp = (a * (1 - num) + b * num) / gap;
-		return (isLocate ? Math_adjust2(type, temp, digits, base) : Math_adjust(type, temp, digits, base)) * gap;
+		return (isLocate ? Math_adjust3(type, temp, digits, base) : Math_adjust2(type, temp, digits, base)) * gap;
 	}
 
 	/**
@@ -2023,9 +2050,9 @@
 	 **/
 	function Math_shear(num) {
 		num = Math.abs(num);
-		return num - oldFloor(num);
+		return num - Math.floor(num);
 		//Can also n % 1
-		//oldCeil(((num < 1.0) ? num : (num % oldFloor(num))) * Math_pow(10, <digit goes here>))
+		//Math.ceil(((num < 1.0) ? num : (num % Math.floor(num))) * Math_pow(10, <digit goes here>))
 	}
 
 	/**
@@ -2048,7 +2075,7 @@
 		}
 		let e = 1,
 			p = 0;
-		while (oldRound(num * e) / e !== num) {
+		while (Math.round(num * e) / e !== num) {
 			e *= 10;
 			p++;
 		}
@@ -2070,7 +2097,7 @@
 	 * @memberof Math
 	 **/
 	function Math_order(num) {
-		return oldFloor(Math_ln(Math.abs(num)) / Math.LN10);
+		return Math.floor(Math_ln(Math.abs(num)) / Math.LN10);
 	}
 
 	/**
@@ -2243,7 +2270,7 @@
 	 * @memberof Math
 	 **/
 	function Math_one(num) {
-		return 1 - Math.abs(oldRound(num) % 2) * 2;
+		return 1 - Math.abs(Math.round(num) % 2) * 2;
 	}
 
 	/**
@@ -2742,9 +2769,9 @@
 		}
 		
 		if (round) {
-			min = oldCeil(min);
-			max = oldFloor(max);
-			returnValue = oldFloor(returnValue * (max - min + 1)) + min;
+			min = Math.ceil(min);
+			max = Math.floor(max);
+			returnValue = Math.floor(returnValue * (max - min + 1)) + min;
 		} else {
 			returnValue = returnValue * (max - min) + min;
 		}
@@ -2830,6 +2857,55 @@
 
 	/**
 	 *
+	 * Permutation table for use with Math.snoise
+	 *
+	 * @param {number[]} data - array of numbers, must have length = 255, every number must be between 0 <= x < 1,...
+	 * @param {array=} returnData - Array to put data
+	 *
+	 * @return {number[]}
+	 *
+	 * Array retuned length will always be 512
+	 *
+	 * @example
+	 * let arraySeed = [];
+	 * for (let i = 0; i < 255; i ++) {
+	 *   arraySeed.push(Math.random(0, 1));
+	 * }
+	 * Math.tnoise(arraySeed);
+	 * //Array of number from 0 to 11
+	 *
+	 * @function snoise
+	 * @memberof Math
+	 **/
+	function Math_tnoise(data, returnData) {
+		let i, r, aux,
+			p = _helper2(),
+			perm = _helper2();
+		
+		for (i = 0; i < 256; i++) {
+			p[i] = i;
+		}
+		
+		for (i = 0; i < 255; i++) {
+			r = i + Math.floor(data[i] * (256 - i));
+			aux = p[i];
+			p[i] = p[r];
+			p[r] = aux;
+		}
+
+		returnData = _helper1(returnData, false);
+		for (i = 0; i < 512; i++) {
+			perm[i] = p[i & 255];
+			returnData[i] = perm[i] % 12;
+		}
+
+		_helper2(p);
+		_helper2(perm);
+		return returnData;
+	}
+
+	/**
+	 *
 	 * Simplex noise
 	 *
 	 * @param {number[]} seed - array of numbers, must have length = 512, every number must be between 0 <= x <= 11,...
@@ -2888,13 +2964,13 @@
 			sum = 0;
 			if (typeof z === "number") {
 				tempM = (x + y + z) * _helper9_1_;
-				tempI = oldFloor(x + tempM);
-				tempJ = oldFloor(y + tempM);
-				tempK = oldFloor(z + tempM);
+				tempI = Math.floor(x + tempM);
+				tempJ = Math.floor(y + tempM);
+				tempK = Math.floor(z + tempM);
 				tempM = (tempI + tempJ + tempK) * _snoise_6_;
-				tempX = x - (tempI - tempM);
-				tempY = y - (tempJ - tempM);
-				tempZ = z - (tempK - tempM);
+				tempX = x - tempI + tempM;
+				tempY = y - tempJ + tempM;
+				tempZ = z - tempK + tempM;
 				if (tempX >= tempY) {
 					if (tempY >= tempZ) {
 						tempI2 = 1;
@@ -2952,11 +3028,11 @@
 				return 32.0 * sum;
 			}
 			tempI2 = (x + y) * _snoise_4_;
-			tempI = oldFloor(x + tempI2);
-			tempJ = oldFloor(y + tempI2);
+			tempI = Math.floor(x + tempI2);
+			tempJ = Math.floor(y + tempI2);
 			tempJ2 = (tempI + tempJ) * _snoise_5_;
-			tempX = x - (tempI - tempJ2);
-			tempY = y - (tempJ - tempJ2);
+			tempX = x - tempI + tempJ2;
+			tempY = y - tempJ + tempJ2;
 			if (tempX > tempY) {
 				tempI2 = 1;
 				tempJ2 = 0;
@@ -3017,9 +3093,9 @@
 		for (i = -1; i < 2; ++i) {
 			for (j = -1; j < 2; ++j) {
 				for (k = -1; k < 2; ++k) {
-					cubeX = oldFloor(x) + i;
-					cubeY = oldFloor(y) + j;
-					cubeZ = oldFloor(z) + k;
+					cubeX = Math.floor(x) + i;
+					cubeY = Math.floor(y) + j;
+					cubeZ = Math.floor(z) + k;
 					last = _helper11(_helper13((_memory_1_[0] + cubeX) & 0xffffffff, (_memory_1_[1] + cubeY) & 0xffffffff, (_memory_1_[2] + cubeZ) & 0xffffffff));
 					tempLast = last & 0xffffffff;
 					if (tempLast < 393325350) {
@@ -5616,7 +5692,7 @@
 	 * @function truncVec
 	 * @memberof Vector
 	 **/
-	function Math_truncVec(x, y, num, returnData) {
+	function Math_trunc2Vec(x, y, num, returnData) {
 		let scale = num / Math_magVec(x, y, false);
 		scale = scale < 1.0 ? scale : 1.0;
 		return Math_scaleVec(x, y, scale, returnData);
@@ -6676,7 +6752,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inOutQuad(time) {
-		return time < 0.5 ? 2 * time * time : -1 + (4 - 2 * time) * time;
+		return time < 0.5 ? 2 * time * time : 2 * (2 - time) * time - 1;
 	}
 
 	/**
@@ -6730,7 +6806,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inOutCubic(time) {
-		return time < 0.5 ? 4 * oldPow(time, 3) : (time - 1) * oldPow(2 * time - 2, 2) + 1;
+		return time < 0.5 ? 4 * oldPow(time, 3) : 4 * oldPow(time - 1, 3) + 1;
 	}
 
 	/**
@@ -6916,7 +6992,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inLog(time, pow) {
-		return 1 - Tween_outLog(1 - time, pow);
+		return 1 - Math_log(pow * (1 - time) + time, pow);
 	}
 
 	/**
@@ -6956,9 +7032,9 @@
 	function Tween_inOutLog(time, pow) {
 		time *= 2;
 		if (time < 1) {
-			return 0.5 - Tween_outLog(1 - time, pow) / 2;
+			return 0.5 - Math_log(pow * (1 - time) + time, pow) / 2;
 		}
-		return 0.5 + Tween_outLog(time - 1, pow) / 2;
+		return 0.5 + Math_log((time - 1) * (pow - 1) + 1, pow) / 2;
 	}
 
 	/**
@@ -7215,7 +7291,7 @@
 	 **/
 	function Tween_inBack(time, overShoot, isOver) {
 		overShoot = overShoot ? (isOver ? overShoot : _helper15(overShoot)) : 1.70158;
-		return 1 * time * time * ((overShoot + 1) * time - overShoot);
+		return time * time * ((overShoot + 1) * time - overShoot);
 	}
 
 	/**
@@ -7347,7 +7423,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_bias(time, bias) {
-		return -time / (bias * (time - 1) - time);
+		return time / (bias * (1 - time) + time);
 	}
 
 	/**
@@ -7367,7 +7443,7 @@
 	 **/
 	function Tween_inOutBias(time, bias) {
 		if (time < 0.5) {
-			return -time /  (2 * (bias - 1) * time - bias);
+			return time / ((2 - 2 * bias) * time + bias);
 		}
 		return ((2 * bias - 1) * time - bias + 1) / (2 * (bias - 1) * time - bias + 2);
 	}
@@ -7513,15 +7589,14 @@
 		}
 
 		let temp1 = (1 - ratio) / 2,
-			temp2 = back === true,
 			temp3 = (ratio - 1) * (ratio - 1);
 		if (time < temp1) {
-			if (temp2) {
+			if (back) {
 				return -(4 * time * (ratio + time - 1)) / temp3;
 			}
 			return power * (1 - oldPow((-ratio - 2 * time + 1) / (1 - ratio), 4));
 		} else if (time > temp1 + ratio) {
-			if (temp2) {
+			if (back) {
 				if (time === 1) {
 					return 0;
 				}
@@ -7529,7 +7604,7 @@
 			}
 			return (oldPow(ratio - 2 * time + 1, 4) * (time - power)) / oldPow(ratio - 1, 4) + power;
 		}
-		return temp2 ? 1 : power;
+		return back ? 1 : power;
 	}
 
 	/**
@@ -7707,24 +7782,46 @@
 
 	/**
 	 *
-	 * Mirror
+	 * inOut
 	 *
 	 * @param {number} time
 	 * @param {function} func (x)
 	 * @return {number}
 	 *
 	 * @example
-	 * Tween.mirror(0.25, Tween.inQuad);
+	 * Tween.inOut(0.25, Tween.inQuad);
 	 * //0.125
 	 *
-	 * @function mirror
+	 * @function inOut
 	 * @memberof Tween
 	 **/
-	function Tween_mirror(time, func) {
-		if (time <= 0.5) {
+	function Tween_inOut(time, func) {
+		if (time < 0.5) {
 			return func(2 * time) / 2;
 		}
-		return (2 - func(2 * (1 - time))) / 2;
+		return 1 - f(2 - 2 * t) / 2;
+	}
+
+	/**
+	 *
+	 * outIn
+	 *
+	 * @param {number} time
+	 * @param {function} func (x)
+	 * @return {number}
+	 *
+	 * @example
+	 * Tween.outIn(0.25, Tween.inQuad);
+	 * //0.375
+	 *
+	 * @function outIn
+	 * @memberof Tween
+	 **/
+	function Tween_outIn(time, func) {
+		if (time < 0.5)  {
+			return 0.5 - func(1 - 2 * time) / 2;
+		}
+		return (f(2 * t - 1) + 1) / 2;
 	}
 
 	/**
@@ -7865,7 +7962,7 @@
 
 	/**
 	 *
-	 * Customizable tween
+	 * Polynomial tween
 	 *
 	 * @param {number} time
 	 * @param {number[]} points - control points [x1, y1, x2, y2, ...]
@@ -8748,16 +8845,18 @@
 		"M", "smooth", Math_smooth,
 		"M", "adjust", Math_adjust,
 		"M", "adjust2", Math_adjust2,
-		"M", "round", Math_round,
-		"M", "floor", Math_floor,
-		"M", "ceil", Math_ceil,
-		"M", "trunc", Math_trunc,
-		"M", "away", Math_away,
+		"M", "adjust3", Math_adjust3,
+		"M", "away3", Math_away3,
 		"M", "round2", Math_round2,
 		"M", "floor2", Math_floor2,
 		"M", "ceil2", Math_ceil2,
 		"M", "trunc2", Math_trunc2,
 		"M", "away2", Math_away2,
+		"M", "round3", Math_round3,
+		"M", "floor3", Math_floor3,
+		"M", "ceil3", Math_ceil3,
+		"M", "trunc3", Math_trunc3,
+		"M", "away3", Math_away3,
 		"M", "correct", Math_correct,
 		"M", "near", Math_near,
 		"M", "snap", Math_snap,
@@ -8793,6 +8892,7 @@
 		"M", "randomTri", Math_randomTri,
 		"M", "randomCirc", Math_randomCirc,
 		"M", "vnoise", Math_vnoise,
+		"M", "tnoise", Math_tnoise,
 		"M", "snoise", Math_snoise,
 		"M", "worley", Math_worley,
 
@@ -8878,7 +8978,7 @@
 		"M", "rec", Math_rec,
 		"M", "normVec", Math_normVec,
 		"M", "scaleVec", Math_scaleVec,
-		"M", "truncVec", Math_truncVec,
+		"M", "truncVec", Math_trunc2Vec,
 		"M", "magVec", Math_magVec,
 		"M", "dotVec", Math_dotVec,
 		"M", "crossVec", Math_crossVec,
@@ -8980,7 +9080,8 @@
 		"T", "envelope", Tween_envelope,
 		"T", "shift", Tween_shift,
 		"T", "reverse", Tween_reverse,
-		"T", "mirror", Tween_mirror,
+		"T", "inOut", Tween_inOut,
+		"T", "outIn", Tween_outIn,
 		"T", "rk4", Tween_rk4,
 		"T", "wave", Tween_wave,
 		"T", "poly", Tween_poly,
