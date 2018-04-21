@@ -8846,7 +8846,7 @@
 		"M", "adjust", Math_adjust,
 		"M", "adjust2", Math_adjust2,
 		"M", "adjust3", Math_adjust3,
-		"M", "away3", Math_away3,
+		"M", "away", Math_away,
 		"M", "round2", Math_round2,
 		"M", "floor2", Math_floor2,
 		"M", "ceil2", Math_ceil2,
