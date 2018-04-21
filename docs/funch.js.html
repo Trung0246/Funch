@@ -31,7 +31,7 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.22a
+	Funch.js, v0.23a
 
 	MIT License
 
@@ -486,7 +486,6 @@
 	}
 
 	function _helper23(num, func, places, type, epsilon) {
-		_helper2();
 		let k,
 			allEqual = true,
 			flip = (type === 2 ? 1 : -1);
@@ -797,7 +796,7 @@
 
 	/**
 	 *
-	 * Calculate `num1` divided by [remainder]{@link http://en.wikipedia.org/wiki/Remainder} of `num2`. If the remainder is negative, adjust it to a positive number in the range of `0` - `num2`
+	 * Sanitized modulus function that always returns in the range [0, num2) rather than (-num2, 0] if num1 is negative
 	 *
 	 * @param {number} num1
 	 * @param {number} num2
@@ -2647,7 +2646,6 @@
 	 * @memberof Math
 	 **/
 	function Math_lcm() {
-		_helper2();
 		if (0 === arguments.length) {
 			return NaN;
 		}
@@ -2862,6 +2860,55 @@
 
 	/**
 	 *
+	 * Permutation table for use with Math.snoise
+	 *
+	 * @param {number[]} data - array of numbers, must have length = 255, every number must be between 0 &lt;= x &lt; 1,...
+	 * @param {array=} returnData - Array to put data
+	 *
+	 * @return {number[]}
+	 *
+	 * Array retuned length will always be 512
+	 *
+	 * @example
+	 * let arraySeed = [];
+	 * for (let i = 0; i &lt; 255; i ++) {
+	 *   arraySeed.push(Math.random(0, 1));
+	 * }
+	 * Math.tnoise(arraySeed);
+	 * //Array of number from 0 to 11
+	 *
+	 * @function snoise
+	 * @memberof Math
+	 **/
+	function Math_tnoise(data, returnData) {
+		let i, r, aux,
+			p = _helper2(),
+			perm = _helper2();
+		
+		for (i = 0; i &lt; 256; i++) {
+			p[i] = i;
+		}
+		
+		for (i = 0; i &lt; 255; i++) {
+			r = i + oldFloor(data[i] * (256 - i));
+			aux = p[i];
+			p[i] = p[r];
+			p[r] = aux;
+		}
+
+		returnData = _helper1(returnData, false);
+		for (i = 0; i &lt; 512; i++) {
+			perm[i] = p[i &amp; 255];
+			returnData[i] = perm[i] % 12;
+		}
+
+		_helper2(p);
+		_helper2(perm);
+		return returnData;
+	}
+
+	/**
+	 *
 	 * Simplex noise
 	 *
 	 * @param {number[]} seed - array of numbers, must have length = 512, every number must be between 0 &lt;= x &lt;= 11,...
@@ -2924,9 +2971,9 @@
 				tempJ = oldFloor(y + tempM);
 				tempK = oldFloor(z + tempM);
 				tempM = (tempI + tempJ + tempK) * _snoise_6_;
-				tempX = x - (tempI - tempM);
-				tempY = y - (tempJ - tempM);
-				tempZ = z - (tempK - tempM);
+				tempX = x - tempI + tempM;
+				tempY = y - tempJ + tempM;
+				tempZ = z - tempK + tempM;
 				if (tempX >= tempY) {
 					if (tempY >= tempZ) {
 						tempI2 = 1;
@@ -2987,8 +3034,8 @@
 			tempI = oldFloor(x + tempI2);
 			tempJ = oldFloor(y + tempI2);
 			tempJ2 = (tempI + tempJ) * _snoise_5_;
-			tempX = x - (tempI - tempJ2);
-			tempY = y - (tempJ - tempJ2);
+			tempX = x - tempI + tempJ2;
+			tempY = y - tempJ + tempJ2;
 			if (tempX > tempY) {
 				tempI2 = 1;
 				tempJ2 = 0;
@@ -7897,7 +7944,7 @@
 
 	/**
 	 *
-	 * Customizable tween
+	 * Polynomial tween
 	 *
 	 * @param {number} time
 	 * @param {number[]} points - control points [x1, y1, x2, y2, ...]
@@ -8103,7 +8150,6 @@
 	 * @memberof Tween
 	 **/
 	function Tween_hspline(continuty, bias, tension, density, points, isLoop, isStart, returnData) {
-		_helper2();
 		let tempA, tempB, tempC, tempD, tempX, tempY, tempX2, tempY2, count, iteration,
 			_memory_1_ = _helper2(),
 			_memory_2_ = _helper2();
@@ -8826,6 +8872,7 @@
 		"M", "randomTri", Math_randomTri,
 		"M", "randomCirc", Math_randomCirc,
 		"M", "vnoise", Math_vnoise,
+		"M", "tnoise", Math_tnoise,
 		"M", "snoise", Math_snoise,
 		"M", "worley", Math_worley,
 
@@ -9098,6 +9145,460 @@
 	typeof window !== "undefined" ? window :
 	typeof global !== "undefined" ? global : this
 );
+
+(function(global) {
+
+	function fitCurve(points, maxError, MaxIterations = 20, progressCallback) {
+		let tempP = [];
+		for (let i = 0; i &lt; points.length; i += 2) {
+			if (i === 0 || !(points[i] === points[i - 2] &amp;&amp; points[i + 1] === points[i - 2 + 1])) {
+					tempP.push(points[i], points[i + 1]);
+				}
+		}
+
+		if (tempP.length &lt; 4) {
+			return [];
+		}
+
+		let data1 = [],
+			data2 = [];
+
+		let len = tempP.length,
+			leftTangent = createTangent(tempP[2], tempP[3], tempP[0], tempP[1], data1),
+				rightTangent = createTangent(tempP[len - 4], tempP[len - 3], tempP[len - 2], tempP[len - 1], data2);
+
+		return fitCubic(tempP, leftTangent[0], leftTangent[1], rightTangent[0], rightTangent[1], maxError, MaxIterations, progressCallback);
+	}
+
+	function fitCubic(points, leftTangent_x, leftTangent_y, rightTangent_x, rightTangent_y, error, MaxIterations, progressCallback) {
+		let bezCurve, dist, temp_x, temp_y, temp2_x, temp2_y,
+			centerVector_x, centerVector_y,
+			toCenterTangent_x, toCenterTangent_y,
+			fromCenterTangent_x, fromCenterTangent_y,
+      maxError, splitPoint, prevErr, prevSplit,
+			i, uPrime,
+			temp = [],
+			beziers,
+			u = [];
+		if (points.length === 4) {
+			temp_x = points[0] - points[2];
+			temp_y = points[1] - points[3];
+
+			dist = Math.sqrt(temp_x * temp_x + temp_y * temp_y) / 3;
+
+			temp_x = leftTangent_x * dist;
+			temp_y = leftTangent_y * dist;
+			temp2_x = rightTangent_x * dist;
+			temp2_y = rightTangent_y * dist;
+
+			bezCurve = [
+				points[0], points[1],
+				points[0] + temp_x, points[1] + temp_y,
+				points[2] + temp2_x, points[3] + temp2_y,
+				points[2], points[3]
+			];
+			return bezCurve;
+		}
+		chordLengthParameterize(points, u);
+
+		generateAndReport(points, u, u, leftTangent_x, leftTangent_y, rightTangent_x, rightTangent_y, progressCallback, temp);
+
+		bezCurve = temp[0];
+		maxError = temp[1];
+		splitPoint = temp[2];
+
+		if (maxError &lt; error) {
+			return bezCurve;
+		}
+
+		if (maxError &lt; (error * error)) {
+			uPrime = u;
+			prevErr = maxError;
+			prevSplit = splitPoint;
+
+			for (i = 0; i &lt; MaxIterations; i++) {
+
+				uPrime = reparameterize(bezCurve, points, uPrime);
+				generateAndReport(points, u, uPrime, leftTangent_x, leftTangent_y, rightTangent_x, rightTangent_y, progressCallback, temp);
+
+				bezCurve = temp[0];
+				maxError = temp[1];
+				splitPoint = temp[2];
+
+				if (maxError &lt; error) {
+					return bezCurve;
+				} else if (splitPoint === prevSplit) {
+					let errChange = maxError / prevErr;
+					if (errChange > 0.9999 &amp;&amp; errChange &lt; 1.0001) {
+						break;
+					}
+				}
+
+				prevErr = maxError;
+				prevSplit = splitPoint;
+			}
+		}
+
+		beziers = [];
+		/*centerVector_x = points[(splitPoint - 1) * 2] - points[(splitPoint + 1) * 2];
+		centerVector_y = points[(splitPoint - 1) * 2 + 1] - points[(splitPoint + 1) * 2 + 1];
+
+		if ((centerVector_x === 0) &amp;&amp; (centerVector_y === 0)) {
+			centerVector_x = points[(splitPoint - 1) * 2 + 1] - points[splitPoint * 2 + 1];
+			centerVector_y = points[(splitPoint - 1) * 2] - points[splitPoint * 2];
+			centerVector_x *= -1;
+		}
+
+		temp = Math.sqrt(centerVector_x * centerVector_x + centerVector_y * centerVector_y);
+		toCenterTangent_x = centerVector_x / temp;
+		toCenterTangent_y = centerVector_y / temp;
+
+		fromCenterTangent_x = -toCenterTangent_x;
+		fromCenterTangent_y = -toCenterTangent_y;
+
+		beziers = beziers.concat(fitCubic(points.slice(0, (splitPoint + 1) * 2), leftTangent_x, leftTangent_y, toCenterTangent_x, toCenterTangent_y, error, MaxIterations, progressCallback));
+		beziers = beziers.concat(fitCubic(points.slice(splitPoint * 2), fromCenterTangent_x, fromCenterTangent_y, rightTangent_x, rightTangent_y, error, MaxIterations, progressCallback));
+		return beziers;*/
+
+		centerVector_x = points[splitPoint - 2] - points[splitPoint + 2];
+		centerVector_y = points[splitPoint - 2 + 1] - points[splitPoint + 2 + 1];
+
+		if ((centerVector_x === 0) &amp;&amp; (centerVector_y === 0)) {
+			centerVector_x = points[splitPoint - 2 + 1] - points[splitPoint + 1];
+			centerVector_y = points[splitPoint - 2] - points[splitPoint];
+			centerVector_x *= -1;
+		}
+
+		temp = Math.sqrt(centerVector_x * centerVector_x + centerVector_y * centerVector_y);
+		toCenterTangent_x = centerVector_x / temp;
+		toCenterTangent_y = centerVector_y / temp;
+
+		fromCenterTangent_x = -toCenterTangent_x;
+		fromCenterTangent_y = -toCenterTangent_y;
+
+		beziers = beziers.concat(fitCubic(points.slice(0, splitPoint + 2), leftTangent_x, leftTangent_y, toCenterTangent_x, toCenterTangent_y, error, MaxIterations, progressCallback));
+		beziers = beziers.concat(fitCubic(points.slice(splitPoint), fromCenterTangent_x, fromCenterTangent_y, rightTangent_x, rightTangent_y, error, MaxIterations, progressCallback));
+		return beziers;
+	}
+
+	function generateAndReport(points, paramsOrig, paramsPrime, leftTangent_x, leftTangent_y, rightTangent_x, rightTangent_y, progressCallback, temp) {
+		let bezCurve, maxError, splitPoint, temp2 = [];
+		
+		bezCurve = generateBezier(points, paramsPrime, leftTangent_x, leftTangent_y, rightTangent_x, rightTangent_y, progressCallback);
+
+		computeMaxError(points, bezCurve, paramsOrig, temp2);
+
+		maxError = temp2[0];
+		splitPoint = temp2[1];
+
+		if (progressCallback) {
+			progressCallback({
+				bez: bezCurve,
+				points: points,
+				params: paramsOrig,
+				maxErr: maxError,
+				maxPoint: splitPoint,
+			});
+		}
+
+		temp[0] = bezCurve;
+		temp[1] = maxError;
+		temp[2] = splitPoint;
+		return temp;
+	}
+
+	function generateBezier(points, parameters, leftTangent_x, leftTangent_y, rightTangent_x, rightTangent_y, progressCallback) {
+		let tempL_x, tempL_y, tempR_x, tempR_y,
+			tmp_x, tmp_y,
+			i, len,
+			u, ux,
+			C0_0 = 0, C0_1 = 0, C1_0 = 0, C1_1 = 0,
+			X_0 = 0, X_1 = 0,
+			det_C0_C1, det_C0_X, det_X_C1,
+			alpha_l, alpha_r,
+			epsilon, segLength,
+			firstPoint_x = points[0], firstPoint_y = points[1],
+			lastPoint_x = points[points.length - 2], lastPoint_y = points[points.length - 1],
+			A = [],
+			bezCurve = [firstPoint_x, firstPoint_y, null, null, null, null, lastPoint_x, lastPoint_y],
+			tempQ = [];
+
+		len = parameters.length;
+		for (i = 0; i &lt; len; i++) {
+			u = parameters[i];
+			ux = 1 - u;
+
+			//Don't remove bracket, round off error
+			tempL_x = leftTangent_x * (3 * u * (ux * ux));
+			tempL_y = leftTangent_y * (3 * u * (ux * ux));
+			tempR_x = rightTangent_x * (3 * ux * (u * u));
+			tempR_y = rightTangent_y * (3 * ux * (u * u));
+
+			A.push(tempL_x);
+			A.push(tempL_y);
+			A.push(tempR_x);
+			A.push(tempR_y);
+		}
+
+		for (i = 0, len = points.length / 2; i &lt; len; i++) {
+			u = parameters[i];
+			let f = i * 4;
+
+			C0_0 += (A[f + 0] * A[f + 0]) + (A[f + 1] * A[f + 1]);
+			C0_1 += (A[f + 0] * A[f + 2]) + (A[f + 1] * A[f + 3]);
+			C1_0 += (A[f + 0] * A[f + 2]) + (A[f + 1] * A[f + 3]);
+			C1_1 += (A[f + 2] * A[f + 2]) + (A[f + 3] * A[f + 3]);
+
+
+			bezier.q(firstPoint_x, firstPoint_y, firstPoint_x, firstPoint_y, lastPoint_x, lastPoint_y, lastPoint_x, lastPoint_y, u, tempQ);
+
+			tmp_x = points[i * 2] - tempQ[0];
+			tmp_y = points[i * 2 + 1] - tempQ[1];
+
+			X_0 += (A[f + 0] * tmp_x) + (A[f + 1] * tmp_y);
+			X_1 += (A[f + 2] * tmp_x) + (A[f + 3] * tmp_y);
+		}
+
+		det_C0_C1 = (C0_0 * C1_1) - (C1_0 * C0_1);
+		det_C0_X = (C0_0 * X_1) - (C1_0 * X_0);
+		det_X_C1 = (X_0 * C1_1) - (X_1 * C0_1);
+
+		alpha_l = det_C0_C1 === 0 ? 0 : det_X_C1 / det_C0_C1;
+		alpha_r = det_C0_C1 === 0 ? 0 : det_C0_X / det_C0_C1;
+
+		tmp_x = firstPoint_x - lastPoint_x;
+		tmp_y = firstPoint_y - lastPoint_y;
+
+		segLength = Math.sqrt(tmp_x * tmp_x + tmp_y * tmp_y);
+
+		epsilon = 1.0e-6 * segLength;
+
+		if (alpha_l &lt; epsilon || alpha_r &lt; epsilon) {
+			//Fall back on standard (probably inaccurate) formula, and subdivide further if needed.
+			tempL_x = leftTangent_x * (segLength / 3.0);
+			tempL_y = leftTangent_y * (segLength / 3.0);
+			tempR_x = rightTangent_x * (segLength / 3.0);
+			tempR_y = rightTangent_y * (segLength / 3.0);
+		
+			bezCurve[2] = firstPoint_x + tempL_x;
+			bezCurve[3] = firstPoint_y + tempL_y;
+			bezCurve[4] = lastPoint_x + tempR_x;
+			bezCurve[5] = lastPoint_y + tempR_y;
+		} else {
+			tempL_x = leftTangent_x * alpha_l;
+			tempL_y = leftTangent_y * alpha_l;
+			tempR_x = rightTangent_x * alpha_r;
+			tempR_y = rightTangent_y * alpha_r;
+
+			bezCurve[2] = firstPoint_x + tempL_x;
+			bezCurve[3] = firstPoint_y + tempL_y;
+			bezCurve[4] = lastPoint_x + tempR_x;
+			bezCurve[5] = lastPoint_y + tempR_y;
+		}
+
+		return bezCurve;
+	}
+
+	function computeMaxError(points, bez, parameters, tempr) {
+		let dist,
+			maxDist,
+			splitPoint,
+			i, count, t,
+			t_distMap = mapTtoRelativeDistances(bez, 10),
+			temp = [], tempV_x, tempV_y;
+
+		maxDist = 0;
+		splitPoint = points.length / 4;
+
+		for (i = 0, count = points.length / 2; i &lt; count; i++) {
+			t = find_t(parameters[i], t_distMap, 10);
+
+			bezier.q(bez[0], bez[1], bez[2], bez[3], bez[4], bez[5], bez[6], bez[7], t, temp);
+
+			tempV_x = temp[0] - points[i * 2];
+			tempV_y = temp[1] - points[i * 2 + 1];
+
+			dist = tempV_x * tempV_x + tempV_y * tempV_y;
+
+			if (dist > maxDist) {
+				maxDist = dist;
+				splitPoint = i * 2;
+			}
+		}
+		tempr[0] = maxDist;
+		tempr[1] = splitPoint;
+		return tempr;
+	}
+
+	function mapTtoRelativeDistances(bez, B_parts) {
+		let B_t_curr = [],
+			B_t_dist = [0],
+			B_t_prev_x = bez[0],
+			B_t_prev_y = bez[1],
+			sumLen = 0,
+			i, temp_x, temp_y;
+
+		for (i = 1; i &lt;= B_parts; i++) {
+			bezier.q(bez[0], bez[1], bez[2], bez[3], bez[4], bez[5], bez[6], bez[7], i / B_parts, B_t_curr);
+
+			temp_x = B_t_curr[0] - B_t_prev_x;
+			temp_y = B_t_curr[1] - B_t_prev_y;
+
+			sumLen += Math.sqrt(temp_x * temp_x + temp_y * temp_y);
+
+			B_t_dist.push(sumLen);
+			B_t_prev_x = B_t_curr[0];
+			B_t_prev_y = B_t_curr[1];
+		}
+
+		for (i = 0; i &lt; B_t_dist.length; i ++) {
+			B_t_dist[i] /= sumLen;
+		}
+		return B_t_dist;
+	}
+
+	function chordLengthParameterize(points, u) {
+		let currU, prevU, prevP_x, prevP_y, i, tempV_x, tempV_y;
+
+		for (i = 0; i &lt; points.length; i += 2) {
+
+			if (i) {
+				tempV_x = points[i] - prevP_x;
+				tempV_y = points[i + 1] - prevP_y;
+				currU = Math.sqrt(tempV_x * tempV_x + tempV_y * tempV_y) + prevU;
+			} else {
+				currU = 0;
+			}
+
+			u.push(currU);
+
+			prevU = currU;
+			prevP_x = points[i];
+			prevP_y = points[i + 1];
+		}
+
+		for (i = 0; i &lt; u.length; i ++) {
+			u[i] /= prevU;
+		}
+
+		return u;
+	}
+
+	function reparameterize(bezier, points, parameters) {
+		//Clone is necessary for now
+		//TODO: remove clone
+
+		let result = [];
+
+		for (let i = 0; i &lt; parameters.length; i ++) {
+			result.push(newtonRaphsonRootFind(bezier, points[i * 2], points[i * 2 + 1], parameters[i]));
+		}
+
+		return result;
+	}
+
+	function newtonRaphsonRootFind(bez, point_x, point_y, u) {
+
+		let temp = [];
+		bezier.q(bez[0], bez[1], bez[2], bez[3], bez[4], bez[5], bez[6], bez[7], u, temp);
+		let d_x = temp[0] - point_x,
+			d_y = temp[1] - point_y,
+			qprime = [];
+			bezier.qprime(bez[0], bez[1], bez[2], bez[3], bez[4], bez[5], bez[6], bez[7], u, qprime);
+		let qprimeprime = [];
+			bezier.qprimeprime(bez[0], bez[1], bez[2], bez[3], bez[4], bez[5], bez[6], bez[7], u, qprimeprime);
+		let numerator = (d_x * qprime[0]) + (d_y * qprime[1]),
+			denominator = qprime[0] * qprime[0] + qprime[1] * qprime[1] + 2 * (d_x * qprimeprime[0]) + (d_y * qprimeprime[1]);
+
+		if (denominator === 0) {
+			return u;
+		}
+		return u - numerator / denominator;
+	}
+
+	function find_t(param, t_distMap, B_parts) {
+		if (param &lt; 0) {
+			return 0;
+		}
+		if (param > 1) {
+			return 1;
+		}
+
+		let lenMax, lenMin, tMax, tMin, t, i;
+
+		for (i = 1; i &lt;= B_parts; i++) {
+
+			if (param &lt;= t_distMap[i]) {
+				tMin = (i - 1) / B_parts;
+				tMax = i / B_parts;
+				lenMin = t_distMap[i - 1];
+				lenMax = t_distMap[i];
+
+				t = (param - lenMin) / (lenMax - lenMin) * (tMax - tMin) + tMin;
+				break;
+			}
+		}
+		return t;
+	}
+
+	function createTangent(pointA_x, pointA_y, pointB_x, pointB_y, data) {
+		let p_x = pointA_x - pointB_x,
+			p_y = pointA_y - pointB_y;
+
+		let temp = Math.sqrt(p_x * p_x + p_y * p_y);
+
+		data[0] = p_x / temp;
+		data[1] = p_y / temp;
+		return data;
+	}
+
+	class bezier {
+		static q(p1_x, p1_y, p2_x, p2_y, p3_x, p3_y, p4_x, p4_y, t, data) {
+			let tx = 1.0 - t;
+			
+			data[0] = p1_x * tx * tx * tx +
+			p2_x * 3 * tx * tx * t +
+			p3_x * 3 * tx * t * t +
+			p4_x * t * t * t;
+			data[1] = p1_y * tx * tx * tx +
+			p2_y * 3 * tx * tx * t +
+			p3_y * 3 * tx * t * t +
+			p4_y * t * t * t;
+			return data;
+		}
+
+		static qprime(p1_x, p1_y, p2_x, p2_y, p3_x, p3_y, p4_x, p4_y, t, data) {
+			let tx = 1.0 - t;
+
+			data[0] = (p2_x - p1_x) * 3 * tx * tx +
+			(p3_x - p2_x) * 6 * tx * t + 
+			(p4_x - p3_x) * 3 * t * t;
+			data[1] = (p2_y - p1_y) * 3 * tx * tx +
+			(p3_y - p2_y) * 6 * tx * t +
+			(p4_y - p3_y) * 3 * t * t;
+			
+			return data;
+		}
+
+		static qprimeprime(p1_x, p1_y, p2_x, p2_y, p3_x, p3_y, p4_x, p4_y, t, data) {
+			data[0] = (p1_x + p3_x - p2_x * 2) * 6 * (1.0 - t) +
+				(p2_x + p4_x - p3_x * 2) * 6 * t;
+			data[1] = (p1_y + p3_y - p2_y * 2) * 6 * (1.0 - t) +
+				(p2_y + p4_y - p3_y * 2) * 6 * t;
+
+			return data;
+		}
+	}
+
+	global.fitCurve = fitCurve;
+	global.dataaa = [168,266,172,254,180,238,190,218,208,188,238,138,262,101,288,74,300,61,302,58,302,61,298,68,290,83,280,103,275,116,275,123,278,128,290,128,305,126,320,124,332,118,342,118,345,118,352,131,360,148,372,166,385,181,402,191,418,191,428,184,428,171,405,151,373,134,333,118,308,118,305,118,308,118,320,118,355,118,385,118,410,116,428,116,430,116,425,118,408,116,395,114,385,111,375,113,365,121,358,131,358,141,360,151,368,158,382,166,408,183,435,203,468,231,495,261,505,283,503,291,493,293,470,288,455,281,440,268,428,254,425,238,435,218,460,214,492,216,520,226,540,246,550,263,545,281,533,293,513,298,500,301,490,306,488,308,488,306];
+})(
+	typeof self !== "undefined" ? self :
+	typeof window !== "undefined" ? window :
+	typeof global !== "undefined" ? global : this
+);
+
+console.log(fitCurve(dataaa, 50));
 
 /*
 /*
@@ -9470,7 +9971,7 @@ function _helper15(ps, ind0, ind1, nps) {
 <br class="clear">
 
 <footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Sun Apr 08 2018 20:31:35 GMT-0700 (Pacific Daylight Time)
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.5.5</a> on Fri Apr 20 2018 18:35:10 GMT-0700 (Pacific Daylight Time)
 </footer>
 
 <script> prettyPrint(); </script>
