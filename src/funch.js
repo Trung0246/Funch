@@ -1,7 +1,7 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.23a
+	Funch.js, v0.24a
 
 	MIT License
 
@@ -93,6 +93,8 @@
 	_toRad_1_ = Math.PI / 180,
 	_toDeg_1_ = 180 / Math.PI,
 	_triEquil_1_ = Math.sqrt(3) / 2,
+
+	//Keep default function
 	oldPow = Math.pow,
 	oldRandom = Math.random,
 
@@ -709,11 +711,12 @@
 
 	/**
 	 *
-	 * Calculate remainder with more options ?
+	 * Calculate remainder with range
 	 *
 	 * @param {number} num
-	 * @param {number} left
-	 * @param {number=} right
+	 * @param {number} min
+	 * @param {number=} max
+	 * @param {offset=} [offset=0] offset
 	 * @return {number}
 	 *
 	 * @example
@@ -726,22 +729,23 @@
 	 * @function rem
 	 * @memberof Math
 	 **/
-	function Math_rem(num, left, right) {
+	function Math_rem(num, min, max, offset) {
 		//detect single-arg case, like mod-loop or fmod
-		if (!right) {
-			right = left;
-			left = 0;
+		if (!max) {
+			max = min;
+			min = 0;
 		}
+		offset = _helper0(offset, 0);
 		//swap frame order
-		if (left > right) {
-			let tmp = right;
-			right = left;
-			left = tmp;
+		if (min > max) {
+			let tmp = max;
+			max = min;
+			min = tmp;
 		}
-		let frame = right - left;
-		num = ((num + left) % frame) - left;
-		if (num < left) num += frame;
-		if (num > right) num -= frame;
+		let frame = max - min;
+		num = ((num + min) % frame) - min;
+		if (num < min) num += frame + offset;
+		if (num > max) num -= frame;
 		return num;
 	}
 
@@ -2097,6 +2101,9 @@
 	 * @memberof Math
 	 **/
 	function Math_order(num) {
+		if (num === 0) {
+			return 0;
+		}
 		return Math.floor(Math_ln(Math.abs(num)) / Math.LN10);
 	}
 
@@ -2448,16 +2455,17 @@
 	 * @function bounce
 	 * @memberof Math
 	 **/
-	function Math_bounce(num, min, max) {
+	function Math_bounce(num, min, max, offset) {
 		num -= min;
 		max -= min;
+		offset = _helper0(offset, 1) + 1;
 		let max2 = max * 2,
 			result = num % max2;
 		if (result < 0) {
 			result += max2;
 		}
 		if (result > max) {
-			result = max2 - result;
+			result = max * offset - result;
 		}
 		return result + min;
 	}
@@ -2722,7 +2730,7 @@
 	 * @param {number=} [min=0] - Minimum
 	 * @param {number=} [max=1] - Maximum
 	 * @param {boolean=} round - `true` if generate integer
-	 * @param {number|number[]} [seed=undefined] - Put seed to generate number here (if array then maximum length is 5), every number must be int32
+	 * @param {number|number[]|function} [seed=undefined] - Put seed (or function) to generate number here (if array then maximum length is 5), every number must be int32
 	 * @param {number=} larger - return this number if `min > max`
 	 * @param {number=} equal - return this number if `min == max`
 	 *
@@ -2751,19 +2759,23 @@
 		}
 		let returnValue;
 		if (seed) {
-			let _memory_1_ = _helper2();
-			if (typeof seed === "number") {
-				_memory_1_[0] = seed;
+			if (typeof seed === "function") {
+				returnValue = seed();
 			} else {
-				_memory_1_[0] = _helper0(seed[0], 0);
+				let _memory_1_ = _helper2();
+				if (typeof seed === "number") {
+					_memory_1_[0] = seed;
+				} else {
+					_memory_1_[0] = _helper0(seed[0], 0);
+				}
+				_memory_1_[1] = _helper0(seed[1], 0);
+				_memory_1_[2] = _helper0(seed[2], 0);
+				_memory_1_[3] = _helper0(seed[3], 0);
+				_memory_1_[4] = _helper0(seed[4], 0);
+				_helper12(_memory_1_);
+				returnValue = _helper13(_memory_1_[5], _memory_1_[6], _memory_1_[4]) / _helper7_1_;
+				_helper2(_memory_1_);
 			}
-			_memory_1_[1] = _helper0(seed[1], 0);
-			_memory_1_[2] = _helper0(seed[2], 0);
-			_memory_1_[3] = _helper0(seed[3], 0);
-			_memory_1_[4] = _helper0(seed[4], 0);
-			_helper12(_memory_1_);
-			returnValue = _helper13(_memory_1_[5], _memory_1_[6], _memory_1_[4]) / _helper7_1_;
-			_helper2(_memory_1_);
 		} else {
 			returnValue = oldRandom();
 		}
@@ -5692,7 +5704,7 @@
 	 * @function truncVec
 	 * @memberof Vector
 	 **/
-	function Math_trunc2Vec(x, y, num, returnData) {
+	function Math_truncVec(x, y, num, returnData) {
 		let scale = num / Math_magVec(x, y, false);
 		scale = scale < 1.0 ? scale : 1.0;
 		return Math_scaleVec(x, y, scale, returnData);
@@ -6952,8 +6964,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_outPow(time, pow) {
-		let check = Number_isEven(pow - 1) ? 1 : -1;
-		return 1 + Math_pow(time - 1, pow) * check;
+		return 1 - Math_pow(1 - time, pow);
 	}
 
 	/**
@@ -6972,8 +6983,11 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inOutPow(time, pow) {
-		let temp = 0.5 * Math_pow(2 * ((time < 0.5) ? time : 1 - time), pow);
-		return (time < 0.5) ? temp : 1 - temp;
+		time *= 2;
+		if (time < 1) {
+			return Math.pow(time, pow) / 2;
+		}
+		return 1 - Math.pow(2 - time, pow) / 2;
 	}
 	
 	/**
@@ -7091,8 +7105,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_inOutSine(time, pow) {
-		time *= 2;
-		if (time < 1) {
+		if (time < 0.5) {
 			return 0.5 - Math_pow(Math.cos(Math.PI * time), pow) / 2;
 		}
 		return Math_pow(Math.cos(Math.PI * (time - 1)), pow) / 2 + 0.5;
@@ -7321,7 +7334,7 @@
 	 *
 	 * @param {number} time
 	 * @param {number} overShoot
-	 * @param {boolean} isOver - `true` is raw number input
+	 * @param {boolean} isOver - `true` if raw number input
 	 * @return {number}
 	 *
 	 * @example
@@ -7799,7 +7812,7 @@
 		if (time < 0.5) {
 			return func(2 * time) / 2;
 		}
-		return 1 - f(2 - 2 * t) / 2;
+		return 1 - func(2 - 2 * t) / 2;
 	}
 
 	/**
@@ -7821,7 +7834,7 @@
 		if (time < 0.5)  {
 			return 0.5 - func(1 - 2 * time) / 2;
 		}
-		return (f(2 * t - 1) + 1) / 2;
+		return (func(2 * t - 1) + 1) / 2;
 	}
 
 	/**
@@ -8978,7 +8991,7 @@
 		"M", "rec", Math_rec,
 		"M", "normVec", Math_normVec,
 		"M", "scaleVec", Math_scaleVec,
-		"M", "truncVec", Math_trunc2Vec,
+		"M", "truncVec", Math_truncVec,
 		"M", "magVec", Math_magVec,
 		"M", "dotVec", Math_dotVec,
 		"M", "crossVec", Math_crossVec,
