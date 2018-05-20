@@ -1,7 +1,7 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.24a
+	Funch.js, v0.25a
 
 	MIT License
 
@@ -45,7 +45,7 @@
 	- bspline.js    (Thibaut Séguy, MIT)             <github.com/thibauts/b-spline>
 	- StackOverflow (many authors)                   <stackoverflow.com>
 	*/
-
+	
 	//Namespace
 	let Math = global.Math, Number = global.Number,
 
@@ -84,7 +84,7 @@
 		[0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]
 	],
 	_helper7_1_ = Math.pow(2, 32) - 1,
-	_snoise_4_ = 0.5 * (Math.sqrt(3) - 1),
+	_snoise_4_ = (Math.sqrt(3) - 1) / 2,
 	_snoise_5_ = (3 - Math.sqrt(3)) / 6,
 	_snoise_6_ = 1 / 6,
 	_vnoise_1_ = _helper7_1_ / 2 - 0.5,
@@ -405,10 +405,10 @@
 	}
 
 	function _helper21(a, b, c, epsilon) {
-		let minx = Math.min(b.x, c.x),
-			maxx = Math.max(b.x, c.x),
-			miny = Math.min(b.y, c.y),
-			maxy = Math.max(b.y, c.y);
+		let minx = Math_clamp(b.x, b.x, c.x),
+			maxx = Math_clamp(c.x, b.x, c.x),
+			miny = Math_clamp(b.y, b.y, c.y),
+			maxy = Math_clamp(c.y, b.y, c.y);
 
 		if (minx === maxx) return (miny <= a.y && a.y <= maxy);
 		if (miny === maxy) return (minx <= a.x && a.x <= maxx);
@@ -442,9 +442,6 @@
 		let k,
 			allEqual = true,
 			flip = (type === 2 ? 1 : -1);
-		if (typeof places != "number" && !(places instanceof Number)) {
-			places = 10;
-		}
 
 		if (num === flip * Infinity) {
 			return NaN;
@@ -617,31 +614,31 @@
 	 */
 	let Math_KAPPA = {
 		ARC: 4 * (Math.SQRT2 - 1) / 3,
-		SIN: 0.364212423249794, //sin curve, (6 − (3 / 2 * Math.PI − 3) ** 2)/6 also sin ?
-		IN_QUAD: [.55, .085, .68, .53],
-		IN_CUBIC: [.55, .055, .675, .19],
-		IN_QUART: [.895, .03, .685, .22],
-		IN_QUINT: [.755, .05, .855, .06],
-		IN_SINE: [.47, 0, .745, .715],
-		IN_EXPO: [.95, .05, .795, .035],
-		IN_CIRC: [.6, .04, .98, .335],
-		IN_BACK: [.6, -.28, .735, .045],
-		OUT_QUAD: [.25, .46, .45, .94],
-		OUT_CUBIC: [.215, .61, .355, 1],
-		OUT_QUART: [.165, .84, .44, 1],
-		OUT_QUINT: [.23, 1, .32, 1],
-		OUT_SINE: [.39, .575, .565, 1],
-		OUT_EXPO: [.19, 1, .22, 1],
-		OUT_CIRC: [.075, .82, .165, 1],
-		OUT_BACK: [.175, .885, .32, 1.275],
-		IN_OUT_QUAD: [.455, .03, .515, .955],
-		IN_OUT_CUBIC: [.645, .045, .355, 1],
-		IN_OUT_QUART: [.77, 0, .175, 1],
-		IN_OUT_QUINT: [.86, 0, .07, 1],
-		IN_OUT_SINE: [.445, .05, .55, .95],
+		SIN: 0.364212423249794, //sin curve, (6 - (3 / 2 * Math.PI - 3) ** 2)/6 also sin ?
+		IN_QUAD: [0.55, 0.085, 0.68, 0.53],
+		IN_CUBIC: [0.55, 0.055, 0.675, 0.19],
+		IN_QUART: [0.895, 0.03, 0.685, 0.22],
+		IN_QUINT: [0.755, 0.05, 0.855, 0.06],
+		IN_SINE: [0.47, 0, 0.745, 0.715],
+		IN_EXPO: [0.95, 0.05, 0.795, 0.035],
+		IN_CIRC: [0.6, 0.04, 0.98, 0.335],
+		IN_BACK: [0.6, -0.28, 0.735, 0.045],
+		OUT_QUAD: [0.25, 0.46, 0.45, 0.94],
+		OUT_CUBIC: [0.215, 0.61, 0.355, 1],
+		OUT_QUART: [0.165, 0.84, 0.44, 1],
+		OUT_QUINT: [0.23, 1, 0.32, 1],
+		OUT_SINE: [0.39, 0.575, 0.565, 1],
+		OUT_EXPO: [0.19, 1, 0.22, 1],
+		OUT_CIRC: [0.075, 0.82, 0.165, 1],
+		OUT_BACK: [0.175, 0.885, 0.32, 1.275],
+		IN_OUT_QUAD: [0.455, 0.03, 0.515, 0.955],
+		IN_OUT_CUBIC: [0.645, 0.045, 0.355, 1],
+		IN_OUT_QUART: [0.77, 0, 0.175, 1],
+		IN_OUT_QUINT: [0.86, 0, 0.07, 1],
+		IN_OUT_SINE: [0.445, 0.05, 0.55, 0.95],
 		IN_OUT_EXPO: [1, 0, 0, 1],
-		IN_OUT_CIRC: [.785, .135, .15, .86],
-		IN_OUT_BACK: [.68, -.55, .265, 1.55]
+		IN_OUT_CIRC: [0.785, 0.135, 0.15, 0.86],
+		IN_OUT_BACK: [0.68, -0.55, 0.265, 1.55]
 	};
 
 	/**
@@ -1019,6 +1016,29 @@
 
 	/**
 	 *
+	 * [Unpairing function]{@link https://en.wikipedia.org/wiki/Pairing_function}
+	 *
+	 * @param {number} num
+	 * @param {array=} returnData - Array to put data
+	 * @return {number[]} [num1, num2]
+	 *
+	 * @example
+	 * Math.unpair(100);
+	 * //[9, 6]
+	 *
+	 * @function unpair
+	 * @memberof Math
+	 **/
+	function Math_unpair(num, returnData) {
+		returnData = _helper1(returnData, false);
+		let temp = Math.floor(Math.sqrt(2 * num) - 0.5);
+		returnData[0] = num - temp * (temp + 1) / 2;
+		returnData[1] = temp - returnData[0] + 2;
+		return returnData;
+	}
+
+	/**
+	 *
 	 * Calculate [integral]{@link https://en.wikipedia.org/wiki/Integral}
 	 *
 	 * @param {number} a - The begin of interval
@@ -1093,7 +1113,7 @@
 		columns = _helper0(columns, 6);
 		accuracy1 = _helper0(accuracy1, 1e-15); //tol
 		accuracy2 = _helper0(accuracy2, 1);
-		let d1, d2, h2,
+		let d1, d2, h2, m, i,
 			_memory_1_ = _helper2();
 		_memory_1_[0] = (func(num + accuracy2) - func(num - accuracy2)) / (accuracy2 * 2);
 		for (let j = 1; j <= columns - 1; j++) {
@@ -1102,7 +1122,7 @@
 			h2 = accuracy2;
 			accuracy2 /= 2;
 			_memory_1_[0] = (func(num + accuracy2) - func(num - accuracy2)) / h2;
-			for (let m = 4, i = 1; i <= j; i++, m *= 4) {
+			for (m = 4, i = 1; i <= j; i++, m *= 4) {
 				d2 = _memory_1_[i];
 				_memory_1_[i] = (m * _memory_1_[i - 1] - d1) / (m - 1);
 				d1 = d2;
@@ -1174,6 +1194,7 @@
 	 * @param {function} func - Function to calculate
 	 * @param {number=} [tolerance=0] - accuracy
 	 * @param {number=} [iteration=1000]
+	 * @param {number=} [epsilon=1e-15]
 	 * @return {number}
 	 *
 	 * @example
@@ -1183,9 +1204,10 @@
 	 * @function solve
 	 * @memberof Math
 	 */
-	function Math_solve(min, max, func, tolerance, iteration) {
+	function Math_solve(min, max, func, tolerance, iteration, epsilon) {
 		tolerance = _helper0(tolerance, 0);
 		iteration = _helper0(iteration, 1000);
+		epsilon = _helper0(epsilon, 1e-15);
 		let tempTol, newStep, prevStep, p, q, t1, cb, t2,
 			temp1 = min,
 			tempMin = func(min),
@@ -1201,7 +1223,7 @@
 				tempMax = temp2;
 				temp2 = tempMin;
 			}
-			tempTol = 1e-15 * Math.abs(max) + tolerance / 2;
+			tempTol = epsilon * Math.abs(max) + tolerance / 2;
 			newStep = (temp1 - max) / 2;
 			if (Math.abs(newStep) <= tempTol || tempMax === 0) {
 				return max;
@@ -1638,6 +1660,7 @@
 			case 4:
 				return Math_away(num);
 		}
+		return num;
 	}
 
 	/**
@@ -2250,16 +2273,43 @@
 	 * @memberof Math
 	 **/
 	function Math_fold(type, num) {
-		if (type) {
-			if (num > 0) {
-				return 2 * num - 1;
+		if (num <= 0) {
+			num = Math.abs(num);
+			if (!type) {
+				num -= 0.5;
 			}
-			return 2 * Math.abs(num);
+		} else if (type) {
+			num -= 0.5;
 		}
-		if (num >= 0) {
-			return 2 * num;
+
+		return num * 2;
+	}
+
+	/**
+	 *
+	 * [Inverse of Folding function]{@link http://mathworld.wolfram.com/FoldingFunction.html}
+	 *
+	 * @param {boolean} type
+	 * @param {number} num
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.infd(true, 1);
+	 * //-1
+	 *
+	 * @function infd
+	 * @memberof Math
+	 **/
+	function Math_infd(type, num) {
+		if (num % 2 >= 1) {
+			num += 1;
+		} else {
+			num *= -1;
 		}
-		return 2 * Math.abs(num) - 1;
+		if (type) {
+			num *= -1;
+		}
+		return num / 2;
 	}
 
 	/**
@@ -2446,6 +2496,7 @@
 	 * @param {number} num
 	 * @param {number} min
 	 * @param {number} max
+	 * @param {number=} [offset=1]
 	 * @return {number}
 	 *
 	 * @example
@@ -4760,7 +4811,7 @@
 
 		if ((s < 0) !== (t < 0)) return false;
 
-		let area = Geometry.areaTri(x_1, y_1, x_2, y_2, x_3, y_3, true);
+		let area = Geometry_areaTri(x_1, y_1, x_2, y_2, x_3, y_3, true);
 		if (area > 0) {
 			s *= -1;
 			t *= -1;
@@ -4792,7 +4843,7 @@
 	function Geometry_areaTri(x_1, y_1, x_2, y_2, x_3, y_3, accurate) {
 		let temp = (x_3 - x_1) * (y_2 - y_1) - (x_2 - x_1) * (y_3 - y_1);
 		if (!accurate) {
-			return Math.abs(temp / 2)
+			return Math.abs(temp / 2);
 		}
 		return temp;
 	}
@@ -5115,7 +5166,7 @@
 		if (points.length <= 6) {
 			return false;
 		}
-		let check = Geometry_isClockWisePoly(points),
+		let check = Geometry_areaPoly(points, true) > 0 ,
 			ccw = Geometry_sideLine(points[points.length - 3], points[points.length - 2], points[0], points[1], points[2], points[3]),
 			temp;
 		ccw = (ccw > 0 || Math.abs(ccw) < 0);
@@ -5926,6 +5977,7 @@
 	 *
 	 * @param {number} x - x position
 	 * @param {number} y - y position
+	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number}}
 	 *
 	 * @example
@@ -7506,6 +7558,7 @@
 	 * @param {number} time
 	 * @param {number=} [bounciness=400]
 	 * @param {number=} [elasticity=200]
+	 * @param {number=} [gravity=100]
 	 * @param {boolean=} [back=false] - `true` if return back to 0
 	 * @return {number}
 	 *
@@ -7516,10 +7569,11 @@
 	 * @function bounce
 	 * @memberof Tween
 	 **/
-	function Tween_bounce(time, bounciness, elasticity, back) {
-		let tempL, tempL2, tempb2, curve2a, curve2b, curve2H, curveLength = 0, gravity = 100;
+	function Tween_bounce(time, bounciness, elasticity, gravity, back) {
+		let tempL, tempL2, tempb2, curve2a, curve2b, curve2H, curveLength = 0;
 		bounciness = Math.min(_helper0(bounciness, 400) / 1250, 0.8);
 		elasticity = _helper0(elasticity, 200) / 1000;
+		gravity = _helper0(gravity, 100);
 
 		for (let j = 0; j < 2; j ++) {
 			if (j === 0) {
@@ -7567,7 +7621,7 @@
 		} else {
 			let temp2;
 			tempL = curve.b - curve.a;
-			temp2 = (-2 * curve.a - tempL + 2 * time) / tempL;
+			temp2 = 2 * (time - curve.a) / tempL - 1;
 			returnData = temp2 * temp2 * curve.H - curve.H + 1;
 			if (back) {
 				returnData = 1 - returnData;
@@ -7812,7 +7866,7 @@
 		if (time < 0.5) {
 			return func(2 * time) / 2;
 		}
-		return 1 - func(2 - 2 * t) / 2;
+		return 1 - func(2 - 2 * time) / 2;
 	}
 
 	/**
@@ -7834,7 +7888,7 @@
 		if (time < 0.5)  {
 			return 0.5 - func(1 - 2 * time) / 2;
 		}
-		return (func(2 * t - 1) + 1) / 2;
+		return (func(2 * time - 1) + 1) / 2;
 	}
 
 	/**
@@ -7905,6 +7959,10 @@
 		let i, j;
 		if (count2) {
 			max = _helper0(max, 10);
+			let tempCount, tempCount2,
+				temp1 = 1,
+				temp2 = size - 2,
+				tempSize = size * size;
 			if (value) {
 				gain = _helper0(gain, 100);
 				for (i = 1; i < size - 1; i++) {
@@ -7913,11 +7971,6 @@
 					}
 				}
 			}
-
-			let tempCount, tempCount2,
-				temp1 = 1,
-				temp2 = size - 2,
-				tempSize = size * size;
 			for (i = temp1; i < temp2; i++) {
 				tempCount = i * size;
 				for (j = temp1; j < temp2; j++) {
@@ -7951,8 +8004,8 @@
 
 			return 0;
 		}
-		let now, next, previous, dhdx,
-			length = size * 3;
+		let dhdx,
+			length = size * 3,
 		//frequency = _helper0(frequency, 0.1);
 		//dampen = _helper0(dampen, 0.97); //0.995
 		now = count % 3,
@@ -8154,7 +8207,7 @@
 
 			_helper_bspline_1(true);
 			return returnData;
-		}
+		};
 	})();
 
 	/**
@@ -8839,6 +8892,7 @@
 		"M", "of", Math_of,
 		"M", "sigmoid", Math_sigmoid,
 		"M", "pair", Math_pair,
+		"M", "unpair", Math_unpair,
 		"M", "integral", Math_integral,
 		"M", "derivative", Math_derivative,
 		"M", "limit", Math_limit,
@@ -8883,6 +8937,7 @@
 		"M", "rect", Math_rect,
 		"M", "tri", Math_tri,
 		"M", "fold", Math_fold,
+		"M", "infd", Math_infd,
 		"M", "one", Math_one,
 		"M", "copy", Math_copy,
 		"M", "flip", Math_flip,
