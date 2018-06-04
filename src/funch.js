@@ -1,7 +1,7 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.25a
+	Funch.js, v0.26a
 
 	MIT License
 
@@ -42,12 +42,12 @@
 	- game-math     (Nick Pruehs, MIT)               <github.com/npruehs/game-math>
 	- angles.js     (Robert Eisele, MIT)             <github.com/infusion/Angles.js>
 	- uniroot.js    (Borgar Thorsteinsson, MIT)      <gist.github.com/borgar/3317728>
-	- bspline.js    (Thibaut Séguy, MIT)             <github.com/thibauts/b-spline>
+	- bspline.js    (Thibaut, MIT)                   <github.com/thibauts/b-spline>
 	- StackOverflow (many authors)                   <stackoverflow.com>
 	*/
 	
 	//Namespace
-	let Math = global.Math, Number = global.Number,
+	let Math = global.Math, Number = global.Number, Boolean = global.Boolean,
 
 	_gamma_1_ = [
 		0.99999999999980993, 676.5203681218851, -1259.1392167224028, 771.32342877765313,
@@ -191,9 +191,9 @@
 
 		while (num1 !== 0) {
 			q = Math.floor(num2 / num1);
-			r = num2 % num1;
 			m = x - oldX * q;
 			n = y - oldY * q;
+			r = num2 % num1;
 			num2 = num1;
 			num1 = r;
 			x = oldX;
@@ -320,8 +320,8 @@
 	}
 
 	function _helper18(p, a, b, edge, isc) {
-		let xx, yy, dst, param;
-		let A = p.x - a.x,
+		let xx, yy, dst, param,
+			A = p.x - a.x,
 			B = p.y - a.y,
 			C = b.x - a.x,
 			D = b.y - a.y;
@@ -428,13 +428,17 @@
 		let A = (a1.x * a2.y - a1.y * a2.x),
 			B = (b1.x * b2.y - b1.y * b2.x);
 
-		let iDen = 1 / Den;
-		c.x = (A * dbx - dax * B) * iDen;
-		c.y = (A * dby - day * B) * iDen;
+		Den = 1 / Den;
+		c.x = (A * dbx - dax * B) * Den;
+		c.y = (A * dby - day * B) * Den;
 
-		if (!_helper21(c, b1, b2, epsilon)) return null;
-		if ((day > 0 && c.y > a1.y) || (day < 0 && c.y < a1.y)) return null;
-		if ((dax > 0 && c.x > a1.x) || (dax < 0 && c.x < a1.x)) return null;
+		if (
+			!_helper21(c, b1, b2, epsilon) ||
+			((day > 0 && c.y > a1.y) || (day < 0 && c.y < a1.y)) ||
+			((dax > 0 && c.x > a1.x) || (dax < 0 && c.x < a1.x))
+		) {
+			return null;
+		}
 		return c;
 	}
 
@@ -581,7 +585,7 @@
 	/**
 	 * @constant {number} EM
 	 * 
-	 * [Euler–Mascheroni constant]{@link https://en.wikipedia.org/wiki/Euler–Mascheroni_constant}, specific value is `0.5772156649015329`
+	 * [Euler??CMascheroni constant]{@link https://en.wikipedia.org/wiki/Euler??CMascheroni_constant}, specific value is `0.5772156649015329`
 	 *
 	 * @memberof Math
 	 */
@@ -701,9 +705,8 @@
 	 * @memberof Math
 	 **/
 	function Math_mod(num1, num2) {
-		//https://math.stackexchange.com/questions/1069751/
-		return num1 - Math.floor(num1 / num2) * num2;
-		//(num1 % num2 + num2) % num2;
+		num1 %= num2;
+		return (num1 * num2 < 0) ? num1 + num2 : num1;
 	}
 
 	/**
@@ -1366,7 +1369,7 @@
 
 	/**
 	 *
-	 * Not sure if this function is [Production–possibility frontier function]{@link https://en.wikipedia.org/wiki/Production%E2%80%93possibility_frontier}
+	 * Not sure if this function is [Production??Cpossibility frontier function]{@link https://en.wikipedia.org/wiki/Production%E2%80%93possibility_frontier}
 	 *
 	 * @param {number} mean - [Mean]{@link https://en.wikipedia.org/wiki/Mean} or [Expected value]{@link https://en.wikipedia.org/wiki/Expected_value}
 	 * @param {number} std - [Standard deviation]{@link https://en.wikipedia.org/wiki/Standard_deviation}
@@ -1636,56 +1639,25 @@
 	 *
 	 * Adjust decimal of a number
 	 *
-	 * @param {number} type - 0: round, 1: floor, 2: ceil, 3: trunc, 4: away
-	 * @param {number} num
-	 * @return {number}
-	 *
-	 * @example
-	 * Math.adjust(0, Math.PI);
-	 * //3 (same as Math.round)
-	 *
-	 * @function adjust
-	 * @memberof Math
-	 **/
-	function Math_adjust(type, num) {
-		switch (type) {
-			case 0:
-				return Math.round(num);
-			case 1:
-				return Math.floor(num);
-			case 2:
-				return Math.ceil(num);
-			case 3:
-				return Math.trunc(num);
-			case 4:
-				return Math_away(num);
-		}
-		return num;
-	}
-
-	/**
-	 *
-	 * Adjust decimal of a number
-	 *
-	 * @param {number} type - 0: round, 1: floor, 2: ceil, 3: trunc, 4: away
+	 * @param {function} function - function that adjust number (Ex: Math.round)
 	 * @param {number} num
 	 * @param {number=} [digits=0]
 	 * @param {number=} base
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.adjust2(0, Math.PI, 2);
-	 * //3.14 (same as Math.round)
+	 * Math.adjust(Math.round, Math.PI, 2);
+	 * //3.14
 	 *
-	 * @function adjust2
+	 * @function adjust
 	 * @memberof Math
 	 **/
-	function Math_adjust2(type, num, digits, base) {
+	function Math_adjust(func, num, digits, base) {
 		digits = _helper0(digits, 0);
 		base = _helper0(base, 10);
 		let result, temp;
 		temp = Math_pow(base, digits);
-		result = Math_adjust(type, num * temp) / temp;
+		result = func(num * temp) / temp;
 		return result;
 	}
 
@@ -1693,20 +1665,20 @@
 	 *
 	 * Adjust decimal of a number by digit location and base
 	 *
-	 * @param {number} type - 0: round, 1: floor, 2: ceil, 3: trunc, 4: away
+	 * @param {function} function - function that adjust number (Ex: Math.round)
 	 * @param {number} num
 	 * @param {number=} [digits=0]
 	 * @param {number=} base
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.adjust3(0, Math.PI, 2);
-	 * //3.1 (same as Math.round2)
+	 * Math.adjust2(Math.round, Math.PI, 2);
+	 * //3.1
 	 *
-	 * @function adjust3
+	 * @function adjust2
 	 * @memberof Math
 	 **/
-	function Math_adjust3(type, num, digits, base) {
+	function Math_adjust2(func, num, digits, base) {
 		digits = _helper0(digits, 0);
 		base = _helper0(base, 10);
 		let base2, exp, temp, temp2;
@@ -1722,11 +1694,42 @@
 		exp = Math.floor(exp - digits + 1.0);
 		temp = Math_pow(base2, Math.abs(exp));
 		if (exp < 0) {
-			temp2 = Math_adjust(type, num * temp) / temp;
+			temp2 = func(num * temp) / temp;
 		} else {
-			temp2 = Math_adjust(type, num / temp) * temp;
+			temp2 = func(num / temp) * temp;
 		}
 		return temp2;
+	}
+
+	/**
+	 *
+	 * Round number around .5
+	 *
+	 * @param {number} num
+	 * @param {boolean=} [left=false] Negative, true if away from 0
+	 * @param {boolean=} [right=true] Positive, true if away from 0
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.round2(2.5);
+	 * //3.1
+	 *
+	 * @function round2
+	 * @memberof Math
+	 **/
+	function Math_round2(num, left, right) {
+		left = _helper0(left, false);
+		right = _helper0(right, true);
+		if (num < 0) {
+			if (left) {
+				return Math.ceil(num - 0.5);
+			}
+			return Math.floor(num + 0.5);
+		}
+		if (right) {
+			return Math.floor(num + 0.5);
+		}
+		return Math.ceil(num - 0.5);
 	}
 
 	/**
@@ -1749,216 +1752,6 @@
 	function Math_away(num) {
 		return num > 0 ? Math.ceil(num) : Math.floor(num);
 	}
-
-	/**
-	 *
-	 * Round number by digits and base
-	 *
-	 * @param {number} num
-	 * @param {number=} [digits=0]
-	 * @param {number=} base
-	 * @return {number}
-	 *
-	 * @example
-	 * Math.round2(Math.PI, 2);
-	 * //3.14
-	 *
-	 * Math.round2(5, -1, 2);
-	 * //6
-	 *
-	 * @function round2
-	 * @memberof Math
-	 **/
-	let Math_round2 = Math_adjust2.bind(this, 0);
-
-	/**
-	 *
-	 * Floor number by digits and base
-	 *
-	 * @param {number} num
-	 * @param {number=} [digits=0]
-	 * @param {number=} base
-	 * @return {number}
-	 *
-	 * @example
-	 * Math.floor2(Math.PI, 2);
-	 * //3.14
-	 *
-	 * Math.floor2(5, -1, 2);
-	 * //4
-	 *
-	 * @function floor2
-	 * @memberof Math
-	 **/
-	let Math_floor2 = Math_adjust2.bind(this, 1);
-
-	/**
-	 *
-	 * Ceil number by digits and base
-	 *
-	 * @param {number} num
-	 * @param {number=} [digits=0]
-	 * @param {number=} base
-	 * @return {number}
-	 *
-	 * @example
-	 * Math.ceil2(Math.PI, 2);
-	 * //3.15
-	 *
-	 * Math.ceil2(5, -1, 2);
-	 * //6
-	 *
-	 * @function ceil2
-	 * @memberof Math
-	 **/
-	let Math_ceil2 = Math_adjust2.bind(this, 2);
-
-	/**
-	 *
-	 * Truncate number by digits and base
-	 *
-	 * @param {number} num
-	 * @param {number=} [digits=0]
-	 * @param {number=} base
-	 * @return {number}
-	 *
-	 * @example
-	 * Math.trunc2(Math.PI, 2);
-	 * //3.14
-	 *
-	 * Math.trunc2(5, -1, 2);
-	 * //4
-	 *
-	 * @function trunc2
-	 * @memberof Math
-	 **/
-	let Math_trunc2 = Math_adjust2.bind(this, 3);
-
-	/**
-	 *
-	 * Truncate away from zero of a number by digits and base
-	 *
-	 * @param {number} num
-	 * @param {number=} [digits=0]
-	 * @param {number=} base
-	 * @return {number}
-	 *
-	 * @example
-	 * Math.away2(Math.PI, 2);
-	 * //3.15
-	 *
-	 * Math.away2(5, -1, 2);
-	 * //6
-	 *
-	 * @function away2
-	 * @memberof Math
-	 **/
-	let Math_away2 = Math_adjust2.bind(this, 4);
-
-	/**
-	 *
-	 * Round number by digit location and base
-	 *
-	 * @param {number} num
-	 * @param {number=} [digits=0]
-	 * @param {number=} base
-	 * @return {number}
-	 *
-	 * @example
-	 * Math.round3(Math.PI, 2);
-	 * //3.1
-	 *
-	 * Math.round3(12345, 2, 5);
-	 * //12500
-	 *
-	 * @function round3
-	 * @memberof Math
-	 **/
-	let Math_round3 = Math_adjust3.bind(this, 0);
-
-	/**
-	 *
-	 * Floor number by digit location and base
-	 *
-	 * @param {number} num
-	 * @param {number=} [digits=0]
-	 * @param {number=} base
-	 * @return {number}
-	 *
-	 * @example
-	 * Math.floor3(Math.PI, 2);
-	 * //3.1
-	 *
-	 * Math.floor3(12345, 2, 5);
-	 * //11875
-	 *
-	 * @function floor3
-	 * @memberof Math
-	 **/
-	let Math_floor3 = Math_adjust3.bind(this, 1);
-
-	/**
-	 *
-	 * Ceil number by digit location and base
-	 *
-	 * @param {number} num
-	 * @param {number=} [digits=0]
-	 * @param {number=} base
-	 * @return {number}
-	 *
-	 * @example
-	 * Math.ceil3(Math.PI, 2);
-	 * //3.2
-	 *
-	 * Math.ceil3(12345, 2, 5);
-	 * //12500
-	 *
-	 * @function ceil3
-	 * @memberof Math
-	 **/
-	let Math_ceil3 = Math_adjust3.bind(this, 2);
-
-	/**
-	 *
-	 * Truncate number by digit location and base
-	 *
-	 * @param {number} num
-	 * @param {number=} [digits=0]
-	 * @param {number=} base
-	 * @return {number}
-	 *
-	 * @example
-	 * Math.trunc3(Math.PI, 2);
-	 * //3.1
-	 *
-	 * Math.trunc3(12345, 2, 5);
-	 * //11875
-	 *
-	 * @function trunc3
-	 * @memberof Math
-	 **/
-	let Math_trunc3 = Math_adjust3.bind(this, 3);
-
-	/**
-	 *
-	 * Truncate away from zero of a number by digit location and base
-	 *
-	 * @param {number} num
-	 * @param {number=} [digits=0]
-	 * @param {number=} base
-	 * @return {number}
-	 *
-	 * @example
-	 * Math.away3(Math.PI, 2);
-	 * //3.2
-	 *
-	 * Math.away3(12345, 2, 5);
-	 * //12500
-	 *
-	 * @function away3
-	 * @memberof Math
-	 **/
-	let Math_away3 = Math_adjust3.bind(this, 4);
 
 	/**
 	 *
@@ -2010,7 +1803,7 @@
 	 *
 	 * Snap a number to nearest number grid
 	 *
-	 * @param {number} type - 0: round, 1: floor, 2: ceil, 3: trunc, 4: away
+	 * @param {function} function - function that adjust number (Ex: Math.round)
 	 * @param {number} num
 	 * @param {number} gap - The interval gap of the grid
 	 * @param {number=} [offset=0]
@@ -2020,17 +1813,17 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.snap(0, 12, 5);
+	 * Math.snap(Math.round, 12, 5);
 	 * //10
 	 *
 	 * @function snap
 	 * @memberof Math
 	 **/
-	function Math_snap(type, num, gap, offset, isLocate, digits, base) {
+	function Math_snap(func, num, gap, offset, digits, base) {
 		offset = _helper0(offset, 0);
 		if (gap === 0) return num;
 		num -= offset;
-		num = gap * (isLocate ? Math_adjust3(type, num / gap, digits, base) : Math_adjust2(type, num / gap, digits, base));
+		num = gap * func(num / gap, digits, base);
 		return offset + num;
 	}
 
@@ -2038,7 +1831,7 @@
 	 *
 	 * Same as `snap` but different a little bit...
 	 *
-	 * @param {number} type - 0: round, 1: floor, 2: ceil, 3: trunc, 4: away
+	 * @param {function} function - function that adjust number (Ex: Math.round)
 	 * @param {number} num
 	 * @param {number} a
 	 * @param {number} b
@@ -2049,16 +1842,16 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.discrete(0, 0.5, 0, 1);
+	 * Math.discrete(Math.round, 0.5, 0, 1);
 	 * //1
 	 *
 	 * @function discrete
 	 * @memberof Math
 	 **/
-	function Math_discrete(type, num, a, b, gap, isLocate, digits, base) {
+	function Math_discrete(func, num, a, b, gap, digits, base) {
 		gap = _helper0(gap, 1);
 		let temp = (a * (1 - num) + b * num) / gap;
-		return (isLocate ? Math_adjust3(type, temp, digits, base) : Math_adjust2(type, temp, digits, base)) * gap;
+		return func(temp, digits, base) * gap;
 	}
 
 	/**
@@ -2471,6 +2264,7 @@
 	 * @param {number} num
 	 * @param {number} min
 	 * @param {number} max
+	 * @param {boolean=} [offset=false]
 	 * @return {number}
 	 *
 	 * @example
@@ -2480,8 +2274,8 @@
 	 * @function wrap
 	 * @memberof Math
 	 **/
-	function Math_wrap(num, min, max) {
-		let range = max - min;
+	function Math_wrap(num, min, max, offset) {
+		let range = max - min + (offset ? 1 : 0);
 		let result = (num - min) % range;
 		if (result < 0) {
 			result += range;
@@ -3357,31 +3151,31 @@
 	/**
 	 * Scale angle
 	 *
-	 * @param {number} time - Scale percent
-	 * @param {number} num1 - angle in radians
-	 * @param {number} num2 - angle in radians
+	 * @param {number} num - Scale percent
+	 * @param {number} min - angle in radians
+	 * @param {number} max - angle in radians
 	 * @param {number} dir - if `1` then clockwise, `-1` is counter-clockwise
 	 * @returns {number}
 	 *
 	 * @example
-	 * Geometry.scaleAngle(-1, 0);
-	 * //3.141592653589793
+	 * Geometry.scaleAngle(0.25, 0, Math.PI);
+	 * //2.356194490192345
 	 *
 	 * @function scaleAngle
 	 * @memberof Geometry
 	 */
-	function Geometry_scaleAngle(scale, num1, num2, dir) {
-		num1 = Math_mod(num1, Math_TAU);
-		num2 = Math_mod(num2, Math_TAU);
-		if (num1 === num2) return num1;
+	function Geometry_scaleAngle(num, min, max, dir) {
+		min = Geometry_fullRad(min);
+		max = Geometry_fullRad(max);
+		if (min === max) return min;
 		if (!dir) {
 			dir =- Math_TAU;
-		} else if ((dir === 1) === (num1 < num2)) {
+		} else if ((dir === 1) === (min < max)) {
 			dir *= Math_TAU;
 		} else {
 			dir = 0;
 		}
-		return Math_mod(num1 + scale * (num2 - num1 - dir), Math_TAU);
+		return Geometry_fullRad(min + num * (max - min - dir));
 	}
 
 	/**
@@ -3430,18 +3224,26 @@
 	 *
 	 * @param {number} num1 - angle in radians
 	 * @param {number} num2 - angle in radians
+	 * @param {boolean=} [dir=false] - `true` if large angle
 	 * @return {number} Angle in radians
 	 *
 	 * @example
 	 * Geometry.diffAngle(Math.PI / 4, Math.PI);
-	 * //-2.356194490192344
+	 * //2.356194490192345
 	 *
 	 * @function diffAngle
 	 * @memberof Geometry
 	 **/
-	function Geometry_diffAngle(num1, num2) {
-		num1 = Geometry_normRad(num1 - num2);
-		return num1 > Math.PI ? (Math_TAU - num1) : num1;
+	function Geometry_diffAngle(num1, num2, dir) {
+		num1 = Geometry_fullRad(num1 - num2 + Math.PI) - Math.PI;
+		if (dir) {
+			num2 = Geometry_fullRad(Math_TAU - num1);
+			num1 = Geometry_fullRad(num1);
+			if (num1 < num2) {
+				return num2;
+			}
+		}
+		return -num1;
 	}
 
 	/**
@@ -3802,7 +3604,7 @@
 				return Geometry_distPnt(x_x, x_y, a_x, a_y, square); //maybe false?
 			}
 			let t = Math_dotVec(x_x - a_x, x_y - a_y, b_x - a_x, b_y - a_y) / l2;
-			t = Math.max(0, Math.min(1, t));
+			t = Math_clamp(t, 0, 1);
 			return Geometry_distPnt(x_x, x_y, a_x + t * (b_x - a_x), a_y + t * (b_y - a_y), square);
 		}
 	}
@@ -3857,11 +3659,11 @@
 	 * @param {number} d_y - y position of second point of the second segment
 	 * @param {number=} accuracy - accuracy to compare line vs points
 	 * @param {object=} returnData - Object to put data
-	 * @return {{x: number, y: number, onLine1: boolean, onLine2: boolean}} returnData.onLine1 will true if intersection point is on line a_x a_y b_x b_y and otherwise
+	 * @return {{x: number, y: number, a: number, b: number}} a and b number means: -1: left, 0: in, 1: right, 2: same slope and collide
 	 *
 	 * @example
 	 * Geometry.intrLine(0, 0, 1, 1, 1, 0, 1, -1);
-	 * //{x: 1, y: 1, onLine1: true, onLine2: false}
+	 * //{x: 1, y: 1, a: 1, b: 1}
 	 *
 	 * @function intrLine
 	 * @memberof Geometry
@@ -3871,8 +3673,8 @@
 
 		result.x = null;
 		result.y = null;
-		result.onLine1 = false;
-		result.onLine2 = false;
+		result.a = null;
+		result.b = null;
 
 		s1_x = b_x - a_x;
 		s1_y = b_y - a_y;
@@ -3886,10 +3688,11 @@
 			//Check if parallel and on same line
 			if (
 				Number.isNaN(Geometry_slopeLine(s2_x * s1_y, s1_x * a, s1_x * s2_y, s1_y * b)) &&
-				Number.isNaN(Geometry_slopeLine(s1_x * s2_y, s2_y * b, s2_x * s1_y, s2_x * a))
+				Number.isNaN(Geometry_slopeLine(s1_x * s2_y, s2_y * b, s2_x * s1_y, s2_x * a)) &&
+				(Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, c_x, c_y, accuracy) || Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, d_x, d_y, accuracy))
 			) {
-				result.onLine1 = (Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, c_x, c_y, accuracy) || Geometry_colliLinePnt(true, a_x, a_y, b_x, b_y, d_x, d_y, accuracy));
-				result.onLine2 = result.onLine1;
+				result.a = 2
+				result.b = 2;
 			}
 			return result;
 		}
@@ -3899,11 +3702,20 @@
 		b = numerator2 / denominator;
 		result.x = a_x + a * s1_x;
 		result.y = a_y + a * s1_y;
-		if (a >= 0 && a <= 1) {
-			result.onLine1 = true;
+
+		if (a <= 0) {
+			result.a = -1;
+		} else if (a <= 1) {
+			result.a = 0;
+		} else {
+			result.a = 1;
 		}
-		if (b >= 0 && b <= 1) {
-			result.onLine2 = true;
+		if (b <= 0) {
+			result.b = -1;
+		} else if (b <= 1) {
+			result.b = 0;
+		} else {
+			result.b = 1;
 		}
 		return result;
 	}
@@ -3963,6 +3775,43 @@
 		returnData = _helper1(returnData, true);
 		returnData.x = a_x + smallerXLen;
 		returnData.y = a_y + smallerYLen;
+		return returnData;
+	}
+
+	/**
+	 *
+	 * Reflect a point over a line
+	 *
+	 * @param {number} a_x - x position of first point of the line segment
+	 * @param {number} a_y - y position of first point of the line segment
+	 * @param {number} b_x - x position of second point of the line segment
+	 * @param {number} b_y - y position of second point of the line segment
+	 * @param {number} o_x - x position of point
+	 * @param {number} o_y - y position of point
+	 * @param {object=} returnData - Object to put data
+	 * @return {{x: number, y: number}}
+	 *
+	 * @example
+	 * Geometry.reflLinePnt(0, 0, 2, 0, 1, 1);
+	 * //{x: 1, y: -1}
+	 *
+	 * @function reflLinePnt
+	 * @memberof Geometry
+	 **/
+	function Geometry_reflLinePnt(a_x, a_y, b_x, b_y, o_x, o_y, returnData) {
+		returnData = _helper1(returnData, true);
+		let dx, dy, temp, a, b, x, y;
+		dx = b_x - a_x;
+		dy = b_y - a_y;
+		b_x = dx * dx;
+		b_y = dy * dy;
+		temp = b_x + b_y;
+		a = (b_x - b_y) / temp;
+		b = 2 * dx * dy / temp;
+		o_x -= a_x;
+		o_y -= a_y;
+		returnData.x = a * o_x + b * o_y + a_x;
+		returnData.y = b * o_x - a * o_y + a_y;
 		return returnData;
 	}
 
@@ -5140,7 +4989,7 @@
 					b2_y = points[2 * j + 3];
 				}
 				Geometry_intrLine(a1_x, a1_y, a2_x, a2_y, b1_x, b1_y, b2_x, b2_y, _memory2_1_);
-				if (_memory2_1_.onLine1 && _memory2_1_.onLine2) {
+				if (typeof _memory2_1_.a === "number" && typeof _memory2_1_.b === "number") {
 					return false;
 				}
 			}
@@ -7893,7 +7742,7 @@
 
 	/**
 	 *
-	 * [RK4 Method]{@link https://en.wikipedia.org/wiki/Runge–Kutta_methods}
+	 * [RK4 Method]{@link https://en.wikipedia.org/wiki/Runge??CKutta_methods}
 	 *
 	 * @param {number} x - initial position
 	 * @param {number} v - initial velocity
@@ -8172,7 +8021,7 @@
 			high = knots[temp];
 			time = time * (high - low) + low;
 
-			if (time < low || time > high) return _helper_bspline_1(true); //throw new Error('out of bounds');
+			if (time < low || time > high) return _helper_bspline_1(true);
 
 			for (s = degree; s < temp; s++) {
 				if (time >= knots[s] && time <= knots[s + 1]) {
@@ -8212,7 +8061,7 @@
 
 	/**
 	 *
-	 * [Cubic Hermite spline]{@link https://en.wikipedia.org/wiki/Cubic_Hermite_spline} tween using [Kochanek–Bartels spline]{@link https://en.wikipedia.org/wiki/Kochanek%E2%80%93Bartels_spline} version
+	 * [Cubic Hermite spline]{@link https://en.wikipedia.org/wiki/Cubic_Hermite_spline} tween using [Kochanek??CBartels spline]{@link https://en.wikipedia.org/wiki/Kochanek%E2%80%93Bartels_spline} version
 	 *
 	 * @param {number} continuty
 	 * @param {number} bias
@@ -8665,13 +8514,13 @@
 	 * @return {boolean}
 	 *
 	 * @example
-	 * Boolean.nall([false, true, false]);
+	 * Boolean.any([false, true, false]);
 	 * //true
 	 *
-	 * @function nall
+	 * @function any
 	 * @memberof Boolean
 	 **/
-	function Boolean_nall(x) {
+	function Boolean_any(x) {
 		for (let loopCount = 0; loopCount < x.length; loopCount++) {
 			if (x[loopCount] == true) {
 				return true;
@@ -8912,18 +8761,8 @@
 		"M", "smooth", Math_smooth,
 		"M", "adjust", Math_adjust,
 		"M", "adjust2", Math_adjust2,
-		"M", "adjust3", Math_adjust3,
-		"M", "away", Math_away,
 		"M", "round2", Math_round2,
-		"M", "floor2", Math_floor2,
-		"M", "ceil2", Math_ceil2,
-		"M", "trunc2", Math_trunc2,
-		"M", "away2", Math_away2,
-		"M", "round3", Math_round3,
-		"M", "floor3", Math_floor3,
-		"M", "ceil3", Math_ceil3,
-		"M", "trunc3", Math_trunc3,
-		"M", "away3", Math_away3,
+		"M", "away", Math_away,
 		"M", "correct", Math_correct,
 		"M", "near", Math_near,
 		"M", "snap", Math_snap,
@@ -8992,6 +8831,7 @@
 		"G", "intrLine", Geometry_intrLine,
 		"G", "sideLine", Geometry_sideLine,
 		"G", "onLine", Geometry_onLine,
+		"G", "reflLinePnt", Geometry_reflLinePnt,
 		"G", "colliLinePnt", Geometry_colliLinePnt,
 		"G", "getXLine", Geometry_getXLine,
 		"G", "getYLine", Geometry_getYLine,
@@ -9167,7 +9007,7 @@
 		"B", "xor", Boolean_xor,
 		"B", "xnor", Boolean_xnor,
 		"B", "all", Boolean_all,
-		"B", "nall", Boolean_nall,
+		"B", "any", Boolean_any,
 
 		"I", "size", Bit_size,
 		"I", "clear", Bit_clear,
@@ -9177,43 +9017,98 @@
 		"I", "reverse", Bit_reverse,
 		"I", "rol", Bit_rol,
 		"I", "ror", Bit_ror,
-	], global);
-})(
-	function(module, global) {
-		//You can change this export function to suit your needs
-		let Geometry = {}, Tween = {}, Bit = {};
+	], {
+		gamma_1: _gamma_1_,
+		lnGamma_1: _lnGamma_1_,
+		erfcx_1: _erfcx_1_,
+		invNorm_1: _invNorm_1_,
+		outBounce_1: _outBounce_1_,
+		snoise_1_ : _snoise_1_,
+		helper7_1: _helper7_1_,
+		snoise_4: _snoise_4_,
+		snoise_5: _snoise_5_,
+		snoise_6: _snoise_6_,
+		vnoise_1: _vnoise_1_,
+		helper9_1: _helper9_1_,
+		helper10_1: _helper10_1_,
+		toRad_1: _toRad_1_,
+		toDeg_1: _toDeg_1_,
+		triEquil_1: _triEquil_1_,
 
-		for (let i = 0; i < module.length; i += 3) {
-			let temp;
-			switch (module[i]) {
-				case "M":
-					temp = global.Math;
-					break;
-				case "G":
-					temp = Geometry;
-					break;
-				case "N":
-					temp = global.Number;
-					break;
-				case "T":
-					temp = Tween;
-					break;
-				case "B":
-					temp = global.Boolean;
-					break;
-				case "I":
-					temp = Bit;
-					break;
+		memory: _memory_,
+		memory2_1: _memory2_1_,
+		memory2_2: _memory2_2_,
+		poly_stack: _poly_stack_,
+		bounce_stack: _bounce_stack_,
+
+		helper0: _helper0,
+		helper1: _helper1,
+		helper2: _helper2,
+		helper3: _helper3,
+		helper8: _helper8,
+		helper9: _helper9,
+		helper10: _helper10,
+		helper11: _helper11,
+		helper12: _helper12,
+		helper13: _helper13,
+		helper14: _helper14,
+		helper15: _helper15,
+		helper16: _helper16,
+		helper17: _helper17,
+		helper18: _helper18,
+		helper19: _helper19,
+		helper20: _helper20,
+		helper21: _helper21,
+		helper22: _helper22,
+		helper23: _helper23,
+		helper24: _helper24,
+		helper25: _helper25,
+		helper26: _helper26,
+		helper27: _helper27,
+	}, global);
+})(
+	function(module, local, global) {
+		//You can change this export function to suit your needs
+		let Geometry = {}, Tween = {}, Bit = {}, type = false;
+
+		function extend(current) {
+			for (let i = 0; i < current.length; i += 3) {
+				let temp;
+				switch (current[i]) {
+					case "M":
+						temp = global.Math;
+						break;
+					case "G":
+						temp = Geometry;
+						break;
+					case "N":
+						temp = global.Number;
+						break;
+					case "T":
+						temp = Tween;
+						break;
+					case "B":
+						temp = global.Boolean;
+						break;
+					case "I":
+						temp = Bit;
+						break;
+				}
+				temp[current[i + 1]] = current[i + 2];
 			}
-			temp[module[i + 1]] = module[i + 2];
 		}
+		extend(module);
+
+		global._FUNCH_PLUGINS_ = function(func) {
+			extend(func(local));
+		};
 
 		let root = {
 			Math: global.Math,
 			Geometry: Geometry,
+			Number: global.Number,
 			Tween: Tween,
 			Boolean: global.Boolean,
-			Number: global.Number,
 			Bit: Bit
 		};
 
@@ -9221,14 +9116,23 @@
 			define([], function() {
 				return root;
 			});
+		} else if (typeof module === "object" && module.exports) {
+			module.exports = root;
 		} else {
-			if (typeof module === "object" && module.exports) {
-				module.exports = root;
-			}
+			type = true;
 		}
-		global.Geometry = Geometry;
-		global.Tween = Tween;
-		global.Bit = Bit;
+
+		function _FUNCH_GLOBAL_() {
+			global.Geometry = Geometry;
+			global.Tween = Tween;
+			global.Bit = Bit;
+		}
+
+		if (!type) {
+			root._GLOBAL_ = _FUNCH_GLOBAL_;
+		} else {
+			_FUNCH_GLOBAL_();
+		}
 	},
 	typeof self !== "undefined" ? self :
 	typeof window !== "undefined" ? window :
