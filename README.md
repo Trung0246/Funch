@@ -10,11 +10,11 @@ This library is mostly used for my personal stuffs, and I updated this library v
 - Test coverage? (Too lazy... There are too many functions...)
 - A website to introduce this library and other things like geting started, documentation, example,...
 
-Version 0.25a (Alpha version)
+Version 0.26a (Alpha version)
 
-[Download](https://cdn.rawgit.com/Trung0246/Funch/f72b6961/src/funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/f72b6961/src/funch.min.js))
+[Download](https://cdn.rawgit.com/Trung0246/Funch/7117fafc/src/funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/7117fafc/src/funch.min.js))
 
-[Documentation](https://cdn.rawgit.com/Trung0246/Funch/f72b6961/docs/index.html) (old, may not update to lastest version) (0.25a)
+[Documentation](https://cdn.rawgit.com/Trung0246/Funch/7117fafc/docs/index.html) (old, may not update to lastest version) (0.26a)
 
 You can generate document yourself by using [JSDoc](http://usejsdoc.org/).
 
@@ -25,7 +25,7 @@ You can generate document yourself by using [JSDoc](http://usejsdoc.org/).
 
 - Simple to add by copy `<script type="text/javascript" src="funch.js"></script>` or `require("./funch.js");`
 
-- Medium-sized ? (**41.9 KB** compressed using [UglifyJS2](https://github.com/mishoo/UglifyJS2))
+- Medium-sized ? (**42.4 KB** compressed using [UglifyJS2](https://github.com/mishoo/UglifyJS2))
 
 - Easy to copy and paste any function you like to use without include whole library *(I'm sad :( )*
 
@@ -33,9 +33,24 @@ You can generate document yourself by using [JSDoc](http://usejsdoc.org/).
 
 - No dependencies
 
+- Extendable with plugins
+
+```
+(_FUNCH_PLUGINS_)(function(local) {
+	let Math_QTR_PI = Math.HALF_PI / 2;
+
+	//Array to export function
+	return [
+		"M", "QRT_PI", Math_QRT_PI
+	];
+});
+```
+
 ### Changelog
 
 - Changed behavior of some functions
+- Fixed some nasty bugs
+- Added ability to add plugins
 
 ##### Notes
     
