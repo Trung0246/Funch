@@ -10,11 +10,11 @@ This library is mostly used for my personal stuffs, and I updated this library v
 - Test coverage? (Too lazy... There are too many functions...)
 - A website to introduce this library and other things like geting started, documentation, example,...
 
-Version 0.26a (Alpha version)
+Version 0.27a (Alpha version)
 
-[Download](https://cdn.rawgit.com/Trung0246/Funch/7117fafc/src/funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/7117fafc/src/funch.min.js))
+[Download](https://cdn.rawgit.com/Trung0246/Funch/e61f3939/src/funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/e61f3939/src/funch.min.js))
 
-[Documentation](https://cdn.rawgit.com/Trung0246/Funch/7117fafc/docs/index.html) (old, may not update to lastest version) (0.26a)
+[Documentation](https://cdn.rawgit.com/Trung0246/Funch/7117fafc/docs/index.html) (may not update to lastest version) (0.26a)
 
 You can generate document yourself by using [JSDoc](http://usejsdoc.org/).
 
@@ -25,7 +25,7 @@ You can generate document yourself by using [JSDoc](http://usejsdoc.org/).
 
 - Simple to add by copy `<script type="text/javascript" src="funch.js"></script>` or `require("./funch.js");`
 
-- Medium-sized ? (**42.4 KB** compressed using [UglifyJS2](https://github.com/mishoo/UglifyJS2))
+- Medium-sized ? (**42.6 KB** compressed using [UglifyJS2](https://github.com/mishoo/UglifyJS2))
 
 - Easy to copy and paste any function you like to use without include whole library *(I'm sad :( )*
 
@@ -36,21 +36,41 @@ You can generate document yourself by using [JSDoc](http://usejsdoc.org/).
 - Extendable with plugins
 
 ```
-(_FUNCH_PLUGINS_)(function(local) {
+//Require funch.js v0.27a
+(function(root, global) {
+	root = root.bind(this, global);
+	if (typeof define === "function" && define.amd) {
+		define(["funch"], function(Funch) {
+			Funch._PLUGINS_(root);
+		});
+	} else if (typeof module === "object" && module.exports) {
+		module.exports = root;
+		
+		//Example usage in node (there's no way to automate this, sory :():
+		//let funch = require(funch)
+		//let funch_extend = require(funch_extend)
+		//funch._PLUGINS_(funch_extend)
+	} else {
+		global._FUNCH_PLUGINS_(root);
+	}
+})(function (global, local, main) {
 	let Math_QTR_PI = Math.HALF_PI / 2;
 
 	//Array to export function
 	return [
 		"M", "QRT_PI", Math_QRT_PI
 	];
-});
+},
+	typeof self !== "undefined" ? self :
+	typeof window !== "undefined" ? window :
+	typeof global !== "undefined" ? global : this
+);
 ```
 
 ### Changelog
 
-- Changed behavior of some functions
+- Optimized some functions and added new features
 - Fixed some nasty bugs
-- Added ability to add plugins
 
 ##### Notes
     
