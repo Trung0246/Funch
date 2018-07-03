@@ -165,7 +165,7 @@
 	 * Geometry.rotPnt3D(0, 1, 0, Math.QTR_PI, 0, 0);
 	 * //{x: 0, y: 0.7071067811865476, z: -0.5}
 	 *
-	 * @function rotPnt
+	 * @function rotPnt3D
 	 * @memberof Geometry
 	 **/
 	function Geometry_rotPnt3D(x, y, z, x_x, x_y, x_z, returnData) {
@@ -505,7 +505,7 @@
 	 * );
 	 * //1.5999999999999999
 	 *
-	 * @function bilinear
+	 * @function mix
 	 * @memberof Tween
 	 */
 	function Tween_mix(time, eases, ratio) {
