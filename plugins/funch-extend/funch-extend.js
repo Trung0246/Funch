@@ -12,6 +12,7 @@
 })(function (global, local, main) {
 	/*
 	Funch-extend.js, v0.1a
+	Require funch.js v0.27a
 
 	MIT License
 
