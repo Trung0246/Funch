@@ -1,7 +1,7 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.27a
+	Funch.js, v0.28a
 
 	MIT License
 
@@ -547,6 +547,16 @@
 		return _memory_1_;
 	}
 
+	function _helper28(steepness, power) {
+		return (steepness !== power && steepness !== undefined);
+	}
+
+	function _helper29(time, steepness, power) {
+		steepness = _helper0(steepness, 7);
+		power = _helper0(power, Math.E);
+		return (Math_pow(power, steepness * time) - 1) / (Math_pow(power, steepness) - 1);
+	}
+
 	/**
 	 * @constant {number} HALF_PI
 	 * 
@@ -841,7 +851,7 @@
 	 * Calculate factorial of number
 	 *
 	 * @param {number} num - The number to calculate
-     * @param {number=} accuracy
+	 * @param {number=} accuracy
 	 * @return {number}
 	 *
 	 * @example
@@ -1667,9 +1677,7 @@
 	 * @memberof Math
 	 **/
 	function Math_adjust(func, num, digits, base) {
-		digits = _helper0(digits, 0);
-		base = _helper0(base, 10);
-		let temp = Math_pow(base, digits);
+		let temp = Math_pow(_helper0(base, 10), _helper0(digits, 0));
 		return func(num * temp) / temp;
 	}
 
@@ -1813,9 +1821,6 @@
 	 * @param {number} num
 	 * @param {number} gap - The interval gap of the grid
 	 * @param {number=} [offset=0]
-	 * @param {boolean} [isLocate=false] - use adjust by digit location and base if true
-	 * @param {number=} [digits=0]
-	 * @param {number=} [base=10]
 	 * @return {number}
 	 *
 	 * @example
@@ -1825,11 +1830,11 @@
 	 * @function snap
 	 * @memberof Math
 	 **/
-	function Math_snap(func, num, gap, offset, digits, base) {
+	function Math_snap(func, num, gap, offset) {
 		offset = _helper0(offset, 0);
 		if (gap === 0) return num;
 		num -= offset;
-		num = gap * func(num / gap, digits, base);
+		num = gap * func(num / gap);
 		return offset + num;
 	}
 
@@ -1842,9 +1847,6 @@
 	 * @param {number} a
 	 * @param {number} b
 	 * @param {number=} [gap=1] - The interval gap of the grid
-	 * @param {boolean} [isLocate=false] - use adjust by digit location and base if true
-	 * @param {number=} [digits=0]
-	 * @param {number=} [base=10]
 	 * @return {number}
 	 *
 	 * @example
@@ -1854,9 +1856,9 @@
 	 * @function discrete
 	 * @memberof Math
 	 **/
-	function Math_discrete(func, num, a, b, gap, digits, base) {
+	function Math_discrete(func, num, a, b, gap) {
 		gap = _helper0(gap, 1);
-		return func((a * (1 - num) + b * num) / gap, digits, base) * gap;
+		return func((a * (1 - num) + b * num) / gap) * gap;
 	}
 
 	/**
@@ -3203,28 +3205,31 @@
 	}
 
 	/**
-	 * Scale angle
+	 * Move from min angle to max angle
 	 *
-	 * @param {number} num - Scale percent
 	 * @param {number} min - angle in radians
 	 * @param {number} max - angle in radians
-	 * @param {number} dir - if `1` then clockwise, `-1` is counter-clockwise
+	 * @param {number} num - percent
+	 * @param {boolean=} [dir=false] - `true` then counter-clockwise
 	 * @returns {number}
 	 *
 	 * @example
-	 * Geometry.scaleAngle(0.25, 0, Math.PI);
+	 * Geometry.onAngle(0, Math.PI, 0.25);
 	 * //2.356194490192345
 	 *
-	 * @function scaleAngle
+	 * @function onAngle
 	 * @memberof Geometry
 	 */
-	function Geometry_scaleAngle(num, min, max, dir) {
+	function Geometry_onAngle(min, max, num, dir) {
 		min = Geometry_fullRad(min);
 		max = Geometry_fullRad(max);
 		if (min === max) return min;
-		if (!dir) {
-			dir =- Math_TAU;
-		} else if ((dir === 1) === (min < max)) {
+		if (dir) {
+			dir = 1;
+		} else {
+			dir = -1;
+		}
+		if ((dir === 1) === (min < max)) {
 			dir *= Math_TAU;
 		} else {
 			dir = 0;
@@ -3721,7 +3726,7 @@
 	 *
 	 * @example
 	 * Geometry.intrLine(0, 0, 1, 1, 1, 0, 1, -1);
-	 * //{x: 1, y: 1, a: 1, b: 1}
+	 * //{x: 1, y: 1, a: 0, b: -1}
 	 *
 	 * @function intrLine
 	 * @memberof Geometry
@@ -3813,7 +3818,7 @@
 	 * @param {number} a_y - y position of first point of the line segment
 	 * @param {number} b_x - x position of second point of the line segment
 	 * @param {number} b_y - y position of second point of the line segment
-	 * @param {number} scale - the location of the point on the line, 0 to 1, but can be larger or smaller than that range
+	 * @param {number} num - the location of the point on the line, 0 to 1, but can be larger or smaller than that range
 	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number}}
 	 *
@@ -3824,10 +3829,10 @@
 	 * @function onLine
 	 * @memberof Geometry
 	 **/
-	function Geometry_onLine(a_x, a_y, b_x, b_y, scale, returnData) {
+	function Geometry_onLine(a_x, a_y, b_x, b_y, num, returnData) {
 		returnData = _helper1(returnData, true);
-		returnData.x = a_x + (b_x - a_x) * scale;
-		returnData.y = a_y + (b_y - a_y) * scale;
+		returnData.x = a_x + (b_x - a_x) * num;
+		returnData.y = a_y + (b_y - a_y) * num;
 		return returnData;
 	}
 
@@ -4460,8 +4465,8 @@
 		temp_x = Math.abs(radius1 * Math.cos(temp_x) * angle - radius2 * Math.sin(temp_x) * angle_2);
 		temp_y = Math.abs(radius2 * Math.sin(temp_y) * angle + radius1 * Math.cos(temp_y) * angle_2);
 		returnData = _helper1(returnData, true);
-		returnData.xMin = -temp_x + x;
-		returnData.yMin = -temp_y + y;
+		returnData.xMin = x - temp_x;
+		returnData.yMin = y - temp_y;
 		returnData.xMax = temp_x + x;
 		returnData.yMax = temp_y + y;
 		return returnData;
@@ -4717,6 +4722,7 @@
 	 * @param {number} y_3 - y position of the third vertex
 	 * @param {number} x - x position of the point
 	 * @param {number} y - y position of the point
+	 * @param {boolean=} [accurate=false] - `true` for better algorithm but slower
 	 * @return {boolean}
 	 *
 	 * @example
@@ -4726,7 +4732,43 @@
 	 * @function colliTriPnt
 	 * @memberof Geometry
 	 **/
-	function Geometry_colliTriPnt(x_1, y_1, x_2, y_2, x_3, y_3, x, y) {
+	function Geometry_colliTriPnt(x_1, y_1, x_2, y_2, x_3, y_3, x, y, accurate) {
+		if (accurate) {
+			//*
+			x_1 -= x;
+			y_1 -= y;
+			x_2 -= x;
+			y_2 -= y;
+			x_3 -= x;
+			y_3 -= y;
+
+			return x_3 * y_1 - x_1 * y_3 >= 0 &&
+				x_1 * y_2 - x_2 * y_1 >= 0 &&
+				x_2 * y_3 - x_3 * y_2 >= 0;
+
+			/*/
+
+			x_3 -= x_1;
+			y_3 -= y_1;
+			x_2 -= x_1;
+			y_2 -= y_1;
+			x -= x_1;
+			y -= y_1;
+
+			let dot00 = x_3 * x_3 + y_3 * y_3,
+				dot01 = x_3 * x_2 + y_3 * y_2,
+				dot02 = x_3 * x + y_3 * y,
+				dot11 = x_2 * x_2 + y_2 * y_2,
+				dot12 = x_2 * x + y_2 * y;
+
+			let invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
+			x_1 = (dot11 * dot02 - dot01 * dot12) * invDenom;
+			y_1 = (dot00 * dot12 - dot01 * dot02) * invDenom;
+
+			// Check if point is in triangle
+			return (x_1 >= 0) && (y_1 >= 0) && (x_1 + y_1 < 1);
+			//*/
+		}
 		let s = y_1 * x_3 - x_1 * y_3 + (y_3 - y_1) * x + (x_1 - x_3) * y,
 			t = x_1 * y_2 - y_1 * x_2 + (y_1 - y_2) * x + (x_2 - x_1) * y;
 
@@ -5183,7 +5225,8 @@
 					if (vi === i0 || vi === i1 || vi === i2) {
 						continue;
 					}
-					if (Geometry_colliTriPnt(a_x, a_y, b_x, b_y, c_x, c_y, points[2 * vi], points[2 * vi + 1])) {
+
+					if (Geometry_colliTriPnt(a_x, a_y, b_x, b_y, c_x, c_y, points[2 * vi], points[2 * vi + 1], true)) {
 						eF = false;
 						break;
 					}
@@ -5221,6 +5264,9 @@
 	 *
 	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
 	 * @param {boolean=} [accurate=false] - `true` if not accurate
+	 * @param {number=} [start=0]
+	 * @param {number=} [end=points.length]
+	 * @param {number=} [dim=2]
 	 * @return {number}
 	 *
 	 * @example
@@ -5230,17 +5276,61 @@
 	 * @function areaPoly
 	 * @memberof Geometry
 	 **/
-	function Geometry_areaPoly(points, accurate) {
+	function Geometry_areaPoly(points, accurate, start, end, dim) {
 		if (points.length < 6) return 0;
-		let length = points.length - 2, sum = 0;
-		for (let i = 0; i < length; i += 2) {
-			sum += (points[i + 2] - points[i]) * (points[i + 1] + points[i + 3]);
+		let sum = 0;
+
+		start = _helper0(start, 0);
+		end = _helper0(end, points.length);
+		dim = _helper0(dim, 2);
+
+		for (let i = start, j = end - dim; i < end; i += dim) {
+			sum -= (points[j] - points[i]) * (points[i + 1] + points[j + 1]);
+			j = i;
 		}
-		sum += (points[0] - points[length]) * (points[length + 1] + points[1]);
+
 		if (!accurate) {
 			return Math.abs(sum / 2);
 		}
 		return sum;
+	}
+
+	/**
+	 *
+	 * Calculate perimeter of a polygon (convex, concave, complex)
+	 *
+	 * @param {number[]} points - array of points [x1, y1, x2, y2, ...]
+	 * @param {boolean=} [accurate=false] - `true` if not accurate
+	 * @return {number}
+	 *
+	 * @example
+	 * Geometry.periPoly([0, 0, 50, 0, 100, 50, 50, 100, 0, 100]);
+	 * //341.4213562373095
+	 *
+	 * @function periPoly
+	 * @memberof Geometry
+	 **/
+	function Geometry_periPoly(points) {
+		let i = 0,
+			n = points.length,
+			xa,
+			ya,
+			xb = points[n - 2],
+			yb = points[n - 1],
+			perimeter = 0;
+
+		while (i < n) {
+			xa = xb;
+			ya = yb;
+			xb = points[i];
+			yb = points[i + 1];
+			xa -= xb;
+			ya -= yb;
+			perimeter += Math.sqrt(xa * xa + ya * ya);
+			i += 2;
+		}
+
+		return perimeter;
 	}
 
 	/**
@@ -6542,9 +6632,13 @@
 	 * @memberof Trigonometry
 	 **/
 	function Math_cssn(num, returnData) {
-		let temp = Math.sin(num);
 		returnData = _helper1(returnData, false);
-		returnData[0] = Math.sqrt(1 - temp * temp);
+		let temp = Math.sin(num), temp2 = Math.sqrt(1 - temp * temp);
+		if (Math.abs(Geometry_normRad(num)) > Math_HALF_PI) {
+			returnData[0] = -temp2;
+		} else {
+			returnData[0] = temp2;
+		}
 		returnData[1] = temp;
 		return returnData;
 	}
@@ -6944,6 +7038,7 @@
 	 *
 	 * @param {number} time
 	 * @param {number} pow - exponent
+	 * @param {number=} [location=0.5] - transition location
 	 * @return {number}
 	 *
 	 * @example
@@ -6953,12 +7048,12 @@
 	 * @function inOutPow
 	 * @memberof Tween
 	 **/
-	function Tween_inOutPow(time, pow) {
-		time *= 2;
-		if (time < 1) {
-			return Math.pow(time, pow) / 2;
+	function Tween_inOutPow(time, pow, location) {
+		location = _helper0(location, 0.5);
+		if (time < location) {
+			return Math_pow(location, 1 - power) * Math_pow(time, power);
 		}
-		return 1 - Math.pow(2 - time, pow) / 2;
+		return 1 - Math_pow(1 - location, 1 - power) * Math_pow(1 - time, power);		
 	}
 	
 	/**
@@ -7087,6 +7182,8 @@
 	 * In Exponent
 	 *
 	 * @param {number} time
+	 * @param {steepness=} [steepness=7]
+	 * @param {power=} [power=Math.E]
 	 * @return {number}
 	 *
 	 * @example
@@ -7096,7 +7193,10 @@
 	 * @function inExpo
 	 * @memberof Tween
 	 **/
-	function Tween_inExpo(time) {
+	function Tween_inExpo(time, steepness, power) {
+		if (_helper28(steepness, power)) {
+			return _helper29(time, steepness, power);
+		}
 		return (time === 0) ? 0 : Math_pow(2, 10 * (time - 1));
 	}
 
@@ -7105,6 +7205,8 @@
 	 * Out Exponent
 	 *
 	 * @param {number} time
+	 * @param {steepness=} [steepness=7]
+	 * @param {power=} [power=Math.E]
 	 * @return {number}
 	 *
 	 * @example
@@ -7114,7 +7216,10 @@
 	 * @function outExpo
 	 * @memberof Tween
 	 **/
-	function Tween_outExpo(time) {
+	function Tween_outExpo(time, steepness, power) {
+		if (_helper28(steepness, power)) {
+			return _helper29(time, -steepness, power);
+		}
 		return (time === 1) ? 1 : (1 - Math_pow(2, -10 * time));
 	}
 
@@ -7123,6 +7228,8 @@
 	 * In Out Exponent
 	 *
 	 * @param {number} time
+	 * @param {steepness=} [steepness=7]
+	 * @param {power=} [power=Math.E]
 	 * @return {number}
 	 *
 	 * @example
@@ -7132,7 +7239,13 @@
 	 * @function inOutExpo
 	 * @memberof Tween
 	 **/
-	function Tween_inOutExpo(time) {
+	function Tween_inOutExpo(time, steepness, power) {
+		if (_helper28(steepness, power)) {
+			if (time < 0.5) {
+				return _helper29(time * 2, steepness, power) / 2;
+			}
+			return _helper29((time - 0.5) * 2, -steepness, power) / 2 + 0.5;
+		}
 		if (time === 0) {
 			return 0;
 		}
@@ -7331,6 +7444,7 @@
 	 * In Bounce
 	 *
 	 * @param {number} time
+	 * @param {boolean=} [past=false]
 	 * @return {number}
 	 *
 	 * @example
@@ -7340,8 +7454,8 @@
 	 * @function inBounce
 	 * @memberof Tween
 	 **/
-	function Tween_inBounce(time) {
-		return 1 - Tween_outBounce(1 - time);
+	function Tween_inBounce(time, past) {
+		return 1 - Tween_outBounce(1 - time, past);
 	}
 
 	/**
@@ -7349,6 +7463,7 @@
 	 * Out Bounce
 	 *
 	 * @param {number} time
+	 * @param {boolean=} [past=false]
 	 * @return {number}
 	 *
 	 * @example
@@ -7358,16 +7473,17 @@
 	 * @function outBounce
 	 * @memberof Tween
 	 **/
-	function Tween_outBounce(time) {
+	function Tween_outBounce(time, past) {
 		if (time < _outBounce_1_[0]) {
-			return (7.5625 * time * time);
+			return 7.5625 * time * time;
 		} else if (time < _outBounce_1_[1]) {
-			return (7.5625 * (time -= _outBounce_1_[2]) * time + 0.75);
+			time = 7.5625 * (time -= _outBounce_1_[2]) * time + 0.75;
 		} else if (time < _outBounce_1_[3]) {
-			return (7.5625 * (time -= _outBounce_1_[4]) * time + 0.9375);
+			time = 7.5625 * (time -= _outBounce_1_[4]) * time + 0.9375;
 		} else {
-			return (7.5625 * (time -= _outBounce_1_[5]) * time + 0.984375);
+			time = 7.5625 * (time -= _outBounce_1_[5]) * time + 0.984375;
 		}
+		return past ? time - 2 : time;
 	}
 
 	/**
@@ -7375,6 +7491,7 @@
 	 * In Out Bounce
 	 *
 	 * @param {number} time
+	 * @param {boolean=} [past=false]
 	 * @return {number}
 	 *
 	 * @example
@@ -7384,11 +7501,11 @@
 	 * @function inOutBounce
 	 * @memberof Tween
 	 **/
-	function Tween_inOutBounce(time) {
+	function Tween_inOutBounce(time, past) {
 		if (time < 0.5) {
-			return Tween_inBounce(time * 2) / 2;
+			return Tween_inBounce(time * 2, past) / 2;
 		}
-		return Tween_outBounce(time * 2 - 1) / 2 + 0.5;
+		return Tween_outBounce(time * 2 - 1, past) / 2 + 0.5;
 	}
 
 	/**
@@ -7478,6 +7595,7 @@
 	 * @param {number=} [elasticity=200]
 	 * @param {number=} [gravity=100]
 	 * @param {boolean=} [back=false] - `true` if return back to 0
+	 * @param {number=} [epsilon=0.001]
 	 * @return {number}
 	 *
 	 * @example
@@ -7487,11 +7605,12 @@
 	 * @function bounce
 	 * @memberof Tween
 	 **/
-	function Tween_bounce(time, bounciness, elasticity, gravity, back) {
+	function Tween_bounce(time, bounciness, elasticity, gravity, back, epsilon) {
 		let tempL, tempL2, tempb2, curve2a, curve2b, curve2H, curveLength = 0;
 		bounciness = Math.min(_helper0(bounciness, 400) / 1250, 0.8);
 		elasticity = _helper0(elasticity, 200) / 1000;
 		gravity = _helper0(gravity, 100);
+		epsilon = _helper0(epsilon, 0.001);
 
 		for (let j = 0; j < 2; j ++) {
 			if (j === 0) {
@@ -7510,7 +7629,7 @@
 				_helper25(0, curve2a, curve2b, curve2H);
 				curveLength ++;
 			}
-			while (j === 0 ? curve2H > 0.001 : (curve2b < 1 && curve2H > 0.001)) {
+			while (j === 0 ? curve2H > epsilon : (curve2b < 1 && curve2H > epsilon)) {
 				tempL2 = curve2b - curve2a;
 				curve2a = curve2b;
 				curve2b = curve2b + tempL2 * bounciness;
@@ -7566,7 +7685,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_slow(time, ratio, power, back) {
-		power = time + (0.5 - time) * (ratio !== 1 ? (power || power === 0) ? power : 0.7 : 0);
+		power = time + (0.5 - time) * (ratio !== 1 ? _helper0(power, 0.7) : 0);
 		if (ratio == null) {
 			ratio = 0.7;
 		} else if (ratio > 1) {
@@ -7574,20 +7693,21 @@
 		}
 
 		let temp1 = (1 - ratio) / 2,
-			temp3 = (ratio - 1) * (ratio - 1);
+			temp2 = ratio - 1,
+			temp3 = temp2 * temp2;
 		if (time < temp1) {
 			if (back) {
-				return -(4 * time * (ratio + time - 1)) / temp3;
+				return 4 * time * (1 - ratio - time) / temp3;
 			}
-			return power * (1 - oldPow((-ratio - 2 * time + 1) / (1 - ratio), 4));
+			return power * (1 - oldPow((ratio + 2 * time - 1) / temp2, 4));
 		} else if (time > temp1 + ratio) {
 			if (back) {
 				if (time === 1) {
 					return 0;
 				}
-				return (4 * (time - 1) * (ratio - time)) / temp3;
+				return 4 * (time - 1) * (ratio - time) / temp3;
 			}
-			return (oldPow(ratio - 2 * time + 1, 4) * (time - power)) / oldPow(ratio - 1, 4) + power;
+			return (oldPow(ratio - 2 * time + 1, 4) * (time - power)) / oldPow(temp2, 4) + power;
 		}
 		return back ? 1 : power;
 	}
@@ -7692,11 +7812,7 @@
 	 * @memberof Tween
 	 **/
 	function Tween_berp(time, num1, num2, num3, num4) {
-		num1 = _helper0(num1, 0.2);
-		num2 = _helper0(num2, 2.5);
-		num3 = _helper0(num3, 2.2);
-		num4 = _helper0(num4, 1.2);
-		return (num4 * (time - 1) - 1) * ((Math_pow(time, num3) - 1)  * Math.sin(Math.PI * num1 * time + Math.PI * oldPow(time, 4) * num2) - time);
+		return (_helper0(num4, 1.2) * (time - 1) - 1) * ((Math_pow(time, _helper0(num3, 2.2)) - 1)  * Math.sin(Math.PI * _helper0(num1, 0.2) * time + Math.PI * oldPow(time, 4) * _helper0(num2, 2.5)) - time);
 	}
 
 	/**
@@ -7817,7 +7933,7 @@
 	 * @param {number} v - initial velocity
 	 * @param {number} dt - timestep
 	 * @param {number} hdt - dt / 2
-	 * @param {number} idt - dt * 2
+	 * @param {number} idt - dt / 6
 	 * @param {function} func - acceleration function (x, v)
 	 * @param {number[]} [returnData=undefined] - Array to put data
 	 * @return {number[]}
@@ -8880,7 +8996,7 @@
 		"G", "toDeg", Geometry_toDeg,
 		"G", "fullDeg", Geometry_fullDeg,
 		"G", "cssnAngle", Geometry_cssnAngle,
-		"G", "scaleAngle", Geometry_scaleAngle,
+		"G", "onAngle", Geometry_onAngle,
 		"G", "getAngle", Geometry_getAngle,
 		"G", "reflAngle", Geometry_reflAngle,
 		"G", "diffAngle", Geometry_diffAngle,
@@ -8942,6 +9058,7 @@
 		"G", "triPoly", Geometry_triPoly,
 		//["G", "slicePoly", Geometry_slicePoly],
 		"G", "areaPoly", Geometry_areaPoly,
+		"G", "periPoly", Geometry_periPoly,
 		"G", "centroidPoly", Geometry_centroidPoly,
 		"G", "convexHullPoly", Geometry_convexHullPoly,
 		"G", "distPolyRay", Geometry_distPolyRay,
@@ -9135,6 +9252,8 @@
 		helper25: _helper25,
 		helper26: _helper26,
 		helper27: _helper27,
+		helper28: _helper28,
+		helper29: _helper29,
 	}, global);
 })(
 	function(module, local, global) {
