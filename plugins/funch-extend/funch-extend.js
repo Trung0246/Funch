@@ -11,8 +11,8 @@
 	}
 })(function (global, local, main) {
 	/*
-	Funch-extend.js, v0.1a
-	Require funch.js v0.27a
+	Funch-extend.js, v0.2a
+	Require funch.js v0.28a
 
 	MIT License
 
@@ -44,6 +44,24 @@
 	For a copy, see:
 	- StackOverflow (many authors)                   <stackoverflow.com>
 	*/
+
+	//Namespace
+	let Geometry = main.Geometry, Tween = main.Tween, Bit = main.Bit,
+		Math = _helper9(global.Math, main.Math),
+		Number = _helper9(global.Number, main.Number),
+		Boolean = _helper9(global.Boolean, main.Boolean),
+
+	_rec3D2_1_ = 2 / Math.PI;
+
+	function _helper9(obj2, obj3) {
+		let obj1 = {},
+			tempKey = Object.getOwnPropertyNames(obj2);
+		for (let i = 0; i < tempKey.length; i ++) {
+			obj1[tempKey[i]] = obj2[tempKey[i]];
+		}
+		Object.assign(obj1, obj3);
+		return obj1;
+	}
 
 	function _helper10(x, y, z, c_x, c_y, c_z, max, returnData) {
 		returnData = local.helper1(returnData, true);
@@ -90,12 +108,16 @@
 	function _helper12(x, y, z, c_x, c_y, c_z, radius, min, max, flag, returnData) {
 		returnData = local.helper1(returnData, true);
 		let dist = Math.sqrt(x * x + y * y + z * z);
-		if (dist < 1) {
-			dist = 1;
+		if (dist <= 0) {
+			dist = 0;
+			x = 0;
+			y = 0;
+			z = 0;
+		} else {
+			x /= dist;
+			y /= dist;
+			z /= dist;
 		}
-		x /= dist;
-		y /= dist;
-		z /= dist;
 
 		if (dist < radius) {
 			if (flag) {
@@ -126,9 +148,6 @@
 		return returnData;
 	}
 
-	//Namespace
-	let Math = global.Math, Number = global.Number, Boolean = global.Boolean;
-
 	/**
 	 * @constant {number} QTR_PI
 	 * 
@@ -136,7 +155,7 @@
 	 * 
 	 * @memberof Math
 	 */
-	let Math_QTR_PI = main.Math.HALF_PI / 2;
+	let Math_QTR_PI = Math.HALF_PI / 2;
 
 	/**
 	 * @constant {number} GRAVITY
@@ -168,23 +187,55 @@
 	 * @function rotPnt3D
 	 * @memberof Geometry
 	 **/
-	function Geometry_rotPnt3D(x, y, z, x_x, x_y, x_z, returnData) {
-		let tempsr = Math.sin(x_x), tempcr = Math.cos(x_x), tempt;
+	function Geometry_rotPnt3D(x, y, z, x_x, x_y, x_z, correct, returnData) {
+		let tempsr, tempcr, tempt, temp1, temp2;
 		returnData = local.helper1(returnData, true);
 		//X
-		y = y * tempcr + z * tempsr;
-		z = y * tempsr - z * tempcr;
+		if (x_x !== undefined) {
+			tempsr = Math.sin(x_x);
+			tempcr = Math.cos(x_x);
+			if (correct) {
+				y = y * tempcr + z * tempsr;
+				z = y * tempsr - z * tempcr;
+			} else {
+				temp1 = y * tempcr - z * tempsr;
+				temp2 = y * tempsr + z * tempcr;
+				y = temp1;
+				z = temp2;
+			}
+		}
 		//Y
-		tempt = x;
-		tempsr = Math.sin(x_y);
-		tempcr = Math.cos(x_y);
-		x = x * tempcr + z * tempsr;
-		z = tempt * tempsr - z * tempcr;
+		if (x_y !== undefined) {
+			tempt = x;
+			tempsr = Math.sin(x_y);
+			tempcr = Math.cos(x_y);
+			if (correct) {
+				x = x * tempcr + z * tempsr;
+				z = tempt * tempsr - z * tempcr;
+			} else {
+				temp1 = z * tempsr + x * tempcr;
+				temp2 = z * tempcr - x * tempsr;
+				x = temp1;
+				z = temp2;
+			}
+		}
 		//Z
-		tempsr = Math.sin(x_z);
-		tempcr = Math.cos(x_z);
-		returnData.x = x * tempcr - y * tempsr;
-		returnData.y = x * tempsr + y * tempcr;
+		if (x_z !== undefined) {
+			tempt = x;
+			tempsr = Math.sin(x_z);
+			tempcr = Math.cos(x_z);
+			if (correct) {
+				x = x * tempcr - y * tempsr;
+				y = tempt * tempsr + y * tempcr;
+			} else {
+				temp1 = x * tempcr - y * tempsr;
+				temp2 = x * tempsr + y * tempcr;
+				x = temp1;
+				y = temp2;
+			}
+		}
+		returnData.x = x;
+		returnData.y = y;
 		returnData.z = z;
 		return returnData;
 	}
@@ -206,7 +257,7 @@
 	function Geometry_gravity(num) {
 		num = Math.sin(num);
 		num *= num;
-		return 9.7803267714 * ((1 + 0.00193185138639 * num) /  Math.sqrt(1 - 0.00669437999013 * num))
+		return 9.7803267714 * ((1 + 0.00193185138639 * num) /  Math.sqrt(1 - 0.00669437999013 * num));
 	}
 
 	/**
@@ -240,7 +291,7 @@
 	 *
 	 * @param {number} radial - r
 	 * @param {number} angle1 - angle in radians
-	 * @param {number} angle2 - angle
+	 * @param {number} angle2 - angle in radians
 	 * @param {object=} returnData - Object to put data
 	 * @return {{x: number, y: number, z: number}}
 	 *
@@ -257,6 +308,94 @@
 		returnData.x = temp * Math.cos(angle2);
 		returnData.y = temp * Math.sin(angle2);
 		returnData.z = radial * Math.cos(angle1);
+		return returnData;
+	}
+
+	/**
+	 *
+	 * Convert plane to sphere coordinates
+	 *
+	 * @param {number} x - x position (between -1 and 1)
+	 * @param {number} y - y position	(between -1 and 1)
+	 * @param {object=} returnData - Object to put data
+	 * @return {{x: number, y: number}}
+	 *
+	 * @example
+	 * Math.pol3D2(0.5, 0.5);
+	 * //{x: 0.7071067811865476, y: -0.7071067811865475}
+	 *
+	 * @function pol3D2
+	 * @memberof Vector
+	 **/
+	function Math_pol3D2(x, y, returnData) {
+		returnData = local.helper1(returnData, true);
+		returnData.x = Math.sin(x * Math.PI) * Math.cos(y * Math.HALF_PI);
+		returnData.y = Math.sin(-y * Math.HALF_PI);
+		return returnData;
+	}
+
+	/**
+	 *
+	 * Convert sphere to plane coordinates
+	 *
+	 * @param {number} x - x position (between -1 and 1)
+	 * @param {number} y - y position	(between -1 and 1)
+	 * @param {object=} returnData - Object to put data
+	 * @return {{x: number, y: number}}
+	 *
+	 * @example
+	 * Math.rec3D2(0.7071067811865476, -0.7071067811865475);
+	 * //{y: 0.49999999999999994, x: 0.4999999917845593}
+	 *
+	 * @function rec3D2
+	 * @memberof Vector
+	 **/
+	function Math_rec3D2(x, y, returnData) {
+		returnData = local.helper1(returnData, true);
+		returnData.y = -_rec3D2_1_ * Math.asin(y);
+		returnData.x = Math.asin(x * Math.sec(returnData.y * Math.HALF_PI)) / Math.PI;
+		return returnData;
+	}
+
+	/**
+	 *
+	 * Verlet integration between 2 points
+	 *
+	 * @param {number} x - x position of first point
+	 * @param {number} y - y position of first point
+	 * @param {number} z - z position of first point
+	 * @param {number} x - x position of second point
+	 * @param {number} y - y position of second point
+	 * @param {number} z - z position of second point
+	 * @param {number} length - length of the line
+	 * @param {number=} [power=2] - power of the line
+	 * @param {number=} [strength=1] - strength of the line
+	 * @param {object=} returnData - Object to put data
+	 * @return {{x1: number, y1: number, z1: number, x2: number, y2: number, z2: number}}
+	 *
+	 * @example
+	 * Math.vrltVec(123.234, 234.345, 0, 345.456 - 78.89, 456.567 - 67.78, 0, Geometry.distPnt(123.234, 234.345, 345.456, 456.567, true));
+	 * //{x1: 88.00894376367708, y1: 196.38956691283047, z1: 0, x2: 301.79105623632296, y2: 426.74243308716956, z2: 0}
+	 *
+	 * @function vrltVec
+	 * @memberof Vector
+	 **/
+	function Math_vrltVec(a_x, a_y, a_z, b_x, b_y, b_z, length, power, strength, returnData) {
+		power = local.helper0(power, 2);
+		power2 = local.helper0(power2, 1);
+		returnData = local.helper1(returnData, true);
+		let tempX = a_x - b_x, tempY = a_y - b_y, tempZ = a_z - b_z,
+			dist = Math.sqrt(tempX * tempX + tempY * tempY + tempZ * tempZ),
+			temp = (length - dist) / (dist * power) * power2,
+			offset_x = tempX * temp,
+			offset_y = tempY * temp,
+			offset_z = tempZ * temp;
+		returnData.x1 = a_x + offset_x;
+		returnData.y1 = a_y + offset_y;
+		returnData.z1 = a_z + offset_z;
+		returnData.x2 = b_x - offset_x;
+		returnData.y2 = b_y - offset_y;
+		returnData.z2 = b_z - offset_z;
 		return returnData;
 	}
 
@@ -482,6 +621,66 @@
 
 	/**
 	 *
+	 * In Atan
+	 *
+	 * @param {number} time
+	 * @param {number=} [power=15]
+	 * @return {number}
+	 *
+	 * @example
+	 * Tween.inAtan(0.25);
+	 * //0.014683755187299807
+	 *
+	 * @function inAtan
+	 * @memberof Tween
+	 **/
+	function Tween_inAtan(time, power) {
+		power = local.helper0(power, 15);
+		return (Math.atan((time - 1) * power) / Math.atan(power)) + 1;
+	}
+
+	/**
+	 *
+	 * Out Atan
+	 *
+	 * @param {number} time
+	 * @param {number=} [power=15]
+	 * @return {number}
+	 *
+	 * @example
+	 * Tween.outAtan(0.25);
+	 * //0.8710074490414546
+	 *
+	 * @function outAtan
+	 * @memberof Tween
+	 **/
+	function Tween_outAtan(time, power) {
+		power = local.helper0(power, 15);
+		return Math.atan(time * power) / Math.atan(power);
+	}
+
+	/**
+	 *
+	 * In Out Atan
+	 *
+	 * @param {number} time
+	 * @param {number=} [power=15]
+	 * @return {number}
+	 *
+	 * @example
+	 * Tween.inOutAtan(0.25);
+	 * //0.044516364648252205
+	 *
+	 * @function inOutAtan
+	 * @memberof Tween
+	 **/
+	function Tween_inOutAtan(time, power) {
+		power = local.helper0(power, 15);
+		return (Math.atan((time - 0.5) * power) / (2 * Math.atan(power / 2))) + 0.5;
+	}
+
+	/**
+	 *
 	 * Mix many easing functions together
 	 *
 	 * @param {number} time
@@ -490,7 +689,7 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Tween_mix(
+	 * Tween.mix(
 	 *   0.45,
 	 *   [
 	 *     (x) => Tween.outCirc(x),                    (x) => Tween.inOutSine(x, 1),
@@ -514,11 +713,11 @@
 		} else if (time < ratio[0]) {
 			return eases[0](time);
 		}
-		let tempI;
+		let tempI, tempT;
 		for (let i = 0; i < ratio.length; i += 1) {
 			if (ratio[i] <= time && time <= ratio[i + 1]) {
 				tempI = i * 2;
-				tempT = eases[tempI + 1](main.Math.norm(time, ratio[i], ratio[i + 1]));
+				tempT = eases[tempI + 1](Math.norm(time, ratio[i], ratio[i + 1]));
 				return eases[tempI + 2](time) * tempT + eases[tempI](time) * (1 - tempT);
 			}
 		}
@@ -556,7 +755,7 @@
 		let dy2 = y2 - y;
 		return (tl * dx2 * dy2 + tr * dx1 * dy2 + bl * dx2 * dy1 + br * dx1 * dy1);
 	}
-
+	
 	return [
 		"M", "QTR_PI", Math_QTR_PI,
 		"M", "GRAVITY", Math_GRAVITY,
@@ -564,6 +763,9 @@
 		"G", "rotPnt3D", Geometry_rotPnt3D,
 		"M", "pol3D", Math_pol3D,
 		"M", "rec3D", Math_rec3D,
+		"M", "pol3D2", Math_pol3D2,
+		"M", "rec3D2", Math_rec3D2,
+		"M", "vrltVec", Math_vrltVec,
 		"M", "updateSteer", Math_updateSteer,
 		"M", "seekSteer", Math_seekSteer,
 		"M", "fleeSteer", Math_fleeSteer,
@@ -571,6 +773,9 @@
 		"M", "arrivalSteer", Math_arrivalSteer,
 		"M", "awaySteer", Math_awaySteer,
 		"M", "evadeSteer", Math_evadeSteer,
+		"T", "inAtan", Tween_inAtan,
+		"T", "outAtan", Tween_outAtan,
+		"T", "inOutAtan", Tween_inOutAtan,
 		"T", "mix", Tween_mix,
 		"T", "bilinear", Tween_bilinear,
 	];
