@@ -1,7 +1,7 @@
 (function(module, global) {
 	"use strict";
 	/*
-	Funch.js, v0.28a
+	Funch.js, v0.29a
 
 	MIT License
 
@@ -82,6 +82,13 @@
 		[1, 1, 0], [-1, 1, 0], [1, -1, 0], [-1, -1, 0],
 		[1, 0, 1], [-1, 0, 1], [1, 0, -1], [-1, 0, -1],
 		[0, 1, 1], [0, -1, 1], [0, 1, -1], [0, -1, -1]
+	],
+	_reverse_1_ = [
+		0x0000ffff, 0xffff0000, 16,
+		0x55555555, 0xAAAAAAAA, 1,
+		0x33333333, 0xCCCCCCCC, 2,
+		0x0F0F0F0F, 0xF0F0F0F0, 4,
+		0x00FF00FF, 0xFF00FF00, 8
 	],
 	_helper7_1_ = Math.pow(2, 32) - 1,
 	_snoise_4_ = (Math.sqrt(3) - 1) / 2,
@@ -1006,18 +1013,19 @@
 	 * [Sigmoid function]{@link https://en.wikipedia.org/wiki/Sigmoid_function}
 	 *
 	 * @param {number} num
+	 * @param {number} height
 	 * @param {number} sharp
 	 * @return {number}
 	 *
 	 * @example
-	 * Math.sigmoid(9, 0.75);
+	 * Math.sigmoid(9, 1, 0.75);
 	 * //0.9988304897349445
 	 *
 	 * @function sigmoid
 	 * @memberof Math
 	 **/
-	function Math_sigmoid(num, sharp) {
-		return 1 / (1 + Math.exp(-sharp * num));
+	function Math_sigmoid(num, height, sharp) {
+		return height / (1 + Math.exp(-sharp * num));
 		//-(num * 2 - 1) * sharp
 	}
 
@@ -2373,6 +2381,27 @@
 
 	/**
 	 *
+	 * Move back and front within range with more options
+	 *
+	 * @param {number} num - num >= 0
+	 * @param {number} min
+	 * @param {number} max
+	 * @param {number} scale
+	 * @return {number}
+	 *
+	 * @example
+	 * Math.zigzag(1, -1, 1, 2);
+	 * //1
+	 *
+	 * @function zigzag
+	 * @memberof Math
+	 **/
+	function Math_zigzag(num, min, max, scale) {
+		return (Math.abs(num % 2 - (2 * num) % 2) * (2 * scale * Math.floor(num / 2) - min + 2 * max) + min * num) / 2;
+	}
+
+	/**
+	 *
 	 * Not sure, but definitely useful and may act as same as bounce, wrap,...
 	 *
 	 * @param {number} num
@@ -2459,6 +2488,7 @@
 	 **/
 	function Math_lerp(num, min, max) {
 		return num * (max - min) + min;
+		//return (1 - num) * min + num * max;
 	}
 
 	/**
@@ -4618,20 +4648,20 @@
 	 * @return {{x: number, y: number}} returnData.x and returnData.y
 	 *
 	 * @example
-	 * Geometry.crcmCntrTri(0, 0, 2, 0, 1, 1);
+	 * Geometry.crcmTriPnt(0, 0, 2, 0, 1, 1);
 	 * //{x: 2, y: 0}
 	 *
-	 * @function crcmCntrTri
+	 * @function crcmTriPnt
 	 * @memberof Geometry
 	 **/
-	function Geometry_crcmCntrTri(x_1, y_1, x_2, y_2, x_3, y_3, returnData) {
+	function Geometry_crcmTriPnt(x_1, y_1, x_2, y_2, x_3, y_3, returnData) {
 		returnData = _helper1(returnData, true);
 		x_1 -= x_3;
 		y_1 -= y_3;
 		x_2 -= x_3;
 		let k = y_2 - y_3;
-		y_2 = x_1 * x_1 + y_1 * y_1;
 		let q = x_2 * x_2 + k * k;
+		y_2 = x_1 * x_1 + y_1 * y_1;
 		k = 2 * (x_1 * k - y_1 * x_2);
 		y_2 *= x_2;
 		returnData.x = x_3 - (y_1 * q - y_2) / k;
@@ -4653,13 +4683,13 @@
 	 * @return {{x: number, y: number, r: number}}
 	 *
 	 * @example
-	 * Geometry.crcmCircTri(0, 0, 2, 0, 1, 1);
+	 * Geometry.crcmTriCirc(0, 0, 2, 0, 1, 1);
 	 * //{x: 1, y: 0, r: 1}
 	 *
-	 * @function crcmCircTri
+	 * @function crcmTriCirc
 	 * @memberof Geometry
 	 **/
-	function Geometry_crcmCircTri(x_1, y_1, x_2, y_2, x_3, y_3, returnData) {
+	function Geometry_crcmTriCirc(x_1, y_1, x_2, y_2, x_3, y_3, returnData) {
 		let A = x_2 - x_1,
 			B = y_2 - y_1,
 			C = x_3 - x_1,
@@ -4691,13 +4721,13 @@
 	 * @return {{x: number, y: number, r: number}}
 	 *
 	 * @example
-	 * Geometry.inCircTri(0, 0, 2, 0, 1, 1);
+	 * Geometry.inTriCirc(0, 0, 2, 0, 1, 1);
 	 * //{x: 1, y: 0.4142135623730951, r: 0.41421356237309487}
 	 *
-	 * @function inCircTri
+	 * @function inTriCirc
 	 * @memberof Geometry
 	 **/
-	function Geometry_inCircTri(x_1, y_1, x_2, y_2, x_3, y_3, returnData) {
+	function Geometry_inTriCirc(x_1, y_1, x_2, y_2, x_3, y_3, returnData) {
 		let d1 = Geometry_distPnt(x_3, y_3, x_2, y_2, true),
 			d2 = Geometry_distPnt(x_1, y_1, x_3, y_3, true),
 			d3 = Geometry_distPnt(x_2, y_2, x_1, y_1, true);
@@ -4734,53 +4764,29 @@
 	 **/
 	function Geometry_colliTriPnt(x_1, y_1, x_2, y_2, x_3, y_3, x, y, accurate) {
 		if (accurate) {
-			//*
-			x_1 -= x;
-			y_1 -= y;
-			x_2 -= x;
-			y_2 -= y;
-			x_3 -= x;
-			y_3 -= y;
+			let s = y_1 * x_3 - x_1 * y_3 + (y_3 - y_1) * x + (x_1 - x_3) * y,
+				t = x_1 * y_2 - y_1 * x_2 + (y_1 - y_2) * x + (x_2 - x_1) * y;
 
-			return x_3 * y_1 - x_1 * y_3 >= 0 &&
-				x_1 * y_2 - x_2 * y_1 >= 0 &&
-				x_2 * y_3 - x_3 * y_2 >= 0;
+			if ((s < 0) !== (t < 0)) return false;
 
-			/*/
-
-			x_3 -= x_1;
-			y_3 -= y_1;
-			x_2 -= x_1;
-			y_2 -= y_1;
-			x -= x_1;
-			y -= y_1;
-
-			let dot00 = x_3 * x_3 + y_3 * y_3,
-				dot01 = x_3 * x_2 + y_3 * y_2,
-				dot02 = x_3 * x + y_3 * y,
-				dot11 = x_2 * x_2 + y_2 * y_2,
-				dot12 = x_2 * x + y_2 * y;
-
-			let invDenom = 1 / (dot00 * dot11 - dot01 * dot01);
-			x_1 = (dot11 * dot02 - dot01 * dot12) * invDenom;
-			y_1 = (dot00 * dot12 - dot01 * dot02) * invDenom;
-
-			// Check if point is in triangle
-			return (x_1 >= 0) && (y_1 >= 0) && (x_1 + y_1 < 1);
-			//*/
+			let area = Geometry_areaTri(x_1, y_1, x_2, y_2, x_3, y_3, true);
+			if (area > 0) {
+				s *= -1;
+				t *= -1;
+				area *= -1;
+			}
+			return s > 0 && t > 0 && (s + t) >= area;
 		}
-		let s = y_1 * x_3 - x_1 * y_3 + (y_3 - y_1) * x + (x_1 - x_3) * y,
-			t = x_1 * y_2 - y_1 * x_2 + (y_1 - y_2) * x + (x_2 - x_1) * y;
+		x_1 -= x;
+		y_1 -= y;
+		x_2 -= x;
+		y_2 -= y;
+		x_3 -= x;
+		y_3 -= y;
 
-		if ((s < 0) !== (t < 0)) return false;
-
-		let area = Geometry_areaTri(x_1, y_1, x_2, y_2, x_3, y_3, true);
-		if (area > 0) {
-			s *= -1;
-			t *= -1;
-			area *= -1;
-		}
-		return s > 0 && t > 0 && (s + t) >= area;
+		return x_3 * y_1 - x_1 * y_3 >= 0 &&
+			x_1 * y_2 - x_2 * y_1 >= 0 &&
+			x_2 * y_3 - x_3 * y_2 >= 0;
 	}
 
 	/**
@@ -5226,7 +5232,7 @@
 						continue;
 					}
 
-					if (Geometry_colliTriPnt(a_x, a_y, b_x, b_y, c_x, c_y, points[2 * vi], points[2 * vi + 1], true)) {
+					if (Geometry_colliTriPnt(a_x, a_y, b_x, b_y, c_x, c_y, points[2 * vi], points[2 * vi + 1])) {
 						eF = false;
 						break;
 					}
@@ -5869,13 +5875,13 @@
 	 *
 	 * @example
 	 * Math.projVec(5, 0, 5, 5);
-	 * //{x: 2.5, y: 2.5}
+	 * //{x: 5, y: 0}
 	 *
 	 * @function projVec
 	 * @memberof Vector
 	 **/
 	function Math_projVec(a_x, a_y, b_x, b_y, returnData) {
-		return Math_scaleVec(b_x, b_y, Math_dotVec(a_x, a_y, b_x, b_y) / Math_magVec(b_x, b_y, false), returnData);
+		return Math_scaleVec(a_x, a_y, Math_dotVec(a_x, a_y, b_x, b_y) / Math_magVec(a_x, a_y, false), returnData);
 	}
 
 	/**
@@ -5897,7 +5903,7 @@
 	 * @memberof Vector
 	 **/
 	function Math_rejVec(a_x, a_y, b_x, b_y, returnData) {
-		Math.projVec(a_x, a_y, b_x, b_y, returnData);
+		Math_projVec(a_x, a_y, b_x, b_y, returnData);
 		returnData.x = a_x - returnData.x;
 		returnData.y = a_y - returnData.y;
 		return returnData;
@@ -7051,9 +7057,9 @@
 	function Tween_inOutPow(time, pow, location) {
 		location = _helper0(location, 0.5);
 		if (time < location) {
-			return Math_pow(location, 1 - power) * Math_pow(time, power);
+			return Math_pow(location, 1 - pow) * Math_pow(time, pow);
 		}
-		return 1 - Math_pow(1 - location, 1 - power) * Math_pow(1 - time, power);		
+		return 1 - Math_pow(1 - location, 1 - pow) * Math_pow(1 - time, pow);		
 	}
 	
 	/**
@@ -8829,7 +8835,7 @@
 	 * @return {number}
 	 *
 	 * @example
-	 * Bit.reverse(446, 3);
+	 * Bit.reverse(446);
 	 * //251
 	 *
 	 * @function reverse
@@ -8837,11 +8843,9 @@
 	 **/
 	function Bit_reverse(num, full) {
 		if (full) {
-			num = ((num & 0x0000ffff) << 16) | ((num & 0xffff0000) >>> 16);
-			num = ((num & 0x55555555) << 1) | ((num & 0xAAAAAAAA) >>> 1);
-			num = ((num & 0x33333333) << 2) | ((num & 0xCCCCCCCC) >>> 2);
-			num = ((num & 0x0F0F0F0F) << 4) | ((num & 0xF0F0F0F0) >>> 4);
-			num = ((num & 0x00FF00FF) << 8) | ((num & 0xFF00FF00) >>> 8);
+			for (let i = 0; i < 15; i += 3) {
+				num = ((num & _reverse_1_[i]) << _reverse_1_[i + 2]) | ((num & _reverse_1_[i + 1]) >>> _reverse_1_[i + 2]);
+			}
 			return num;
 		}
 		let result = 0, temp, prev = num;
@@ -8971,6 +8975,7 @@
 		"M", "clamp", Math_clamp,
 		"M", "wrap", Math_wrap,
 		"M", "bounce", Math_bounce,
+		"M", "zigzag", Math_zigzag,
 		"M", "approach", Math_approach,
 		"M", "map", Math_map,
 		"M", "norm", Math_norm,
@@ -9039,9 +9044,9 @@
 		"G", "centroidTri", Geometry_centroidTri,
 		"G", "equilTri", Geometry_equilTri,
 		"G", "rightTri", Geometry_rightTri,
-		"G", "crcmCntrTri", Geometry_crcmCntrTri,
-		"G", "crcmCircTri", Geometry_crcmCircTri,
-		"G", "inCircTri", Geometry_inCircTri,
+		"G", "crcmTriPnt", Geometry_crcmTriPnt,
+		"G", "crcmTriCirc", Geometry_crcmTriCirc,
+		"G", "inTriCirc", Geometry_inTriCirc,
 		"G", "colliTriPnt", Geometry_colliTriPnt,
 		"G", "areaTri", Geometry_areaTri,
 		"G", "randomTri", Geometry_randomTri,
@@ -9210,7 +9215,9 @@
 		erfcx_1: _erfcx_1_,
 		invNorm_1: _invNorm_1_,
 		outBounce_1: _outBounce_1_,
-		snoise_1_ : _snoise_1_,
+		snoise_1 : _snoise_1_,
+		reverse_1: _reverse_1_,
+
 		helper7_1: _helper7_1_,
 		snoise_4: _snoise_4_,
 		snoise_5: _snoise_5_,
