@@ -12,7 +12,7 @@ This library is mostly used for my personal stuffs, and I updated this library v
 
 Version 0.29a (Alpha version)
 
-[Download](https://cdn.rawgit.com/Trung0246/Funch/4e2bf742/src/funch.js) ([Minified](https://cdn.rawgit.com/Trung0246/Funch/4e2bf742/src/funch.min.js))
+[Download](https://cdn.jsdelivr.net/gh/Trung0246/Funch@4e2bf742163ac8c37267d64ab57f930e7889d3cc/src/funch.js) ([Minified](https://cdn.jsdelivr.net/gh/Trung0246/Funch@4e2bf742163ac8c37267d64ab57f930e7889d3cc/src/funch.min.js))
 
 [Documentation](https://cdn.rawgit.com/Trung0246/Funch/7117fafc/docs/index.html) (may not update to lastest version) (0.26a)
 
